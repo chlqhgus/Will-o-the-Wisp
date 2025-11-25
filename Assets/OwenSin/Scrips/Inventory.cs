@@ -1,13 +1,13 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;   // IMPORTANT for TMP
 
 public class Inventory : MonoBehaviour
 {
     public int lotusRice = 40;
     public int herbalMedicine = 25;
 
-    public Text lotusText;
-    public Text herbText;
+    public TMP_Text lotusText;
+    public TMP_Text herbText;
 
     void Start()
     {
@@ -38,4 +38,3 @@ public class Inventory : MonoBehaviour
         herbText.text = "x" + herbalMedicine;
     }
 }
-

@@ -3,13 +3,21 @@ using UnityEngine;
 
 public class QueueManager : MonoBehaviour
 {
-    public Transform spawnPoint;       // x=13, y=0.14 (off-screen right)
-    public Transform[] queueSlots;     // 4 slot transforms at X = 0, 3, 6, 9
+    public Transform spawnPoint;
+    public Transform[] queueSlots; // slot0 = center
     public GameObject npcPrefab;
+
     public float spawnInterval = 3f;
 
     private List<NPC> activeNPCs = new List<NPC>();
     private float timer = 0f;
+
+    private string[] testLines = {
+        "I am hungry… please help.",
+        "The night was dangerous…",
+        "Do you have medicine?",
+        "I heard goblins nearby…"
+    };
 
     void Start()
     {
@@ -28,10 +36,12 @@ public class QueueManager : MonoBehaviour
 
         UpdateSortingOrders();
         UpdateQueueTargets();
+        UpdateSpeechBubble();
     }
 
-    // ---------------------------------------------------------------
-
+    // -------------------------------------------------------------------
+    // Spawn
+    // -------------------------------------------------------------------
     void SpawnNPC()
     {
         GameObject obj = Instantiate(npcPrefab, spawnPoint.position, Quaternion.identity);
@@ -39,6 +49,9 @@ public class QueueManager : MonoBehaviour
         activeNPCs.Add(npc);
     }
 
+    // -------------------------------------------------------------------
+    // Assign movement target for each NPC
+    // -------------------------------------------------------------------
     void UpdateQueueTargets()
     {
         for (int i = 0; i < activeNPCs.Count; i++)
@@ -49,37 +62,59 @@ public class QueueManager : MonoBehaviour
             }
             else
             {
-                // If more NPCs exist, they wait behind slot 4
-                Vector3 waitPos = queueSlots[queueSlots.Length - 1].position + new Vector3(3f * (i - 3), 0, 0);
+                Vector3 waitPos =
+                    queueSlots[queueSlots.Length - 1].position +
+                    new Vector3(3f * (i - 3), 0, 0);
+
                 activeNPCs[i].SetTarget(waitPos);
             }
         }
     }
 
-    // ---------------------------------------------------------------
-
+    // -------------------------------------------------------------------
+    // Sorting order
+    // -------------------------------------------------------------------
     void UpdateSortingOrders()
     {
-        // Highest priority = front of queue (100 downward)
         int baseOrder = 100;
 
         for (int i = 0; i < activeNPCs.Count; i++)
         {
-            int order = baseOrder - i;     // 100, 99, 98, 97...
+            int order = baseOrder - i;
             activeNPCs[i].SetSortingOrder(order);
         }
     }
 
-    // ---------------------------------------------------------------
-
-    public void RemoveFrontNPC()
+    // -------------------------------------------------------------------
+    // NEW — Speech Bubble Logic
+    // -------------------------------------------------------------------
+    void UpdateSpeechBubble()
     {
-        if (activeNPCs.Count == 0) return;
+        for (int i = 0; i < activeNPCs.Count; i++)
+        {
+            NPC npc = activeNPCs[i];
 
-        NPC first = activeNPCs[0];
-        activeNPCs.RemoveAt(0);
-        Destroy(first.gameObject);
+            if (i == 0)
+            {
+                // FRONT NPC shows bubble
+                if (!npc.bubbleBG.activeSelf)
+                {
+                    string randomLine = testLines[Random.Range(0, testLines.Length)];
+                    npc.ShowBubble(randomLine);
+                }
+            }
+            else
+            {
+                // Others hide bubble
+                npc.HideBubble();
+            }
+        }
     }
+
+    // -------------------------------------------------------------------
+    // Refuse / Accept
+    // -------------------------------------------------------------------
+    public Inventory inventory;
 
     public void RefuseFrontNPC()
     {
@@ -88,13 +123,8 @@ public class QueueManager : MonoBehaviour
         NPC front = activeNPCs[0];
         activeNPCs.RemoveAt(0);
 
-        // tell the NPC to leave quickly
         front.LeaveScene();
-
-        // queue shifts automatically because UpdateQueueTargets() handles positions
     }
-
-    public Inventory inventory;
 
     public void GiveLotusRice()
     {
@@ -121,8 +151,6 @@ public class QueueManager : MonoBehaviour
 
         front.AcceptAndLeave();
     }
-
-
 }
 
 
