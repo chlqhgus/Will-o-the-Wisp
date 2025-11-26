@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 8705469909669754070}
   - component: {fileID: 6416773353414980228}
   - component: {fileID: 8503763199291516033}
-  - component: {fileID: -2008758333963738552}
-  - component: {fileID: -5316557869744059464}
   m_Layer: 0
   m_Name: Concubine
   m_TagString: Untagged
@@ -29,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 8914953879124222673}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.37, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -115,80 +113,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-2008758333963738552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8914953879124222673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed3ea1196dd2745bf8c142671008d79b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCDataHolder
-  data:
-    prefabID: 1
-    displayName: NPC
-    prefabIndex: 0
-    arrivalDay1:
-    - hfbdbdfbbfbb
-    - effefeeff
-    acceptRiceDay1:
-    - nnnnnnnnnnnn
-    acceptMedDay1:
-    - cccccccccccccccc
-    rejectRiceDay1:
-    - aaaaaaaaaaaaa
-    rejectMedDay1:
-    - vvvvvvvv
-    redemandDay1:
-    - lllllllllll
-    arrivalReturning: []
-    acceptRiceReturning: []
-    acceptMedReturning: []
-    rejectRiceReturning: []
-    rejectMedReturning: []
-    redemandReturning: []
---- !u!114 &-5316557869744059464
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8914953879124222673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ed4cf1b8a31346a1a4838c67a826505, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCController
-  walkSpeed: 3
-  leaveSpeed: 12
-  arriveThreshold: 0.05
-  bubbleRoot: {fileID: 1451478085317142705, guid: 4e150ad96ba4346fa805c043e7ebbe03, type: 3}
-  bubbleText: {fileID: 5508783868765907271, guid: f66747cc1f0474305ac3836c378d0906, type: 3}
-  bubbleOffset: {x: 0, y: 1.6, z: 0}
-  prefabData:
-    prefabID: 
-    displayName: NPC
-    prefabIndex: 0
-    arrivalDay1: []
-    acceptRiceDay1: []
-    acceptMedDay1: []
-    rejectRiceDay1: []
-    rejectMedDay1: []
-    redemandDay1: []
-    arrivalReturning: []
-    acceptRiceReturning: []
-    acceptMedReturning: []
-    rejectRiceReturning: []
-    rejectMedReturning: []
-    redemandReturning: []
-  state:
-    prefabID: 
-    isDead: 0
-    isSick: 0
-    daysWithoutFood: 0
-    receivedFoodToday: 0
-    receivedMedicineToday: 0
-    metBefore: 0
