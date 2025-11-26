@@ -16,6 +16,10 @@ public class BookButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [Header("Click Actions")]
     [SerializeField] private GameObject[] objectsToActivate; // 클릭 시 활성화할 오브젝트들
     
+    [Header("Sound Effect")]
+    [SerializeField] private AudioClip bookSoundEffect;  // 책 클릭 사운드 이펙트
+    [SerializeField] private AudioSource audioSource;    // AudioSource (없으면 자동으로 찾거나 생성)
+    
     private Image imageComponent;
     private SpriteRenderer spriteRenderer;
     private RectTransform rectTransform;
@@ -25,6 +29,16 @@ public class BookButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     
     void Start()
     {
+        // AudioSource 설정 (없으면 자동으로 찾거나 생성)
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+        
         // Image 컴포넌트 확인 (UI 요소인 경우)
         imageComponent = GetComponent<Image>();
         if (imageComponent != null)
@@ -96,11 +110,22 @@ public class BookButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     
     public void OnPointerClick(PointerEventData eventData)
     {
+        // 사운드 재생
+        PlayBookSound();
+        
         // 클릭 시 크기 축소 효과
         StartCoroutine(ClickScaleAnimation());
         
         // 클릭 시 오브젝트 활성화
         ActivateObjects();
+    }
+    
+    private void PlayBookSound()
+    {
+        if (bookSoundEffect != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(bookSoundEffect);
+        }
     }
     
     private void ActivateObjects()

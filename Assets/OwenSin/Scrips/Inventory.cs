@@ -1,18 +1,45 @@
+// Inventory.cs
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Inventory : MonoBehaviour
 {
+    private static Inventory instance;
+    public static Inventory Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<Inventory>();
+            }
+            return instance;
+        }
+    }
+
     public int lotusRice = 40;
     public int herbalMedicine = 10;
+    public int money = 0; // 돈
 
-    public TextMeshProUGUI riceText;       // correct name
-    public TextMeshProUGUI medicineText;   // correct name
+    public Text lotusText;    // assign UI Text
+    public Text herbText;
+    public TextMeshProUGUI moneyText; // 돈 표시용 TextMeshProUGUI (선택사항)
 
-    void Start()
+    void Awake()
     {
-        Refresh();
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
     }
+
+    void Start() { Refresh(); }
 
     public bool UseLotusRice()
     {
@@ -30,25 +57,23 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    public void AddLotus(int n)
+    public void AddLotus(int n) { lotusRice += n; Refresh(); }
+    public void AddHerb(int n) { herbalMedicine += n; Refresh(); }
+    public void AddMoney(int n) { money += n; Refresh(); }
+    
+    public bool SpendMoney(int amount)
     {
-        lotusRice += n;
+        if (money < amount) return false;
+        money -= amount;
         Refresh();
-    }
-
-    public void AddHerb(int n)
-    {
-        herbalMedicine += n;
-        Refresh();
+        return true;
     }
 
     void Refresh()
     {
-        if (riceText != null)
-            riceText.text = "X" + lotusRice;       // FIXED
-
-        if (medicineText != null)
-            medicineText.text = "X" + herbalMedicine; // FIXED
+        if (lotusText != null) lotusText.text = "x" + lotusRice;
+        if (herbText != null) herbText.text = "x" + herbalMedicine;
+        if (moneyText != null) moneyText.text = money.ToString();
     }
 }
 

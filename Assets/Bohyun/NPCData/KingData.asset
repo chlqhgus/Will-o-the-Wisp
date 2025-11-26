@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: KingData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: King
+  requestType: 0
+  foodRequestLines:
+  - I am hungry. Bring me my meal at once.
+  medicineRequestLines: []
+  foodAcceptLines:
+  - I shall reward you for this.
+  medicineAcceptLines: []
+  foodRejectLines:
+  - You dare refuse the command of your king? Do you value your life so lightly?
+  medicineRejectLines: []
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - Your persistence has finally reached my ear. I grant it this once.
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - A second plea,  yet still you defy my will? Begone from my sight.
+  medicineReRejectLines: []
+  specialLines: []
+  csvImportPath: 

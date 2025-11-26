@@ -29,9 +29,14 @@ public class DictionaryDetailManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI detailText; // Detail_Text
     [SerializeField] private Button leftButton;         // LeftButton
     [SerializeField] private Button rightButton;       // RightButton
+    [SerializeField] private Button closeButton;        // CloseButton
     
     [Header("Page Image (Common)")]
     [SerializeField] private Sprite commonPageImage;    // 모든 페이지에서 공통으로 사용하는 페이지 이미지
+    
+    [Header("Sound Effect")]
+    [SerializeField] private AudioClip bookSoundEffect;  // 책 관련 사운드 이펙트 (클릭, 넘기기, 닫기)
+    [SerializeField] private AudioSource audioSource;    // AudioSource (없으면 자동으로 찾거나 생성)
     
     [Header("Dictionary Data")]
     [SerializeField] private DictionaryPageData[] pages = new DictionaryPageData[3]; // 3가지 도깨비 데이터
@@ -40,6 +45,16 @@ public class DictionaryDetailManager : MonoBehaviour
     
     void Start()
     {
+        // AudioSource 설정 (없으면 자동으로 찾거나 생성)
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+        
         // 공통 페이지 이미지 설정
         if (pageImage != null && commonPageImage != null)
         {
@@ -57,6 +72,11 @@ public class DictionaryDetailManager : MonoBehaviour
             rightButton.onClick.AddListener(OnRightButtonClicked);
         }
         
+        if (closeButton != null)
+        {
+            closeButton.onClick.AddListener(OnCloseButtonClicked);
+        }
+        
         // 초기 페이지 표시
         UpdatePage();
     }
@@ -72,6 +92,7 @@ public class DictionaryDetailManager : MonoBehaviour
     {
         if (currentPageIndex > 0)
         {
+            PlayBookSound();
             currentPageIndex--;
             UpdatePage();
         }
@@ -81,8 +102,24 @@ public class DictionaryDetailManager : MonoBehaviour
     {
         if (currentPageIndex < pages.Length - 1)
         {
+            PlayBookSound();
             currentPageIndex++;
             UpdatePage();
+        }
+    }
+    
+    private void OnCloseButtonClicked()
+    {
+        PlayBookSound();
+        // Dictionary_detail을 비활성화 (Unity의 OnClick 이벤트에서도 처리되지만, 사운드를 먼저 재생)
+        gameObject.SetActive(false);
+    }
+    
+    public void PlayBookSound()
+    {
+        if (bookSoundEffect != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(bookSoundEffect);
         }
     }
     
@@ -172,6 +209,11 @@ public class DictionaryDetailManager : MonoBehaviour
         if (rightButton != null)
         {
             rightButton.onClick.RemoveListener(OnRightButtonClicked);
+        }
+        
+        if (closeButton != null)
+        {
+            closeButton.onClick.RemoveListener(OnCloseButtonClicked);
         }
     }
 }

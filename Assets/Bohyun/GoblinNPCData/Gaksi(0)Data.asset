@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: Gaksi(0)Data
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Gaksi(0)
+  requestType: 0
+  foodRequestLines:
+  - My dear... don't you have something for me?
+  medicineRequestLines: []
+  foodAcceptLines:
+  - Hehe... thank you.
+  medicineAcceptLines: []
+  foodRejectLines:
+  - Are you... truly sincere?
+  medicineRejectLines: []
+  foodReRequestLines:
+  - Huh?
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - "Thank you\u2026 though your hesitation is a little disappointing."
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - "Hmm\u2026 this wasn\u2019t part of my plan\u2026 but very well."
+  medicineReRejectLines: []
+  specialLines: []
+  csvImportPath: 

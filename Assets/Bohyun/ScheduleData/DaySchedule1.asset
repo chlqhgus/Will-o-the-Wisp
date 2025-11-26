@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49b4a112b8a3646baa2c6d09cdd32e0c, type: 3}
+  m_Name: DaySchedule1
+  m_EditorClassIdentifier: Assembly-CSharp::DaySchedule
+  dayNumber: 1
+  npcPrefabs:
+  - {fileID: 1859262825088084324, guid: 08f6565d697574cdf82388b77b335c40, type: 3}
+  - {fileID: 7716212944933369802, guid: 693c8872d809b4fa4bbd081b36595529, type: 3}
+  - {fileID: 6643116713686459958, guid: df1ecb114356b409199535b07db03cde, type: 3}
+  - {fileID: 217054088062350000, guid: 1b3f855d875134d89a499d74726e9712, type: 3}
+  - {fileID: 1173175363873446436, guid: e4256f00afecb44009b5ab6a0563b1d6, type: 3}
+  - {fileID: 6643116713686459958, guid: 0a27f0dbf77764f59bca1e38b1dabfbb, type: 3}
+  - {fileID: 8063579809778003454, guid: 8d2a4a062e0cc47ab87d40ea78a3e8ec, type: 3}
+  - {fileID: 3331030340175329738, guid: eaf2646c295a44f908cb727d42ecf472, type: 3}
+  - {fileID: 8914953879124222673, guid: e854374cb978348ccba8db1a611a9823, type: 3}
+  - {fileID: 7716212944933369802, guid: 85903d3f125da488a97aa678e9940881, type: 3}
+  - {fileID: 6643116713686459958, guid: 83b92112245354832a2184c268b7718b, type: 3}
+  - {fileID: 1600793333435452931, guid: 2325eab656bc44ce5b5250da6279358a, type: 3}
+  - {fileID: 6643116713686459958, guid: b21e061c7a34e430fb99a84827599132, type: 3}
+  - {fileID: 8063579809778003454, guid: 6a020713099e243cfb9719cf2f32e00f, type: 3}
+  - {fileID: 217054088062350000, guid: 766d4066085a74fd7834a259915e2a6d, type: 3}
+  spawnInterval: 1

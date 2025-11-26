@@ -9,7 +9,11 @@ public class NPCData
     [Header("Identity (edit in prefab)")]
     public string prefabID = "";           // unique string per prefab (set manually)
     public string displayName = "NPC";
+    public string npcName = "";            // NPC name (used by BohyunQueueManager)
     public int prefabIndex = 0;            // optional if you map prefabs by index
+
+    [Header("Random Speech Lines")]
+    public string[] speechLines = new string[0];  // random lines shown when NPC arrives at front
 
     [Header("Day1 (first-time) dialogues (multi-sentence lists)")]
     [TextArea(1, 4)] public List<string> arrivalDay1 = new List<string>();

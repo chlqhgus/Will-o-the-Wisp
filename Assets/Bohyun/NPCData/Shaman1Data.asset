@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: Shaman1Data
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Shaman 1
+  requestType: 0
+  foodRequestLines:
+  - Give me some food, and I'll tell you something good.
+  medicineRequestLines: []
+  foodAcceptLines:
+  - Dokkaebi walk among us, disguised as people, waiting to betray you. Consult your
+    books carefully.
+  medicineAcceptLines: []
+  foodRejectLines:
+  - The flow of energy breaks, an ill omen indeed.
+  medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
+  specialLines: []
+  csvImportPath: 
