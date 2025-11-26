@@ -1,0 +1,9 @@
+npc-name,rice-request,medicine-request,rice-accept,medicine-accept,rice-reject,medicine-reject,rice-re-accept,medicine-re-accept,rice-re-reject,medicine-re-reject,special
+Heoju,-,-,-,-,-,-,-,-,-,-,-
+Duak(¡â),Please¡¦ spare me some food¡¦,-,Thank you¡¦ truly.,-,I beg you¡¦ I¡¯m starving¡¦,-,Thank you¡¦ I won¡¯t forget this.,-,Then¡¦ I suppose there's nothing I can do¡¦,-,-
+Gaksi(0),My dear¡¦ don¡¯t you have something for me?,-,Hehe¡¦ thank you.,-,Are you¡¦ truly sincere?,-,Thank you¡¦ though your hesitation is a little disappointing.,-,Hmm¡¦ this wasn¡¯t part of my plan¡¦ but very well.,-,-
+Birak(0),"Hey, you. Hand over the food. Now.",-,Tch¡¦ not meat? Fine. I¡¯ll let it slide?just this once.,-,You messing with me? Why can¡¯t you give it to me?,,"""Should¡¯ve done that from the start¡¦""
+/ ""Hold up¡¦ this is meat, right?""",,"""How dare you, you filthy human!!""
+/ ""Give me meat! Real meat I can sink my teeth into!""",,
+5,,,,,,,,,,,
+6,,,,,,,,,,,

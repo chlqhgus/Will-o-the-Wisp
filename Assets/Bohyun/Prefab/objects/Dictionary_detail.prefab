@@ -621,7 +621,10 @@ MonoBehaviour:
   detailText: {fileID: 3562041059246663228}
   leftButton: {fileID: 6923507571516326848}
   rightButton: {fileID: 8417106982260086908}
+  closeButton: {fileID: 6241182288462499481}
   commonPageImage: {fileID: -1229905482659958042, guid: 3292afc9e49f04fb69fc8141856248a2, type: 3}
+  bookSoundEffect: {fileID: 8300000, guid: a2f1f642d130b4005a2b752d686fb5b5, type: 3}
+  audioSource: {fileID: 0}
   pages:
   - faceImage: {fileID: -7136524316631348995, guid: ddfad20367ad14a71960c2a8e0764ead, type: 3}
     textSegments:
