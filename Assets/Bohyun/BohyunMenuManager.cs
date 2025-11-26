@@ -221,7 +221,7 @@ public class BohyunMenuManager : MonoBehaviour
     private void CreateFadeOverlay()
     {
         // Canvas 찾기
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             Debug.LogWarning("BohyunMenuManager: Canvas not found!");

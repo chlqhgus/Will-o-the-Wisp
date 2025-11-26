@@ -20,7 +20,8 @@ public class TitleManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI titleText; // Title 텍스트
     [SerializeField] private Button startButton; // Start 버튼
     [SerializeField] private Button exitButton; // Exit 버튼
-    [SerializeField] private string gameSceneName = "GameScene"; // 게임 씬 이름
+    [SerializeField] private string introSceneName = "IntroScene"; // Intro 씬 이름
+    [SerializeField] private float sceneTransitionFadeDuration = 10f; // 씬 전환 페이드아웃 시간
     
     [Header("Animation Settings")]
     [SerializeField] private float subtitle1TypingSpeed = 0.05f; // Subtitle1 타이핑 속도
@@ -30,6 +31,14 @@ public class TitleManager : MonoBehaviour
     [SerializeField] private float delayBetweenDialogues = 0.5f; // 대사 사이 딜레이
     [SerializeField] private float dialogueFadeInDuration = 0.3f; // 대사 페이드인 시간
     [SerializeField] private float dialogueFadeOutDuration = 0.3f; // 대사 페이드아웃 시간
+    
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource typingAudioSource; // 타이핑 소리용 AudioSource
+    [SerializeField] private AudioClip typingSound; // 타이핑 소리 클립
+    [SerializeField] private float typingSoundVolume = 0.5f; // 타이핑 소리 볼륨
+    [SerializeField] private AudioSource bgmAudioSource; // BGM용 AudioSource
+    [SerializeField] private AudioClip bgmClip; // BGM 클립
+    [SerializeField] private float bgmVolume = 0.5f; // BGM 볼륨
     
     [Header("Title Animation Settings")]
     [SerializeField] private float titleFadeInDuration = 1f; // Title 페이드인 시간
@@ -69,7 +78,47 @@ public class TitleManager : MonoBehaviour
     {
         InitializeScene();
         SetupMenuButtons();
+        InitializeAudio();
         StartCoroutine(PlayTitleSequence());
+    }
+    
+    private void InitializeAudio()
+    {
+        // 타이핑 소리용 AudioSource 초기화
+        if (typingAudioSource == null)
+        {
+            GameObject typingAudioObject = new GameObject("TypingAudioSource");
+            typingAudioObject.transform.SetParent(transform);
+            typingAudioSource = typingAudioObject.AddComponent<AudioSource>();
+            typingAudioSource.playOnAwake = false;
+            typingAudioSource.loop = true; // 타이핑 소리는 루프
+            typingAudioSource.volume = typingSoundVolume;
+        }
+        else
+        {
+            // 기존 AudioSource 설정
+            typingAudioSource.playOnAwake = false;
+            typingAudioSource.loop = true;
+            typingAudioSource.volume = typingSoundVolume;
+        }
+        
+        // BGM용 AudioSource 초기화
+        if (bgmAudioSource == null && bgmClip != null)
+        {
+            GameObject bgmAudioObject = new GameObject("BGMAudioSource");
+            bgmAudioObject.transform.SetParent(transform);
+            bgmAudioSource = bgmAudioObject.AddComponent<AudioSource>();
+            bgmAudioSource.playOnAwake = false;
+            bgmAudioSource.loop = true;
+            bgmAudioSource.volume = bgmVolume;
+        }
+        else if (bgmAudioSource != null)
+        {
+            // 기존 AudioSource 설정
+            bgmAudioSource.playOnAwake = false;
+            bgmAudioSource.loop = true;
+            bgmAudioSource.volume = bgmVolume;
+        }
     }
     
     private void InitializeScene()
@@ -193,6 +242,17 @@ public class TitleManager : MonoBehaviour
             yield return StartCoroutine(TypeText(subtitle1Text, subtitle1, subtitle1TypingSpeed));
         }
         
+        // 1-1. Subtitle1 끝난 후 0.5초 딜레이 후 BGM 재생
+        yield return new WaitForSeconds(0.5f);
+        
+        if (bgmClip != null && bgmAudioSource != null)
+        {
+            bgmAudioSource.clip = bgmClip;
+            bgmAudioSource.volume = bgmVolume;
+            bgmAudioSource.loop = true;
+            bgmAudioSource.Play();
+        }
+        
         // 2. Black overlay alpha값이 250까지 서서히 변경 (완전히 끝날 때까지 대기)
         yield return StartCoroutine(FadeBlackOverlay(firstFadeTargetAlpha));
         
@@ -310,10 +370,27 @@ public class TitleManager : MonoBehaviour
         textComponent.text = "";
         textComponent.gameObject.SetActive(true);
         
+        // 타이핑 소리 시작 (BGM과 함께 재생되도록)
+        bool isPlayingTypingSound = false;
+        if (typingSound != null && typingAudioSource != null)
+        {
+            typingAudioSource.clip = typingSound;
+            typingAudioSource.volume = typingSoundVolume;
+            typingAudioSource.loop = true;
+            typingAudioSource.Play(); // Play() 사용하여 루프 재생 (BGM은 별도 AudioSource에서 재생되어야 함)
+            isPlayingTypingSound = true;
+        }
+        
         for (int i = 0; i <= fullText.Length; i++)
         {
             textComponent.text = fullText.Substring(0, i);
             yield return new WaitForSeconds(typingSpeed);
+        }
+        
+        // 타이핑 소리 중지
+        if (isPlayingTypingSound && typingAudioSource != null)
+        {
+            typingAudioSource.Stop();
         }
     }
     
@@ -520,9 +597,56 @@ public class TitleManager : MonoBehaviour
     
     private IEnumerator FadeOutAndLoadScene()
     {
-        // 바로 씬 전환
-        SceneManager.LoadScene(gameSceneName);
-        yield return null;
+        // 모든 코루틴 중지
+        StopAllCoroutines();
+        
+        // 검정 페이드아웃 효과
+        if (blackOverlay != null)
+        {
+            float elapsedTime = 0f;
+            Color startColor = blackOverlay.color;
+            Color targetColor = Color.black;
+            targetColor.a = 1f; // 완전히 검정색으로
+            
+            // 현재 alpha가 이미 높으면 더 부드럽게 시작
+            // 시작 alpha를 0으로 리셋하여 항상 부드럽게 페이드아웃
+            if (startColor.a < 0.5f)
+            {
+                startColor.a = 0f; // 현재 alpha가 낮으면 0에서 시작
+            }
+            
+            while (elapsedTime < sceneTransitionFadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / sceneTransitionFadeDuration);
+                
+                // Ease in (처음엔 느리게, 나중에 빠르게)
+                t = t * t;
+                
+                if (blackOverlay != null)
+                {
+                    Color currentColor = Color.Lerp(startColor, targetColor, t);
+                    blackOverlay.color = currentColor;
+                }
+                
+                yield return null;
+            }
+            
+            // 최종 색상 설정
+            if (blackOverlay != null)
+            {
+                blackOverlay.color = targetColor;
+            }
+        }
+        
+        // 잠시 대기 (에디터가 객체를 정리할 시간 제공)
+        yield return new WaitForEndOfFrame();
+        
+        // Intro Scene으로 전환
+        if (!string.IsNullOrEmpty(introSceneName))
+        {
+            SceneManager.LoadScene(introSceneName);
+        }
     }
     
     private void OnExitButtonClicked()
@@ -536,6 +660,35 @@ public class TitleManager : MonoBehaviour
     
     private void OnDestroy()
     {
+        // 모든 코루틴 중지
+        StopAllCoroutines();
+        
+        // 버튼 이벤트 정리
+        if (startButton != null)
+        {
+            startButton.onClick.RemoveListener(OnStartButtonClicked);
+        }
+        
+        if (exitButton != null)
+        {
+            exitButton.onClick.RemoveListener(OnExitButtonClicked);
+        }
+        
+        // 오디오 소스 정리
+        if (typingAudioSource != null)
+        {
+            typingAudioSource.Stop();
+        }
+        
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.Stop();
+        }
+    }
+    
+    private void OnDisable()
+    {
+        // 에디터에서도 안전하게 정리
         if (startButton != null)
         {
             startButton.onClick.RemoveListener(OnStartButtonClicked);

@@ -31,7 +31,7 @@ public class CursorManager : MonoBehaviour
     private void FindAllButtons()
     {
         // 씬의 모든 Button 컴포넌트 찾기
-        Button[] allButtons = FindObjectsOfType<Button>();
+        Button[] allButtons = FindObjectsByType<Button>(FindObjectsSortMode.None);
         interactiveButtons.AddRange(allButtons);
     }
     
