@@ -653,24 +653,19 @@ public class TitleManager : MonoBehaviour
         
         // 잠시 대기 (에디터가 객체를 정리할 시간 제공)
         yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.1f); // 추가 대기 시간
         
         // Intro Scene으로 전환
         if (!string.IsNullOrEmpty(introSceneName))
         {
+            // 씬 전환 전에 모든 참조 정리
+            CleanupBeforeSceneTransition();
+            
             SceneManager.LoadScene(introSceneName);
         }
     }
     
-    private void OnExitButtonClicked()
-    {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
-        #endif
-    }
-    
-    private void OnDestroy()
+    private void CleanupBeforeSceneTransition()
     {
         // 버튼 이벤트 정리
         if (startButton != null)
@@ -695,17 +690,37 @@ public class TitleManager : MonoBehaviour
         }
     }
     
+    private void OnExitButtonClicked()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+    }
+    
+    private void OnDestroy()
+    {
+        CleanupBeforeSceneTransition();
+    }
+    
     private void OnDisable()
     {
-        // 에디터에서도 안전하게 정리
-        if (startButton != null)
+        // 에디터에서도 안전하게 정리 (씬 전환 중 호출될 수 있음)
+        // 하지만 이미 CleanupBeforeSceneTransition에서 정리했으므로 중복 체크만
+        if (isTransitioning)
         {
-            startButton.onClick.RemoveListener(OnStartButtonClicked);
+            return; // 이미 정리됨
         }
         
-        if (exitButton != null)
+        // 에디터 모드에서만 실행 (플레이 모드가 아닐 때)
+        #if UNITY_EDITOR
+        if (!UnityEditor.EditorApplication.isPlaying)
         {
-            exitButton.onClick.RemoveListener(OnExitButtonClicked);
+            return;
         }
+        #endif
+        
+        CleanupBeforeSceneTransition();
     }
 }
