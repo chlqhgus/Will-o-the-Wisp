@@ -274,6 +274,24 @@ public class TitleManager : MonoBehaviour
             yield return StartCoroutine(FadeOutDialogue(adultDialogueText));
         }
         
+        // 7-1. subtitle1과 subtitle2 동시에 페이드아웃 (제목이 떠오르기 전에)
+        bool subtitle1Active = subtitle1Text != null && subtitle1Text.gameObject.activeSelf;
+        bool subtitle2Active = subtitle2Text != null && subtitle2Text.gameObject.activeSelf;
+        
+        if (subtitle1Active || subtitle2Active)
+        {
+            if (subtitle1Active)
+            {
+                StartCoroutine(FadeOutDialogue(subtitle1Text));
+            }
+            if (subtitle2Active)
+            {
+                StartCoroutine(FadeOutDialogue(subtitle2Text));
+            }
+            // 둘 중 더 긴 페이드아웃 시간만큼 대기
+            yield return new WaitForSeconds(dialogueFadeOutDuration);
+        }
+        
         // 7-2. black overlay 200까지 서서히 변경 (완전히 끝날 때까지 대기)
         yield return StartCoroutine(FadeBlackOverlay(secondFadeTargetAlpha));
         
