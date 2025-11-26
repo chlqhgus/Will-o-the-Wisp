@@ -30,7 +30,7 @@ MonoBehaviour:
   - Just this once.
   medicineReAcceptLines: []
   foodReRejectLines:
-  - "Twice I asked, yet you deny me still\uFFFD\uFFFD how unfortunate."
+  - "Twice I asked, yet you deny me still\u2026 how unfortunate."
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

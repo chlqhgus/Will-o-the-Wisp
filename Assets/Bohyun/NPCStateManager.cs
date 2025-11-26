@@ -32,9 +32,16 @@ public class NPCStateManager : MonoBehaviour
         public bool isDead = false; // 죽었는지 여부
         public bool requestedMedicineToday = false; // 오늘 약을 요청했는지
         public int refusalCount = 0; // 오늘 거절당한 횟수 (재요청 가능 여부 판단용)
+        public bool receivedFoodToday = false; // 오늘 밥을 받았는지
     }
 
     private Dictionary<string, NPCState> npcStates = new Dictionary<string, NPCState>();
+    
+    // 무당 이벤트 관련
+    private bool hasShamanEventTriggered = false;
+    
+    // 오늘 등장한 모든 NPC 이름 목록 (daySchedule에서 설정됨)
+    private List<string> allNPCNames = new List<string>();
 
     void Awake()
     {
@@ -62,7 +69,8 @@ public class NPCStateManager : MonoBehaviour
                 daysWithoutMedicine = 0,
                 isDead = false,
                 requestedMedicineToday = false,
-                refusalCount = 0
+                refusalCount = 0,
+                receivedFoodToday = false
             };
         }
         return npcStates[npcName];
@@ -139,6 +147,41 @@ public class NPCStateManager : MonoBehaviour
     }
 
     /// <summary>
+    /// NPC에게 밥을 주었음을 기록합니다.
+    /// </summary>
+    public void RecordFoodGiven(string npcName)
+    {
+        NPCState state = GetOrCreateState(npcName);
+        state.receivedFoodToday = true;
+    }
+    
+    /// <summary>
+    /// NPC가 오늘 밥을 받았는지 확인합니다.
+    /// </summary>
+    public bool ReceivedFoodToday(string npcName)
+    {
+        if (!npcStates.ContainsKey(npcName))
+            return false;
+        return npcStates[npcName].receivedFoodToday;
+    }
+    
+    /// <summary>
+    /// 오늘 등장할 모든 NPC 이름 목록을 설정합니다. (NPCQueueSystem에서 호출)
+    /// </summary>
+    public void SetAllNPCNames(List<string> npcNames)
+    {
+        allNPCNames = new List<string>(npcNames);
+    }
+    
+    /// <summary>
+    /// 오늘 등장한 모든 NPC 이름 목록을 반환합니다.
+    /// </summary>
+    public List<string> GetAllNPCNames()
+    {
+        return new List<string>(allNPCNames);
+    }
+    
+    /// <summary>
     /// 새로운 날이 시작될 때 호출 (모든 NPC의 오늘 요청 상태 리셋)
     /// </summary>
     public void OnNewDay()
@@ -147,7 +190,9 @@ public class NPCStateManager : MonoBehaviour
         {
             state.requestedMedicineToday = false;
             state.refusalCount = 0; // 거절 횟수도 리셋
+            state.receivedFoodToday = false; // 밥 받은 상태도 리셋
         }
+        allNPCNames.Clear(); // NPC 목록도 리셋
     }
 
     /// <summary>
@@ -156,6 +201,23 @@ public class NPCStateManager : MonoBehaviour
     public void ResetAllStates()
     {
         npcStates.Clear();
+        hasShamanEventTriggered = false;
+    }
+    
+    /// <summary>
+    /// 무당 이벤트가 발생했는지 확인합니다.
+    /// </summary>
+    public bool HasShamanEventTriggered()
+    {
+        return hasShamanEventTriggered;
+    }
+    
+    /// <summary>
+    /// 무당 이벤트 발생을 기록합니다.
+    /// </summary>
+    public void SetShamanEventTriggered()
+    {
+        hasShamanEventTriggered = true;
     }
 }
 

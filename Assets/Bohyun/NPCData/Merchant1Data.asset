@@ -21,7 +21,7 @@ MonoBehaviour:
   - Ah, thank you! I owe you one.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Hmph, bit stingy, aren\uFFFD\uFFFDt we?"
+  - Hmph, bit stingy, aren't we?
   medicineRejectLines: []
   foodReRequestLines: []
   medicineReRequestLines: []

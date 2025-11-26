@@ -1,5 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 /// <summary>
@@ -20,6 +25,19 @@ public class NPCQueueSystem : MonoBehaviour
     [Tooltip("말풍선 텍스트 (씬에 있는 UI)")]
     public TextMeshProUGUI speechBubbleText;
     
+    [Header("Special Events")]
+    [Tooltip("도깨비사전 UI (무당 NPC를 만나면 활성화)")]
+    public GameObject dictionaryUI;
+    
+    [Header("Typing Effect Settings")]
+    [Tooltip("타이핑 속도 (초 단위, 작을수록 빠름)")]
+    public float typingSpeed = 0.05f;
+    [Tooltip("타이핑 소리 (선택사항)")]
+    public AudioClip typingSound;
+    [Tooltip("타이핑 소리 볼륨")]
+    [Range(0f, 1f)]
+    public float typingSoundVolume = 0.5f;
+    
     [Header("Inventory (선택사항)")]
     public Inventory inventory;
     
@@ -30,6 +48,12 @@ public class NPCQueueSystem : MonoBehaviour
     private int currentSpawnIndex = 0;
     private bool isInitialSpawnComplete = false; // 초기 스폰 완료 여부
     
+    // 타이핑 효과 관련
+    private AudioSource typingAudioSource;
+    private Coroutine typingCoroutine;
+    private bool isTypingComplete = true; // 타이핑이 완료되었는지 여부
+    private string currentTypingText = ""; // 현재 타이핑 중인 전체 텍스트
+    
     // 현재 가장 앞에 있는 NPC (queueSlots[0]에 있는 NPC = center)
     private GameObject frontNPC = null;
     private NPCComponent frontNPCComponent = null;
@@ -37,17 +61,70 @@ public class NPCQueueSystem : MonoBehaviour
     // 상호작용 처리 중인지 여부 (대사 표시 중에는 다음 상호작용 방지)
     private bool isProcessingInteraction = false;
     
+    // 무당 이벤트 관련
+    private bool isCurrentNPCShaman = false; // 현재 상호작용 중인 NPC가 무당인지
+    
     [Header("Position Settings")]
     [Tooltip("NPC가 목표 위치에 도착했다고 판단하는 거리")]
     public float arrivalDistance = 0.1f;
+    
+    [Header("Refusal Settings")]
+    [Tooltip("거절당한 NPC가 재요청할 확률 (0.0 ~ 1.0, 예: 0.5 = 50%)")]
+    [Range(0f, 1f)]
+    public float reRequestChance = 0.5f;
+    
+    [Header("Visual Settings")]
+    [Tooltip("뒤에 있는 NPC의 어둡기 정도 (0.0 = 완전히 어둡게, 1.0 = 변화 없음)")]
+    [Range(0f, 1f)]
+    public float minBrightness = 0.5f; // 뒤에 있는 NPC의 최소 밝기
 
     void Start()
     {
+        // NPCStateManager에 오늘 등장할 모든 NPC 이름 목록 설정
+        if (daySchedule != null && daySchedule.npcPrefabs != null && NPCStateManager.Instance != null)
+        {
+            List<string> npcNames = new List<string>();
+            foreach (GameObject prefab in daySchedule.npcPrefabs)
+            {
+                if (prefab != null)
+                {
+                    NPCComponent npcComponent = prefab.GetComponent<NPCComponent>();
+                    if (npcComponent != null && npcComponent.bohyunData != null && !string.IsNullOrEmpty(npcComponent.bohyunData.npcName))
+                    {
+                        npcNames.Add(npcComponent.bohyunData.npcName);
+                    }
+                }
+            }
+            NPCStateManager.Instance.SetAllNPCNames(npcNames);
+        }
+        
         // 말풍선 초기화
+        // 타이핑 코루틴 중지
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        
+        // 타이핑 소리 중지
+        if (typingAudioSource != null && typingAudioSource.isPlaying)
+        {
+            typingAudioSource.Stop();
+        }
+        
         if (speechBubbleBG != null)
             speechBubbleBG.SetActive(false);
         if (speechBubbleText != null)
             speechBubbleText.gameObject.SetActive(false);
+        
+        // 타이핑 소리용 AudioSource 초기화
+        if (typingSound != null)
+        {
+            typingAudioSource = gameObject.AddComponent<AudioSource>();
+            typingAudioSource.playOnAwake = false;
+            typingAudioSource.loop = true;
+            typingAudioSource.volume = typingSoundVolume;
+        }
         
         // 초기화
         isInitialSpawnComplete = false;
@@ -106,6 +183,15 @@ public class NPCQueueSystem : MonoBehaviour
         
         // 말풍선 업데이트
         UpdateSpeechBubble();
+        
+        // 타이핑 중 클릭 감지
+        CheckTypingSkip();
+        
+        // 모든 상호작용이 끝났는지 확인 (Update에서도 체크)
+        if (!isProcessingInteraction)
+        {
+            CheckAndTransitionToNighttime();
+        }
     }
 
     /// <summary>
@@ -277,6 +363,68 @@ public class NPCQueueSystem : MonoBehaviour
                 int order = baseOrder - i; // 앞에 있는 NPC가 더 높은 order
                 npcComponent.SetSortingOrder(order);
             }
+            
+            // 뒤로 갈수록 어둡게 만들기
+            UpdateNPCBrightness(activeNPCs[i], i);
+        }
+    }
+    
+    /// <summary>
+    /// NPC의 밝기를 큐 위치에 따라 조절합니다. 뒤로 갈수록 어둡게 만듭니다.
+    /// </summary>
+    void UpdateNPCBrightness(GameObject npc, int queueIndex)
+    {
+        if (npc == null) return;
+        
+        // 첫 번째 NPC는 원래 밝기 유지
+        if (queueIndex == 0)
+        {
+            // 원래 색상으로 복원
+            SpriteRenderer[] spriteRenderers = npc.GetComponentsInChildren<SpriteRenderer>();
+            foreach (var sr in spriteRenderers)
+            {
+                if (sr != null)
+                {
+                    Color color = sr.color;
+                    color.r = 1f;
+                    color.g = 1f;
+                    color.b = 1f;
+                    sr.color = color;
+                }
+            }
+            return;
+        }
+        
+        // 뒤로 갈수록 어둡게
+        // queueIndex가 1일 때: 밝기 0.6
+        // queueIndex가 2일 때: 밝기 0.4
+        // queueIndex가 3 이상일 때: minBrightness까지 감소
+        float brightness;
+        if (queueIndex == 1)
+        {
+            brightness = 0.6f;
+        }
+        else if (queueIndex == 2)
+        {
+            brightness = 0.4f;
+        }
+        else
+        {
+            // 3 이상일 때는 minBrightness까지 선형 감소
+            brightness = Mathf.Lerp(0.4f, minBrightness, (float)(queueIndex - 2) / Mathf.Max(1f, (queueSlots != null ? queueSlots.Length - 1 : 3f) - 2));
+        }
+        
+        SpriteRenderer[] renderers = npc.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var renderer in renderers)
+        {
+            if (renderer != null)
+            {
+                Color color = renderer.color;
+                color.r = brightness;
+                color.g = brightness;
+                color.b = brightness;
+                renderer.color = color;
+            }
         }
     }
 
@@ -314,6 +462,9 @@ public class NPCQueueSystem : MonoBehaviour
             // 도착했을 때만 대사 표시
             if (hasArrived && frontNPC != null && frontNPCComponent != null && frontNPCComponent.bohyunData != null)
             {
+                // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
+                isCurrentNPCShaman = IsShamanNPC(frontNPCComponent.bohyunData);
+                
                 ShowDialogue(frontNPCComponent.bohyunData);
             }
             else
@@ -331,6 +482,9 @@ public class NPCQueueSystem : MonoBehaviour
             // 도착했고 대사가 표시되지 않았으면 표시
             else if (hasArrived && speechBubbleBG != null && !speechBubbleBG.activeSelf)
             {
+                // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
+                isCurrentNPCShaman = IsShamanNPC(frontNPCComponent.bohyunData);
+                
                 ShowDialogue(frontNPCComponent.bohyunData);
             }
         }
@@ -389,14 +543,8 @@ public class NPCQueueSystem : MonoBehaviour
             dialogue = "...";
         }
 
-        // 말풍선 표시
-        if (speechBubbleBG != null)
-            speechBubbleBG.SetActive(true);
-        if (speechBubbleText != null)
-        {
-            speechBubbleText.gameObject.SetActive(true);
-            speechBubbleText.text = dialogue;
-        }
+        // 말풍선 표시 (타이핑 효과 포함)
+        ShowDialogueText(dialogue);
     }
 
     /// <summary>
@@ -404,6 +552,19 @@ public class NPCQueueSystem : MonoBehaviour
     /// </summary>
     void HideSpeechBubble()
     {
+        // 타이핑 코루틴 중지
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        
+        // 타이핑 소리 중지
+        if (typingAudioSource != null && typingAudioSource.isPlaying)
+        {
+            typingAudioSource.Stop();
+        }
+        
         if (speechBubbleBG != null)
             speechBubbleBG.SetActive(false);
         if (speechBubbleText != null)
@@ -509,46 +670,17 @@ public class NPCQueueSystem : MonoBehaviour
         {
             requestedMedicine = npcData.requestType == BohyunNPCRequestType.Medicine;
             
-            // 거절 대사 표시 (두 번 거절이면 재거절 대사, 아니면 일반 거절 대사)
-            string rejectDialogue = "";
-            bool hasReRequest = false; // 재요청 가능 여부 (re-accept나 re-reject 대사가 있으면 재요청 가능)
-            
+            // 재요청 가능 여부 확인 (re-accept나 re-reject 대사가 있으면 재요청 가능)
+            bool hasReRequest = false;
             if (requestedMedicine)
             {
-                // 두 번 거절당했을 때
-                if (refusalCount >= 1 && npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
-                {
-                    rejectDialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
-                }
-                // 첫 거절
-                else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
-                {
-                    rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
-                }
-                // 재요청 가능 여부 확인 (re-accept나 re-reject 대사가 있으면 재요청 가능)
                 hasReRequest = (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0) ||
                                (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0);
             }
             else
             {
-                // 두 번 거절당했을 때
-                if (refusalCount >= 1 && npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
-                {
-                    rejectDialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
-                }
-                // 첫 거절
-                else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
-                {
-                    rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
-                }
-                // 재요청 가능 여부 확인 (re-accept나 re-reject 대사가 있으면 재요청 가능)
                 hasReRequest = (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0) ||
                                (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0);
-            }
-            
-            if (!string.IsNullOrEmpty(rejectDialogue))
-            {
-                ShowDialogueText(rejectDialogue);
             }
             
             // 상태 기록
@@ -557,15 +689,94 @@ public class NPCQueueSystem : MonoBehaviour
                 NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
             }
             
-            // 재요청 가능하면 NPC를 큐에 남겨두고, 아니면 제거
+            // 재요청 가능하고 첫 거절이면, 랜덤으로 재요청 여부 결정
             if (hasReRequest && refusalCount == 0)
             {
-                // 첫 거절이면 재요청 대사 표시하고 NPC는 큐에 남김
-                StartCoroutine(ProcessRefusalAndReRequest(frontNPC));
+                // 랜덤으로 재요청할지 결정
+                if (Random.value <= reRequestChance)
+                {
+                    // 재요청하는 경우: 거절 대사 건너뛰고 바로 재요청 대사만 표시
+                    StartCoroutine(ProcessRefusalAndReRequest(frontNPC, skipRejectDialogue: true));
+                }
+                else
+                {
+                    // 재요청하지 않는 경우: 거절 대사 표시 후 지나감
+                    string rejectDialogue = "";
+                    if (requestedMedicine)
+                    {
+                        if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                        {
+                            rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                        }
+                    }
+                    else
+                    {
+                        if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                        {
+                            rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                        }
+                    }
+                    
+                    if (!string.IsNullOrEmpty(rejectDialogue))
+                    {
+                        ShowDialogueText(rejectDialogue);
+                    }
+                    
+                    StartCoroutine(ProcessInteractionAndRemove(frontNPC));
+                }
             }
             else
             {
-                // 두 번째 거절이거나 재요청 불가능하면 제거
+                // 두 번째 거절이거나 재요청 불가능: 거절 대사 표시 후 제거
+                string rejectDialogue = "";
+                if (requestedMedicine)
+                {
+                    // 두 번 거절당했을 때
+                    if (refusalCount >= 1)
+                    {
+                        if (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                        {
+                            rejectDialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                        }
+                        else
+                        {
+                            // re-reject 대사가 없으면 기본 메시지
+                            rejectDialogue = "I'm gonna die tomorrow...";
+                        }
+                    }
+                    // 첫 거절
+                    else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                    {
+                        rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                    }
+                }
+                else
+                {
+                    // 두 번 거절당했을 때
+                    if (refusalCount >= 1)
+                    {
+                        if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                        {
+                            rejectDialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                        }
+                        else
+                        {
+                            // re-reject 대사가 없으면 기본 메시지
+                            rejectDialogue = "I'm gonna die tomorrow...";
+                        }
+                    }
+                    // 첫 거절
+                    else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                    {
+                        rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(rejectDialogue))
+                {
+                    ShowDialogueText(rejectDialogue);
+                }
+                
                 StartCoroutine(ProcessInteractionAndRemove(frontNPC));
             }
         }
@@ -593,6 +804,9 @@ public class NPCQueueSystem : MonoBehaviour
         BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
         
+        // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
+        isCurrentNPCShaman = IsShamanNPC(npcData);
+        
         // 거절 횟수 확인
         int refusalCount = 0;
         if (NPCStateManager.Instance != null)
@@ -611,20 +825,29 @@ public class NPCQueueSystem : MonoBehaviour
                 // 밥을 요청했고 밥을 줌 = Accept
                 isAccept = true;
                 
-                // 한 번 거절 후 다시 받았을 때 대사
-                if (refusalCount > 0 && npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0)
+                // 밥을 준 기록
+                if (NPCStateManager.Instance != null)
                 {
-                    dialogue = npcData.foodReAcceptLines[Random.Range(0, npcData.foodReAcceptLines.Length)];
+                    NPCStateManager.Instance.RecordFoodGiven(npcName);
+                    NPCStateManager.Instance.ResetRefusalCount(npcName);
+                }
+                
+                // 한 번 거절 후 다시 받았을 때 대사
+                if (refusalCount > 0)
+                {
+                    if (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0)
+                    {
+                        dialogue = npcData.foodReAcceptLines[Random.Range(0, npcData.foodReAcceptLines.Length)];
+                    }
+                    else
+                    {
+                        // re-accept 대사가 없으면 기본 메시지
+                        dialogue = "Thank you... Thank you...";
+                    }
                 }
                 else if (npcData.foodAcceptLines != null && npcData.foodAcceptLines.Length > 0)
                 {
                     dialogue = npcData.foodAcceptLines[Random.Range(0, npcData.foodAcceptLines.Length)];
-                }
-                
-                // 거절 횟수 리셋
-                if (NPCStateManager.Instance != null)
-                {
-                    NPCStateManager.Instance.ResetRefusalCount(npcName);
                 }
             }
             else if (npcData.requestType == BohyunNPCRequestType.Medicine)
@@ -637,9 +860,17 @@ public class NPCQueueSystem : MonoBehaviour
                 }
                 
                 // 두 번 거절당했을 때
-                if (refusalCount >= 1 && npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                if (refusalCount >= 1)
                 {
-                    dialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                    if (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                    {
+                        dialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                    }
+                    else
+                    {
+                        // re-reject 대사가 없으면 기본 메시지
+                        dialogue = "I'm gonna die tomorrow...";
+                    }
                 }
                 else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
                 {
@@ -665,6 +896,9 @@ public class NPCQueueSystem : MonoBehaviour
             inventory.UseLotusRice();
         }
 
+        // 무당 이벤트 트리거 (상호작용 완료 후)
+        TriggerShamanEvent();
+
         // 대사 표시 후 페이드아웃 및 제거
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
@@ -685,6 +919,9 @@ public class NPCQueueSystem : MonoBehaviour
 
         BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
+        
+        // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
+        isCurrentNPCShaman = IsShamanNPC(npcData);
         
         // 거절 횟수 확인
         int refusalCount = 0;
@@ -710,9 +947,17 @@ public class NPCQueueSystem : MonoBehaviour
                 }
                 
                 // 한 번 거절 후 다시 받았을 때 대사
-                if (refusalCount > 0 && npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0)
+                if (refusalCount > 0)
                 {
-                    dialogue = npcData.medicineReAcceptLines[Random.Range(0, npcData.medicineReAcceptLines.Length)];
+                    if (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0)
+                    {
+                        dialogue = npcData.medicineReAcceptLines[Random.Range(0, npcData.medicineReAcceptLines.Length)];
+                    }
+                    else
+                    {
+                        // re-accept 대사가 없으면 기본 메시지
+                        dialogue = "Thank you... Thank you...";
+                    }
                 }
                 else if (npcData.medicineAcceptLines != null && npcData.medicineAcceptLines.Length > 0)
                 {
@@ -729,9 +974,17 @@ public class NPCQueueSystem : MonoBehaviour
                 }
                 
                 // 두 번 거절당했을 때
-                if (refusalCount >= 1 && npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                if (refusalCount >= 1)
                 {
-                    dialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                    if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                    {
+                        dialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                    }
+                    else
+                    {
+                        // re-reject 대사가 없으면 기본 메시지
+                        dialogue = "I'm gonna die tomorrow...";
+                    }
                 }
                 else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
                 {
@@ -757,21 +1010,28 @@ public class NPCQueueSystem : MonoBehaviour
             inventory.UseHerbalMedicine();
         }
 
+        // 무당 이벤트 트리거 (상호작용 완료 후)
+        TriggerShamanEvent();
+
         // 대사 표시 후 페이드아웃 및 제거
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
 
     [Header("Interaction Settings")]
-    [Tooltip("대사 표시 후 페이드아웃까지 대기 시간")]
-    public float dialogueDisplayDuration = 2f;
+    [Tooltip("타이핑 완료 후 말풍선이 사라지기까지 대기 시간 (초)")]
+    public float dialogueDisplayDuration = 0.5f;
 
     /// <summary>
     /// 거절 후 재요청을 처리합니다. (거절 대사 표시 → 재요청 대사 표시 → NPC는 큐에 남김)
     /// </summary>
-    System.Collections.IEnumerator ProcessRefusalAndReRequest(GameObject npc)
+    System.Collections.IEnumerator ProcessRefusalAndReRequest(GameObject npc, bool skipRejectDialogue = false)
     {
-        // 거절 대사 표시 시간 대기
-        yield return new WaitForSeconds(dialogueDisplayDuration);
+        // 거절 대사를 건너뛰지 않는 경우에만 대기
+        if (!skipRejectDialogue)
+        {
+            // 거절 대사 표시 시간 대기
+            yield return new WaitForSeconds(dialogueDisplayDuration);
+        }
         
         // 재요청 대사 표시
         BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
@@ -799,6 +1059,9 @@ public class NPCQueueSystem : MonoBehaviour
             }
         }
         
+        // 무당 이벤트 트리거 (상호작용 완료 후)
+        TriggerShamanEvent();
+        
         // 상호작용 처리 완료 (NPC는 큐에 남아있음)
         isProcessingInteraction = false;
     }
@@ -808,6 +1071,12 @@ public class NPCQueueSystem : MonoBehaviour
     /// </summary>
     System.Collections.IEnumerator ProcessInteractionAndRemove(GameObject npcToRemove)
     {
+        // 타이핑이 완료될 때까지 대기
+        while (!isTypingComplete)
+        {
+            yield return null;
+        }
+        
         // 대사 표시 시간 대기
         yield return new WaitForSeconds(dialogueDisplayDuration);
         
@@ -842,6 +1111,9 @@ public class NPCQueueSystem : MonoBehaviour
             Destroy(npcToRemove);
         }
         
+        // 무당 이벤트 트리거 (상호작용 완료 후)
+        TriggerShamanEvent();
+        
         // frontNPC 초기화
         frontNPC = null;
         frontNPCComponent = null;
@@ -849,12 +1121,146 @@ public class NPCQueueSystem : MonoBehaviour
         // 상호작용 처리 완료
         isProcessingInteraction = false;
         
+        // 모든 상호작용이 끝났는지 확인
+        CheckAndTransitionToNighttime();
+        
         // 다음 NPC들이 앞으로 이동 (UpdateNPCPositions가 자동으로 처리)
         // 끝에 새 NPC 생성 (Update에서 자동으로 처리)
     }
+    
+    [Header("Nighttime Settings")]
+    [Tooltip("Nighttime 씬 이름")]
+    public string nighttimeSceneName = "Nighttime";
+    
+    [Tooltip("페이드아웃 오버레이 (자동 생성 가능)")]
+    public Image fadeOverlay;
+    
+    [Tooltip("씬 전환 페이드아웃 시간 (초)")]
+    public float sceneTransitionFadeDuration = 1f;
+    
+    [Tooltip("페이드아웃 색상")]
+    public Color fadeColor = Color.black;
+    
+    private bool isTransitioning = false; // 전환 중인지 여부
+    
+    /// <summary>
+    /// 모든 상호작용이 끝났는지 확인하고 Nighttime으로 전환합니다.
+    /// </summary>
+    void CheckAndTransitionToNighttime()
+    {
+        // 이미 전환 중이면 무시
+        if (isTransitioning) return;
+        
+        // 큐에 NPC가 없고, 모든 NPC가 스폰되었는지 확인
+        if (daySchedule == null || daySchedule.npcPrefabs == null)
+            return;
+        
+        int totalNPCs = daySchedule.npcPrefabs.Length;
+        bool allSpawned = currentSpawnIndex >= totalNPCs;
+        bool queueEmpty = activeNPCs.Count == 0;
+        bool notProcessing = !isProcessingInteraction;
+        
+        if (allSpawned && queueEmpty && notProcessing)
+        {
+            // 모든 상호작용 완료 - Nighttime으로 전환
+            Debug.Log("모든 상호작용이 완료되었습니다. Nighttime으로 전환합니다.");
+            isTransitioning = true;
+            StartCoroutine(TransitionToNighttime());
+        }
+    }
+    
+    /// <summary>
+    /// 페이드아웃 오버레이를 생성합니다.
+    /// </summary>
+    void CreateFadeOverlay()
+    {
+        if (fadeOverlay != null) return; // 이미 있으면 생성하지 않음
+        
+        // Canvas 찾기
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogWarning("NPCQueueSystem: Canvas를 찾을 수 없어 페이드아웃 오버레이를 생성할 수 없습니다.");
+            return;
+        }
+        
+        // 페이드아웃용 Image GameObject 생성
+        GameObject fadeObj = new GameObject("FadeOverlay");
+        fadeObj.transform.SetParent(canvas.transform, false);
+        
+        // RectTransform 설정 (전체 화면 덮기)
+        RectTransform rectTransform = fadeObj.AddComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.anchoredPosition = Vector2.zero;
+        
+        // Image 컴포넌트 추가
+        fadeOverlay = fadeObj.AddComponent<Image>();
+        fadeOverlay.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 0f); // 초기에는 투명
+        fadeOverlay.raycastTarget = false; // 클릭 이벤트 차단하지 않음
+        
+        // 가장 위에 표시되도록 설정
+        fadeObj.transform.SetAsLastSibling();
+    }
+    
+    /// <summary>
+    /// 페이드아웃 효과와 함께 Nighttime 씬으로 전환합니다.
+    /// </summary>
+    IEnumerator TransitionToNighttime()
+    {
+        // 페이드아웃 오버레이가 없으면 생성
+        if (fadeOverlay == null)
+        {
+            CreateFadeOverlay();
+        }
+        
+        if (fadeOverlay == null)
+        {
+            // 오버레이를 생성할 수 없으면 바로 씬 전환
+            Debug.LogWarning("NPCQueueSystem: 페이드아웃 오버레이를 생성할 수 없어 바로 씬을 전환합니다.");
+            if (!string.IsNullOrEmpty(nighttimeSceneName))
+            {
+                SceneManager.LoadScene(nighttimeSceneName);
+            }
+            yield break;
+        }
+        
+        float elapsedTime = 0f;
+        Color startColor = fadeOverlay.color;
+        Color targetColor = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 1f);
+        
+        // 페이드아웃 시작
+        while (elapsedTime < sceneTransitionFadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / sceneTransitionFadeDuration;
+            
+            // Ease in quadratic
+            t = t * t;
+            
+            fadeOverlay.color = Color.Lerp(startColor, targetColor, t);
+            
+            yield return null;
+        }
+        
+        // 최종 색상 설정
+        fadeOverlay.color = targetColor;
+        
+        // 씬 전환
+        if (!string.IsNullOrEmpty(nighttimeSceneName))
+        {
+            SceneManager.LoadScene(nighttimeSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Nighttime 씬 이름이 설정되지 않았습니다.");
+            isTransitioning = false; // 전환 실패 시 플래그 리셋
+        }
+    }
 
     /// <summary>
-    /// 대사 텍스트를 표시합니다.
+    /// 대사 텍스트를 표시합니다 (타이핑 효과 포함).
     /// </summary>
     void ShowDialogueText(string dialogue)
     {
@@ -863,10 +1269,108 @@ public class NPCQueueSystem : MonoBehaviour
         if (speechBubbleText != null)
         {
             speechBubbleText.gameObject.SetActive(true);
-            speechBubbleText.text = dialogue;
+            // 기존 타이핑 코루틴이 있으면 중지
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+            }
+            // 타이핑 효과 시작
+            typingCoroutine = StartCoroutine(TypeText(dialogue));
         }
     }
+    
+    /// <summary>
+    /// 텍스트를 타이핑 효과로 표시합니다.
+    /// </summary>
+    private System.Collections.IEnumerator TypeText(string fullText)
+    {
+        if (speechBubbleText == null)
+        {
+            isTypingComplete = true;
+            currentTypingText = "";
+            yield break;
+        }
+        
+        isTypingComplete = false; // 타이핑 시작
+        currentTypingText = fullText; // 현재 타이핑 중인 텍스트 저장
+        speechBubbleText.text = "";
+        
+        // 타이핑 소리 시작
+        bool isPlayingTypingSound = false;
+        if (typingSound != null && typingAudioSource != null)
+        {
+            typingAudioSource.clip = typingSound;
+            typingAudioSource.volume = typingSoundVolume;
+            typingAudioSource.Play();
+            isPlayingTypingSound = true;
+        }
+        
+        // 한 글자씩 타이핑
+        for (int i = 0; i <= fullText.Length; i++)
+        {
+            speechBubbleText.text = fullText.Substring(0, i);
+            yield return new WaitForSeconds(typingSpeed);
+        }
+        
+        // 타이핑 소리 중지
+        if (isPlayingTypingSound && typingAudioSource != null)
+        {
+            typingAudioSource.Stop();
+        }
+        
+        typingCoroutine = null;
+        isTypingComplete = true; // 타이핑 완료
+        currentTypingText = ""; // 타이핑 완료 후 초기화
+    }
 
+    /// <summary>
+    /// 타이핑 중 말풍선 클릭 시 타이핑을 건너뛰고 전체 텍스트를 표시합니다.
+    /// </summary>
+    void CheckTypingSkip()
+    {
+        // 타이핑 중이 아니면 무시
+        if (isTypingComplete || string.IsNullOrEmpty(currentTypingText)) return;
+        
+        // 말풍선이 활성화되어 있지 않으면 무시
+        if (speechBubbleBG == null || !speechBubbleBG.activeSelf) return;
+        
+        // 마우스 클릭 감지 (새 Input System 사용)
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            // 타이핑 건너뛰기 (말풍선이 활성화되어 있으면 클릭 시 스킵)
+            SkipTyping();
+        }
+    }
+    
+    /// <summary>
+    /// 타이핑을 건너뛰고 전체 텍스트를 즉시 표시합니다.
+    /// </summary>
+    void SkipTyping()
+    {
+        // 타이핑 코루틴 중지
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        
+        // 전체 텍스트 즉시 표시
+        if (speechBubbleText != null && !string.IsNullOrEmpty(currentTypingText))
+        {
+            speechBubbleText.text = currentTypingText;
+        }
+        
+        // 타이핑 소리 중지
+        if (typingAudioSource != null && typingAudioSource.isPlaying)
+        {
+            typingAudioSource.Stop();
+        }
+        
+        // 타이핑 완료로 표시 (클릭으로 스킵한 경우도 타이핑 완료로 간주)
+        isTypingComplete = true;
+        currentTypingText = "";
+    }
+    
     /// <summary>
     /// NPC 이름을 가져옵니다.
     /// </summary>
@@ -883,6 +1387,83 @@ public class NPCQueueSystem : MonoBehaviour
         return npc.name.Replace("(Clone)", "").Trim();
     }
 
+    /// <summary>
+    /// NPC가 무당인지 확인합니다.
+    /// </summary>
+    bool IsShamanNPC(BohyunNPCData npcData)
+    {
+        if (npcData == null) return false;
+        return npcData.npcName != null && npcData.npcName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase);
+    }
+    
+    /// <summary>
+    /// 무당 NPC와의 상호작용 완료 후 도깨비사전을 활성화합니다.
+    /// </summary>
+    void TriggerShamanEvent()
+    {
+        // 현재 상호작용 중인 NPC가 무당인지 확인
+        if (!isCurrentNPCShaman) return;
+        
+        // NPCStateManager에서 이미 이벤트가 발생했는지 확인
+        if (NPCStateManager.Instance != null && NPCStateManager.Instance.HasShamanEventTriggered())
+        {
+            return; // 이미 발생했으면 다시 발생하지 않음
+        }
+        
+        // 도깨비사전 활성화 (페이드인 효과 포함)
+        if (dictionaryUI != null)
+        {
+            StartCoroutine(FadeInDictionaryUI());
+            
+            // NPCStateManager에 이벤트 발생 기록
+            if (NPCStateManager.Instance != null)
+            {
+                NPCStateManager.Instance.SetShamanEventTriggered();
+            }
+            
+            Debug.Log("무당 NPC와의 대화가 완료되었습니다! 도깨비사전이 활성화되었습니다.");
+        }
+        else
+        {
+            Debug.LogWarning("NPCQueueSystem: DictionaryUI가 할당되지 않았습니다.");
+        }
+    }
+    
+    /// <summary>
+    /// 도깨비사전 UI를 페이드인 효과와 함께 표시합니다.
+    /// </summary>
+    System.Collections.IEnumerator FadeInDictionaryUI()
+    {
+        if (dictionaryUI == null) yield break;
+        
+        // CanvasGroup 컴포넌트 확인 및 추가
+        CanvasGroup canvasGroup = dictionaryUI.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = dictionaryUI.AddComponent<CanvasGroup>();
+        }
+        
+        // 초기 상태: 알파 0, 활성화
+        canvasGroup.alpha = 0f;
+        dictionaryUI.SetActive(true);
+        
+        // 페이드인 시간
+        float fadeDuration = 0.5f;
+        float elapsedTime = 0f;
+        
+        // 페이드인 애니메이션
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / fadeDuration);
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, t);
+            yield return null;
+        }
+        
+        // 최종 알파 설정
+        canvasGroup.alpha = 1f;
+    }
+    
     /// <summary>
     /// 새로운 DaySchedule로 하루를 시작합니다.
     /// </summary>
@@ -963,6 +1544,14 @@ public class NPCQueueSystem : MonoBehaviour
     public int GetActiveNPCCount()
     {
         return activeNPCs.Count;
+    }
+    
+    /// <summary>
+    /// 현재 스폰 인덱스를 반환합니다 (이미 스폰된 NPC 수).
+    /// </summary>
+    public int GetCurrentSpawnIndex()
+    {
+        return currentSpawnIndex;
     }
 }
 

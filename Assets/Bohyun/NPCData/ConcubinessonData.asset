@@ -15,26 +15,25 @@ MonoBehaviour:
   npcName: Concubine's son
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDm feeling quite starved. Fetch me a meal."
+  - I'm feeling quite starved. Fetch me a meal.
   medicineRequestLines: []
   foodAcceptLines:
   - A wise choice. I shall see that you are rewarded.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Ah\uFFFD\uFFFD so that is your answer, then. Very well."
+  - "Ah\u2026 so that is your answer, then. Very well."
   medicineRejectLines: []
   foodReRequestLines:
   - Please...
   medicineReRequestLines: []
   foodReAcceptLines:
-  - "I\uFFFD\uFFFDm grateful\uFFFD\uFFFD I feared my second request would burden
-    you."
+  - "I\u2019m grateful\u2026 I feared my second request would burden you."
   medicineReAcceptLines: []
   foodReRejectLines:
-  - "If even my second request is too much, I won\uFFFD\uFFFDt trouble you further."
+  - "If even my second request is too much, I won\u2019t trouble you further."
   medicineReRejectLines: []
   specialLines:
-  - "Shh\uFFFD\uFFFD keep your voice down. / King seemed terribly upset yesterday\uFFFD\uFFFD
-    / Did he\uFFFD\uFFFD say something about me just now? / Nothing happened? \uFFFD\uFFFDI
-    see. Then it wasn\uFFFD\uFFFDt about me\uFFFD\uFFFD"
+  - "Shh\u2026 keep your voice down. / King seemed terribly upset yesterday\u2026
+    / Did he\u2026 say something about me just now? / Nothing happened? \u2026I see.
+    Then it wasn\u2019t about me\u2026"
   csvImportPath: 

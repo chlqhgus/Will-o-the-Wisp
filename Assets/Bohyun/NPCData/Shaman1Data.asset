@@ -15,10 +15,11 @@ MonoBehaviour:
   npcName: Shaman 1
   requestType: 0
   foodRequestLines:
-  - The air is thick with the spirits of hunger... won't you offer me a bowl?
+  - Give me some food, and I'll tell you something good.
   medicineRequestLines: []
   foodAcceptLines:
-  - The currents of energy have brightened... your kindness will be answered.
+  - Dokkaebi walk among us, disguised as people, waiting to betray you. Consult your
+    books carefully.
   medicineAcceptLines: []
   foodRejectLines:
   - The flow of energy breaks, an ill omen indeed.
