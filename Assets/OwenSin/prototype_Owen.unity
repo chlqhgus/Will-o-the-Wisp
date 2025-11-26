@@ -782,7 +782,7 @@ GameObject:
   - component: {fileID: 1005924407}
   - component: {fileID: 1005924408}
   m_Layer: 5
-  m_Name: lotustext
+  m_Name: riceText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -983,8 +983,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   lotusRice: 30
   herbalMedicine: 5
-  lotusText: {fileID: 0}
-  herbText: {fileID: 0}
+  riceText: {fileID: 1005924408}
+  medicineText: {fileID: 1445978469}
 --- !u!1 &1275788435
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,7 +1393,7 @@ GameObject:
   - component: {fileID: 1445978470}
   - component: {fileID: 1445978469}
   m_Layer: 5
-  m_Name: herbtext
+  m_Name: medicineText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

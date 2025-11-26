@@ -1,16 +1,18 @@
-// Inventory.cs
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class Inventory : MonoBehaviour
 {
     public int lotusRice = 40;
     public int herbalMedicine = 10;
 
-    public Text lotusText;    // assign UI Text
-    public Text herbText;
+    public TextMeshProUGUI riceText;       // correct name
+    public TextMeshProUGUI medicineText;   // correct name
 
-    void Start() { Refresh(); }
+    void Start()
+    {
+        Refresh();
+    }
 
     public bool UseLotusRice()
     {
@@ -28,13 +30,25 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    public void AddLotus(int n) { lotusRice += n; Refresh(); }
-    public void AddHerb(int n) { herbalMedicine += n; Refresh(); }
+    public void AddLotus(int n)
+    {
+        lotusRice += n;
+        Refresh();
+    }
+
+    public void AddHerb(int n)
+    {
+        herbalMedicine += n;
+        Refresh();
+    }
 
     void Refresh()
     {
-        if (lotusText != null) lotusText.text = "x" + lotusRice;
-        if (herbText != null) herbText.text = "x" + herbalMedicine;
+        if (riceText != null)
+            riceText.text = "X" + lotusRice;       // FIXED
+
+        if (medicineText != null)
+            medicineText.text = "X" + herbalMedicine; // FIXED
     }
 }
 
