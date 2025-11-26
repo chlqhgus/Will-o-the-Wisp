@@ -1,0 +1,390 @@
+fileFormatVersion: 2
+guid: cd8cc0618fb254c0eacf1ce33f716ef3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2327072268804999746
+    second: "Will-o\u2019-the-Wisp_0"
+  - first:
+      213: 2473211439047787144
+    second: "Will-o\u2019-the-Wisp_1"
+  - first:
+      213: -554307561508765614
+    second: "Will-o\u2019-the-Wisp_2"
+  - first:
+      213: -4578211792886361509
+    second: "Will-o\u2019-the-Wisp_3"
+  - first:
+      213: 4346620722082886605
+    second: "Will-o\u2019-the-Wisp_4"
+  - first:
+      213: -1246298864105288596
+    second: "Will-o\u2019-the-Wisp_5"
+  - first:
+      213: -3676804353411598496
+    second: "Will-o\u2019-the-Wisp_6"
+  - first:
+      213: 3590781640917035316
+    second: "Will-o\u2019-the-Wisp_7"
+  - first:
+      213: 5077796196096016828
+    second: "Will-o\u2019-the-Wisp_8"
+  - first:
+      213: -4222409014852284143
+    second: "Will-o\u2019-the-Wisp_9"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_0"
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 286
+        width: 564
+        height: 529
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb53733d91494bfd0800000000000000
+      internalID: -2327072268804999746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_1"
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 617
+        width: 275
+        height: 198
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88240ee33bc925220800000000000000
+      internalID: 2473211439047787144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_2"
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 796
+        width: 9
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25005fba534be48f0800000000000000
+      internalID: -554307561508765614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_3"
+      rect:
+        serializedVersion: 2
+        x: 1123
+        y: 793
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b52118a71ace670c0800000000000000
+      internalID: -4578211792886361509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_4"
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 284
+        width: 430
+        height: 474
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc33a11748c425c30800000000000000
+      internalID: 4346620722082886605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_5"
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 744
+        width: 16
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6c080949c144bee0800000000000000
+      internalID: -1246298864105288596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_6"
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 313
+        width: 218
+        height: 401
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067ba4ecbed59fcc0800000000000000
+      internalID: -3676804353411598496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_7"
+      rect:
+        serializedVersion: 2
+        x: 1131
+        y: 706
+        width: 27
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 439aadca0e405d130800000000000000
+      internalID: 3590781640917035316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_8"
+      rect:
+        serializedVersion: 2
+        x: 645
+        y: 683
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb1022eacb4f77640800000000000000
+      internalID: 5077796196096016828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Will-o\u2019-the-Wisp_9"
+      rect:
+        serializedVersion: 2
+        x: 1183
+        y: 438
+        width: 30
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 111925d4f5df665c0800000000000000
+      internalID: -4222409014852284143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 31a05a82d67964615ab07e4ec8b78654
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      "Will-o\u2019-the-Wisp_0": -2327072268804999746
+      "Will-o\u2019-the-Wisp_1": 2473211439047787144
+      "Will-o\u2019-the-Wisp_2": -554307561508765614
+      "Will-o\u2019-the-Wisp_3": -4578211792886361509
+      "Will-o\u2019-the-Wisp_4": 4346620722082886605
+      "Will-o\u2019-the-Wisp_5": -1246298864105288596
+      "Will-o\u2019-the-Wisp_6": -3676804353411598496
+      "Will-o\u2019-the-Wisp_7": 3590781640917035316
+      "Will-o\u2019-the-Wisp_8": 5077796196096016828
+      "Will-o\u2019-the-Wisp_9": -4222409014852284143
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
