@@ -100,7 +100,7 @@ public class MenuManager : MonoBehaviour
     private void CreateFadeOverlay()
     {
         // Canvas 찾기
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             Debug.LogError("Canvas not found!");
