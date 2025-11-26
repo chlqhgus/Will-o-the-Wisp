@@ -21,7 +21,13 @@ MonoBehaviour:
   - I will never forget your kindness.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Forgive me\uFFFD\uFFFD I should not have asked."
+  - Forgive me... I should not have asked.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

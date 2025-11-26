@@ -23,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - "Hmph, bit stingy, aren\uFFFD\uFFFDt we?"
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

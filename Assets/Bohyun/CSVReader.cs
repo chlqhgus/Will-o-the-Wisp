@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
+using System.Text;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -42,7 +43,8 @@ public static class CSVReader
             
             if (File.Exists(fullPath))
             {
-                csvText = File.ReadAllText(fullPath);
+                // UTF-8 인코딩으로 파일 읽기 (BOM 처리 포함)
+                csvText = File.ReadAllText(fullPath, Encoding.UTF8);
             }
             else
             {
@@ -101,34 +103,61 @@ public static class CSVReader
 
     /// <summary>
     /// CSV 라인을 파싱합니다 (쉼표로 구분, 따옴표 처리).
+    /// 큰따옴표(")와 작은따옴표(') 모두 지원합니다.
     /// </summary>
     private static string[] ParseCSVLine(string line)
     {
         List<string> result = new List<string>();
-        bool inQuotes = false;
+        bool inDoubleQuotes = false;
+        bool inSingleQuotes = false;
         string currentField = "";
 
         for (int i = 0; i < line.Length; i++)
         {
             char c = line[i];
+            bool inQuotes = inDoubleQuotes || inSingleQuotes;
 
             if (c == '"')
             {
-                if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                if (inDoubleQuotes && i + 1 < line.Length && line[i + 1] == '"')
                 {
-                    // 이스케이프된 따옴표
+                    // 이스케이프된 큰따옴표
                     currentField += '"';
                     i++;
                 }
+                else if (!inSingleQuotes)
+                {
+                    // 큰따옴표 시작/끝 (작은따옴표 안이 아닐 때만)
+                    inDoubleQuotes = !inDoubleQuotes;
+                }
                 else
                 {
-                    // 따옴표 시작/끝
-                    inQuotes = !inQuotes;
+                    // 작은따옴표 안에 있는 큰따옴표는 그대로 추가
+                    currentField += c;
+                }
+            }
+            else if (c == '\'')
+            {
+                if (inSingleQuotes && i + 1 < line.Length && line[i + 1] == '\'')
+                {
+                    // 이스케이프된 작은따옴표
+                    currentField += '\'';
+                    i++;
+                }
+                else if (!inDoubleQuotes)
+                {
+                    // 작은따옴표 시작/끝 (큰따옴표 안이 아닐 때만)
+                    inSingleQuotes = !inSingleQuotes;
+                }
+                else
+                {
+                    // 큰따옴표 안에 있는 작은따옴표는 그대로 추가
+                    currentField += c;
                 }
             }
             else if (c == ',' && !inQuotes)
             {
-                // 필드 구분자
+                // 필드 구분자 (따옴표 밖일 때만)
                 result.Add(currentField);
                 currentField = "";
             }

@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Slave 4
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDve been starving for so long\uFFFD\uFFFD just one meal, I beg you."
+  - I've been starving for so long... just one meal, I beg you.
   medicineRequestLines: []
   foodAcceptLines:
-  - "My deepest thanks\uFFFD\uFFFD truly."
+  - My deepest thanks... truly.
   medicineAcceptLines: []
   foodRejectLines:
   - I will follow your word as it is.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

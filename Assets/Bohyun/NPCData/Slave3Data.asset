@@ -15,8 +15,7 @@ MonoBehaviour:
   npcName: Slave 3
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDm about to collapse from hunger\uFFFD\uFFFD please give me something
-    to eat."
+  - I'm about to collapse from hunger... please give me something to eat.
   medicineRequestLines: []
   foodAcceptLines:
   - I do not know how to show my gratitude.
@@ -24,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - I shall endure even without food, my lord.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

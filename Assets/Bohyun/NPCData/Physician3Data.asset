@@ -23,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - With no strength, it seems I cannot treat anyone today.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

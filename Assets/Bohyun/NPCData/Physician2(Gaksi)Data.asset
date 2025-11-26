@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Physician 2(Gaksi)
   requestType: 0
   foodRequestLines:
-  - "\uFFFD\uFFFDI haven\uFFFD\uFFFDt the strength to treat anyone. A meal, please."
+  - ...I haven't the strength to treat anyone. A meal, please.
   medicineRequestLines: []
   foodAcceptLines:
-  - My thanks?my pulse reading will finally be steady again.
+  - My thanks, my pulse reading will finally be steady again.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Hmm\uFFFD\uFFFD that stings a little."
+  - Hmm... that stings a little.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

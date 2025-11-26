@@ -23,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - Perhaps I was being greedy.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

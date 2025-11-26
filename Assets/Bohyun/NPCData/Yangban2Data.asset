@@ -18,10 +18,19 @@ MonoBehaviour:
   - I could use something to fill my stomach.
   medicineRequestLines: []
   foodAcceptLines:
-  - "You\uFFFD\uFFFDve helped me greatly. You have my gratitude."
+  - You've helped me greatly. You have my gratitude.
   medicineAcceptLines: []
   foodRejectLines:
-  - "A refusal\uFFFD\uFFFD how displeasing."
+  - A refusal... how displeasing.
   medicineRejectLines: []
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - Just this once.
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - "Twice I asked, yet you deny me still\uFFFD\uFFFD how unfortunate."
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

@@ -126,4 +126,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
-  bohyunData: {fileID: 0}
+  bohyunData: {fileID: 11400000, guid: ea1bf2eec3add4214b2913ac05902987, type: 2}

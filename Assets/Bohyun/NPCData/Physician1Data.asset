@@ -20,10 +20,16 @@ MonoBehaviour:
     myself.
   foodAcceptLines: []
   medicineAcceptLines:
-  - "My thanks\uFFFD\uFFFD When the chance comes, I shall see to your health with
-    even greater care."
+  - My thanks... When the chance comes, I shall see to your health with even greater
+    care.
   foodRejectLines: []
   medicineRejectLines:
   - It seems even those tasked with helping others lack the basics of compassion.
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

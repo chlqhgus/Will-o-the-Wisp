@@ -15,13 +15,22 @@ MonoBehaviour:
   npcName: Yangban 3
   requestType: 0
   foodRequestLines:
-  - "You there. I\uFFFD\uFFFDve gone hungry long enough?prepare my meal."
+  - You there. I've gone hungry long enough?prepare my meal.
   medicineRequestLines: []
   foodAcceptLines:
   - Hm. Such generosity suits you.
   medicineAcceptLines: []
   foodRejectLines:
-  - "A refusal\uFFFD\uFFFD how unpleasant."
+  - A refusal... how unpleasant.
   medicineRejectLines: []
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - So you've relented at last. Much appreciated.
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - To be refused again... I suppose that is your final word.
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

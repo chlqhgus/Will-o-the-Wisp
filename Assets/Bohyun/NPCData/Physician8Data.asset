@@ -15,14 +15,19 @@ MonoBehaviour:
   npcName: Physician 8
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDve run out of provisions?hard to make my rounds like this. Just
-    one meal\uFFFD\uFFFD"
+  - I've run out of provisions?hard to make my rounds like this. Just one meal...
   medicineRequestLines: []
   foodAcceptLines:
   - My thanks. I can regain my strength now.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Then I\uFFFD\uFFFDll push through as I am\uFFFD\uFFFD somehow."
+  - "Then I\uFFFD\uFFFDll push through as I am somehow."
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

@@ -10,21 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
-  m_Name: ConcubinessonData
+  m_Name: Gaksi(0)Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: Concubine's son
+  npcName: Gaksi(0)
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDm feeling quite starved. Fetch me a meal."
+  - My dear... don't you have something for me?
   medicineRequestLines: []
   foodAcceptLines:
-  - A wise choice. I shall see that you are rewarded.
+  - Hehe... thank you.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Ah\uFFFD\uFFFD so that is your answer, then. Very well."
+  - Are you... truly sincere?
   medicineRejectLines: []
-  specialLines:
-  - "Shh\uFFFD\uFFFD keep your voice down. / King seemed terribly upset yesterday\uFFFD\uFFFD
-    / Did he\uFFFD\uFFFD say something about me just now? / Nothing happened? \uFFFD\uFFFDI
-    see. Then it wasn\uFFFD\uFFFDt about me\uFFFD\uFFFD"
+  foodReRequestLines:
+  - Huh?
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - "Thank you\u2026 though your hesitation is a little disappointing."
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - "Hmm\u2026 this wasn\u2019t part of my plan\u2026 but very well."
+  medicineReRejectLines: []
+  specialLines: []
   csvImportPath: 

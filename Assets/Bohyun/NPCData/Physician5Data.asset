@@ -15,14 +15,19 @@ MonoBehaviour:
   npcName: Physician 5
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDm too weak to prescribe anything\uFFFD\uFFFD May I trouble you
-    for a meal?"
+  - I'm too weak to prescribe anything... May I trouble you for a meal?
   medicineRequestLines: []
   foodAcceptLines:
   - Strength is returning?my thanks.
   medicineAcceptLines: []
   foodRejectLines:
-  - "A refusal, then\uFFFD\uFFFD I understand."
+  - A refusal, then... I understand.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

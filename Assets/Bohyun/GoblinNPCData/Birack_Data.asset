@@ -10,18 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
-  m_Name: Duak_Data
+  m_Name: Birack_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: "Duak(\uFFFD\uFFFD)"
+  npcName: Heoju
   requestType: 0
   foodRequestLines:
-  - "Please\uFFFD\uFFFD spare me some food\uFFFD\uFFFD"
+  - Hey, you. Hand over the food. Now.
   medicineRequestLines: []
   foodAcceptLines:
-  - "Thank you\uFFFD\uFFFD truly."
+  - "Tch\u2026 not meat? Fine. I\u2019ll let it slide?just this once."
   medicineAcceptLines: []
   foodRejectLines:
-  - "I beg you\uFFFD\uFFFD I\uFFFD\uFFFDm starving\uFFFD\uFFFD"
+  - "I beg you\u2026 I\u2019m starving\u2026"
   medicineRejectLines: []
+  foodReRequestLines:
+  - What? Are you...?
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - "Should\u2019ve done that from the start\u2026"
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - How dare you, you filthy human!!
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

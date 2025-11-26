@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Merchant 5
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDll pay you back later?please, just one meal."
+  - I'll pay you back later?please, just one meal.
   medicineRequestLines: []
   foodAcceptLines:
-  - Bless you?I'll pay this back someday.
+  - Bless you... I'll pay this back someday.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Guess I\uFFFD\uFFFDll just keep working, then."
+  - Guess I'll just keep working, then.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

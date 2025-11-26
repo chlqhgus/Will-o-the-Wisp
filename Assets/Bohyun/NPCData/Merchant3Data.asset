@@ -21,7 +21,13 @@ MonoBehaviour:
   - Much appreciated, friend.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Didn\uFFFD\uFFFDt expect that, but fine."
+  - Didn't expect that, but fine.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

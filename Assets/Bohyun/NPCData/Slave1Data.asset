@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Slave 1
   requestType: 0
   foodRequestLines:
-  - "Master\uFFFD\uFFFD I\uFFFD\uFFFDm so hungry I\uFFFD\uFFFDve no strength left."
+  - Master, I'm so hungry I've no strength left.
   medicineRequestLines: []
   foodAcceptLines:
-  - "How could I ever repay such grace\uFFFD\uFFFD thank you, truly."
+  - How could I ever repay such grace... thank you, truly.
   medicineAcceptLines: []
   foodRejectLines:
-  - "\uFFFD\uFFFDYour servant has overstepped, my apologies."
+  - ...Your servant has overstepped, my apologies.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

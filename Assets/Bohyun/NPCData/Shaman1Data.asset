@@ -15,14 +15,19 @@ MonoBehaviour:
   npcName: Shaman 1
   requestType: 0
   foodRequestLines:
-  - "The air is thick with the spirits of hunger\uFFFD\uFFFD won\uFFFD\uFFFDt you
-    offer me a bowl?"
+  - The air is thick with the spirits of hunger... won't you offer me a bowl?
   medicineRequestLines: []
   foodAcceptLines:
-  - "The currents of energy have brightened\uFFFD\uFFFD your kindness will be answered."
+  - The currents of energy have brightened... your kindness will be answered.
   medicineAcceptLines: []
   foodRejectLines:
-  - "The flow of energy breaks\uFFFD\uFFFD an ill omen indeed."
+  - The flow of energy breaks, an ill omen indeed.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

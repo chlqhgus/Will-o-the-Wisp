@@ -15,7 +15,7 @@ MonoBehaviour:
   npcName: Physician 4
   requestType: 0
   foodRequestLines:
-  - "Even physicians are still human\uFFFD\uFFFD Might you spare some rice?"
+  - Even physicians are still human... Might you spare some rice?
   medicineRequestLines: []
   foodAcceptLines:
   - I shall repay this favor?even through medicine.
@@ -23,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - I suppose it was too much to ask.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

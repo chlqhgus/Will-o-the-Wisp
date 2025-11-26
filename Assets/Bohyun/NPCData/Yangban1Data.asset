@@ -23,6 +23,15 @@ MonoBehaviour:
   foodRejectLines:
   - Well, it seems this is how it shall be.
   medicineRejectLines: []
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines: []
+  foodReAcceptLines:
+  - You asked again, and I shall honor that persistence.
+  medicineReAcceptLines: []
+  foodReRejectLines:
+  - Twice I asked, and twice denied... I understand.
+  medicineReRejectLines: []
   specialLines:
   - "Come to think of it, I noticed you were quite absorbed in that storybook on
     the desk. / It reminded me of something\uFFFD\uFFFD a rather curious matter.

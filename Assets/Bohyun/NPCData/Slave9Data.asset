@@ -16,13 +16,18 @@ MonoBehaviour:
   requestType: 1
   foodRequestLines: []
   medicineRequestLines:
-  - "My eyes barely open\uFFFD\uFFFD I beg you, please grant me some medicine\uFFFD\uFFFD"
+  - My eyes barely open... I beg you, please grant me some medicine...
   foodAcceptLines: []
   medicineAcceptLines:
   - "You have saved my life\uFFFD\uFFFD I am deeply grateful, my lord."
   foodRejectLines: []
   medicineRejectLines:
-  - "No\uFFFD\uFFFD what of my child\uFFFD\uFFFD my wife\uFFFD\uFFFD how will they
-    survive\uFFFD\uFFFD"
+  - No... what of my child... my wife... how will they survive...
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

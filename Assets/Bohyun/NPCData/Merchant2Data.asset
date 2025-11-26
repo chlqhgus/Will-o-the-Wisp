@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Merchant 2
   requestType: 0
   foodRequestLines:
-  - "I\uFFFD\uFFFDm too hungry to even run my stall. Just a spoonful of rice, please."
+  - I'm too hungry to even run my stall. Just a spoonful of rice, please.
   medicineRequestLines: []
   foodAcceptLines:
-  - "You\uFFFD\uFFFDve saved me today. Truly, thank you."
+  - You've saved me today. Truly, thank you.
   medicineAcceptLines: []
   foodRejectLines:
   - Alright then, I get it.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

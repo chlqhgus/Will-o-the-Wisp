@@ -15,13 +15,19 @@ MonoBehaviour:
   npcName: Slave 6
   requestType: 0
   foodRequestLines:
-  - "My hunger is severe\uFFFD\uFFFD anything at all would help."
+  - My hunger is severe... anything at all would help.
   medicineRequestLines: []
   foodAcceptLines:
   - I shall work with renewed strength, thanks to you.
   medicineAcceptLines: []
   foodRejectLines:
-  - "Your servant acted carelessly\uFFFD\uFFFD forgive my rashness."
+  - Your servant acted carelessly... forgive my rashness.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

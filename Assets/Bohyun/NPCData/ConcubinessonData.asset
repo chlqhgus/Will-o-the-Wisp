@@ -10,27 +10,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
-  m_Name: KingData
+  m_Name: ConcubinessonData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: King
+  npcName: Concubine's son
   requestType: 0
   foodRequestLines:
-  - I am hungry. Bring me my meal at once.
+  - "I\uFFFD\uFFFDm feeling quite starved. Fetch me a meal."
   medicineRequestLines: []
   foodAcceptLines:
-  - I shall reward you for this.
+  - A wise choice. I shall see that you are rewarded.
   medicineAcceptLines: []
   foodRejectLines:
-  - You dare refuse the command of your king? Do you value your life so lightly?
+  - "Ah\uFFFD\uFFFD so that is your answer, then. Very well."
   medicineRejectLines: []
   foodReRequestLines:
   - Please...
   medicineReRequestLines: []
   foodReAcceptLines:
-  - Your persistence has finally reached my ear. I grant it this once.
+  - "I\uFFFD\uFFFDm grateful\uFFFD\uFFFD I feared my second request would burden
+    you."
   medicineReAcceptLines: []
   foodReRejectLines:
-  - A second plea,  yet still you defy my will? Begone from my sight.
+  - "If even my second request is too much, I won\uFFFD\uFFFDt trouble you further."
   medicineReRejectLines: []
-  specialLines: []
+  specialLines:
+  - "Shh\uFFFD\uFFFD keep your voice down. / King seemed terribly upset yesterday\uFFFD\uFFFD
+    / Did he\uFFFD\uFFFD say something about me just now? / Nothing happened? \uFFFD\uFFFDI
+    see. Then it wasn\uFFFD\uFFFDt about me\uFFFD\uFFFD"
   csvImportPath: 

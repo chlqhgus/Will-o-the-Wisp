@@ -15,7 +15,7 @@ MonoBehaviour:
   npcName: Slave 2
   requestType: 0
   foodRequestLines:
-  - "Please\uFFFD\uFFFD spare me a single spoon of rice\uFFFD\uFFFD"
+  - Please... spare me a single spoon of rice...
   medicineRequestLines: []
   foodAcceptLines:
   - You have saved me, my lord.
@@ -23,5 +23,11 @@ MonoBehaviour:
   foodRejectLines:
   - As you command...
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

@@ -15,14 +15,20 @@ MonoBehaviour:
   npcName: Shaman 2
   requestType: 0
   foodRequestLines:
-  - "The spirits whisper of their hunger\uFFFD\uFFFD grant me a spoonful."
+  - The spirits whisper of their hunger... grant me a spoonful.
   medicineRequestLines: []
   foodAcceptLines:
   - Even the spirits rejoice at your choice.
   medicineAcceptLines: []
   foodRejectLines:
-  - "A refusal echoes sharply\uFFFD\uFFFD the spirits grow restless."
+  - A refusal echoes sharply... the spirits grow restless.
   medicineRejectLines: []
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
   specialLines:
   - "when do you believe your spirit is at its weakest? / For me, it is when I behold
     something beautiful. / In a place thick with shadow such as this, a pale light
