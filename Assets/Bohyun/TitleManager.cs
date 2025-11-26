@@ -597,8 +597,8 @@ public class TitleManager : MonoBehaviour
     
     private IEnumerator FadeOutAndLoadScene()
     {
-        // 모든 코루틴 중지
-        StopAllCoroutines();
+        // 다른 코루틴들은 중지하되, 이 코루틴은 계속 실행되도록 함
+        // (StopAllCoroutines는 이 코루틴도 중지하므로 사용하지 않음)
         
         // 검정 페이드아웃 효과
         if (blackOverlay != null)
@@ -608,20 +608,23 @@ public class TitleManager : MonoBehaviour
             Color targetColor = Color.black;
             targetColor.a = 1f; // 완전히 검정색으로
             
-            // 현재 alpha가 이미 높으면 더 부드럽게 시작
-            // 시작 alpha를 0으로 리셋하여 항상 부드럽게 페이드아웃
-            if (startColor.a < 0.5f)
+            // 현재 alpha 값을 시작점으로 사용 (더 자연스러운 전환)
+            // alpha가 낮으면 0에서 시작하도록 조정
+            if (startColor.a < 0.1f)
             {
-                startColor.a = 0f; // 현재 alpha가 낮으면 0에서 시작
+                startColor.a = 0f;
             }
+            
+            // 페이드아웃 시작 시간 기록 (디버그용)
+            float startTime = Time.time;
             
             while (elapsedTime < sceneTransitionFadeDuration)
             {
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / sceneTransitionFadeDuration);
                 
-                // Ease in (처음엔 느리게, 나중에 빠르게)
-                t = t * t;
+                // Smooth step (부드러운 전환)
+                t = t * t * (3f - 2f * t);
                 
                 if (blackOverlay != null)
                 {
@@ -637,6 +640,15 @@ public class TitleManager : MonoBehaviour
             {
                 blackOverlay.color = targetColor;
             }
+            
+            // 실제 경과 시간 확인 (디버그용)
+            float actualDuration = Time.time - startTime;
+            Debug.Log($"페이드아웃 완료: 설정 시간 {sceneTransitionFadeDuration}초, 실제 시간 {actualDuration}초");
+        }
+        else
+        {
+            // blackOverlay가 없으면 최소한의 딜레이
+            yield return new WaitForSeconds(sceneTransitionFadeDuration);
         }
         
         // 잠시 대기 (에디터가 객체를 정리할 시간 제공)
@@ -660,9 +672,6 @@ public class TitleManager : MonoBehaviour
     
     private void OnDestroy()
     {
-        // 모든 코루틴 중지
-        StopAllCoroutines();
-        
         // 버튼 이벤트 정리
         if (startButton != null)
         {
