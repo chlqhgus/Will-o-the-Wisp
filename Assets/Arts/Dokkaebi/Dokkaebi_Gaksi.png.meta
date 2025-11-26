@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 35bd975790e3d44888fb4dc7350bea0d
+guid: bbbb13d791b924359a338ed3cf72eed3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4630437101675011594
-    second: "\uC0C1\uBBFC1_breathe_0"
-  - first:
-      213: -3527793465644967058
-    second: "\uC0C1\uBBFC1_breathe_1"
-  - first:
-      213: -1329963042977989706
-    second: "\uC0C1\uBBFC1_breathe_2"
-  - first:
-      213: -7368749427976213042
-    second: "\uC0C1\uBBFC1_breathe_3"
+      213: -1685730420099105265
+    second: Dokkaebi_Gaksi_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -105,17 +96,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\uC0C1\uBBFC1_breathe_0"
+      name: Dokkaebi_Gaksi_0
       rect:
         serializedVersion: 2
-        x: 63
-        y: 0
-        width: 386
-        height: 487
+        x: 231
+        y: 65
+        width: 729
+        height: 913
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,74 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6f12fd73df16dbfb0800000000000000
-      internalID: -4630437101675011594
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\uC0C1\uBBFC1_breathe_1"
-      rect:
-        serializedVersion: 2
-        x: 575
-        y: 0
-        width: 386
-        height: 487
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e6b9947b882ca0fc0800000000000000
-      internalID: -3527793465644967058
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\uC0C1\uBBFC1_breathe_2"
-      rect:
-        serializedVersion: 2
-        x: 1087
-        y: 0
-        width: 386
-        height: 484
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6bb36eaa8a50b8de0800000000000000
-      internalID: -1329963042977989706
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\uC0C1\uBBFC1_breathe_3"
-      rect:
-        serializedVersion: 2
-        x: 1599
-        y: 0
-        width: 386
-        height: 487
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ecd6d92cf61fcb990800000000000000
-      internalID: -7368749427976213042
+      spriteID: f0e3ce24d151b98e0800000000000000
+      internalID: -1685730420099105265
       vertices: []
       indices: 
       edges: []
@@ -210,10 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\uC0C1\uBBFC1_breathe_0": -4630437101675011594
-      "\uC0C1\uBBFC1_breathe_1": -3527793465644967058
-      "\uC0C1\uBBFC1_breathe_2": -1329963042977989706
-      "\uC0C1\uBBFC1_breathe_3": -7368749427976213042
+      Dokkaebi_Gaksi_0: -1685730420099105265
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
