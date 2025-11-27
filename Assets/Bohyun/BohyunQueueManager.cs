@@ -19,8 +19,9 @@ public class BohyunQueueManager : MonoBehaviour
     [Tooltip("뒤로 갈수록 뒤로 이동하는 거리")]
     public float backOffset = 0.3f; // 뒤로 이동하는 거리
 
-    private List<NPC> activeNPCs = new List<NPC>();
-    private Dictionary<NPC, Vector3> npcTargetPositions = new Dictionary<NPC, Vector3>(); // 각 NPC의 목표 위치 저장
+    // NPC.cs가 삭제되어 GameObject로 변경
+    private List<GameObject> activeNPCs = new List<GameObject>();
+    private Dictionary<GameObject, Vector3> npcTargetPositions = new Dictionary<GameObject, Vector3>(); // 각 NPC의 목표 위치 저장
     private float timer = 0f;
     private int currentSpawnIndex = 0; // 현재 스폰할 NPC 인덱스
     private bool isSpawningComplete = false; // 모든 NPC 스폰 완료 여부
@@ -104,11 +105,12 @@ public class BohyunQueueManager : MonoBehaviour
         // 기존 NPCData 확인 (OwenSin 호환)
         else
         {
-            NPCData npcData = prefabToSpawn.GetComponent<NPC>()?.data;
-            if (npcData != null && !string.IsNullOrEmpty(npcData.npcName))
-            {
-                npcName = npcData.npcName;
-            }
+            // NPC.cs가 삭제되어 NPCComponent만 사용
+            // NPCData npcData = prefabToSpawn.GetComponent<NPC>()?.data;
+            // if (npcData != null && !string.IsNullOrEmpty(npcData.npcName))
+            // {
+            //     npcName = npcData.npcName;
+            // }
         }
         
         // 죽은 NPC는 스폰하지 않음
@@ -124,18 +126,11 @@ public class BohyunQueueManager : MonoBehaviour
         }
         
         GameObject obj = Instantiate(prefabToSpawn, spawnPoint.position, Quaternion.identity);
-        NPC npc = obj.GetComponent<NPC>();
+        // NPC.cs가 삭제되어 GameObject만 사용
         
-        // NPC 컴포넌트가 없으면 자동으로 추가
-        if (npc == null)
-        {
-            npc = obj.AddComponent<NPC>();
-            Debug.Log($"BohyunQueueManager: {prefabToSpawn.name}에 NPC 컴포넌트를 자동으로 추가했습니다.");
-        }
-        
-        activeNPCs.Add(npc);
+        activeNPCs.Add(obj);
         // NPC의 초기 목표 위치는 spawnPoint 위치로 설정
-        npcTargetPositions[npc] = spawnPoint.position;
+        npcTargetPositions[obj] = spawnPoint.position;
 
         currentSpawnIndex++;
         
@@ -163,21 +158,17 @@ public class BohyunQueueManager : MonoBehaviour
         
         for (int i = 0; i < activeNPCs.Count; i++)
         {
-            NPC npc = activeNPCs[i];
+            GameObject npc = activeNPCs[i];
             if (npc == null) continue;
 
             // NPC가 이미 나가는 중이면 타겟 업데이트하지 않음
-            if (npc.GetComponent<NPC>() != null)
+            // 목표 위치가 왼쪽 화면 밖(-14f 근처)이면 업데이트하지 않음
+            if (npcTargetPositions.ContainsKey(npc))
             {
-                // NPC의 isLeaving 상태를 확인할 수 없으므로, 
-                // 목표 위치가 왼쪽 화면 밖(-14f 근처)이면 업데이트하지 않음
-                if (npcTargetPositions.ContainsKey(npc))
+                Vector3 currentTarget = npcTargetPositions[npc];
+                if (currentTarget.x < -10f) // 이미 나가는 중
                 {
-                    Vector3 currentTarget = npcTargetPositions[npc];
-                    if (currentTarget.x < -10f) // 이미 나가는 중
-                    {
-                        continue;
-                    }
+                    continue;
                 }
             }
 
@@ -225,12 +216,13 @@ public class BohyunQueueManager : MonoBehaviour
                 }
             }
 
-            // 목표 위치가 변경되었을 때만 SetTarget 호출
+            // 목표 위치가 변경되었을 때만 업데이트
             if (!npcTargetPositions.ContainsKey(npc) || 
                 Vector3.Distance(npcTargetPositions[npc], targetPos) > 0.01f)
             {
                 npcTargetPositions[npc] = targetPos;
-                npc.SetTarget(targetPos);
+                // NPC.cs가 삭제되어 SetTarget 메서드 사용 불가
+                // npc.SetTarget(targetPos);
             }
         }
     }
@@ -247,7 +239,13 @@ public class BohyunQueueManager : MonoBehaviour
             if (activeNPCs[i] == null) continue;
             
             int order = baseOrder - i;
-            activeNPCs[i].SetSortingOrder(order);
+            // NPC.cs가 삭제되어 SetSortingOrder 메서드 사용 불가
+            // SpriteRenderer를 직접 사용
+            SpriteRenderer[] spriteRenderers = activeNPCs[i].GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer sr in spriteRenderers)
+            {
+                if (sr != null) sr.sortingOrder = order;
+            }
         }
     }
 
@@ -256,36 +254,22 @@ public class BohyunQueueManager : MonoBehaviour
     // -------------------------------------------------------------------
     void UpdateSpeechBubble()
     {
-        for (int i = 0; i < activeNPCs.Count; i++)
-        {
-            NPC npc = activeNPCs[i];
-            if (npc == null) continue;
-
-            if (i == 0)
-            {
-                // 가장 앞 NPC만 말풍선 표시
-                if (npc.bubbleBG != null && !npc.bubbleBG.activeSelf)
-                {
-                    string dialogue = GetNPCDialogue(npc);
-                    if (!string.IsNullOrEmpty(dialogue))
-                    {
-                        npc.ShowBubble(dialogue);
-                    }
-                }
-            }
-            else
-            {
-                // 나머지는 말풍선 숨김
-                npc.HideBubble();
-            }
-        }
+        // NPC.cs가 삭제되어 말풍선 기능 사용 불가
+        // 말풍선 기능은 NPCQueueSystem에서 처리
+        // for (int i = 0; i < activeNPCs.Count; i++)
+        // {
+        //     GameObject npc = activeNPCs[i];
+        //     if (npc == null) continue;
+        //     ...
+        // }
     }
 
     /// <summary>
     /// NPC의 요청 타입에 맞는 대사를 반환합니다.
     /// </summary>
-    string GetNPCDialogue(NPC npc)
+    string GetNPCDialogue(GameObject npc)
     {
+        if (npc == null) return "";
         // NPCComponent 확인 (우선)
         NPCComponent bohyunNPC = npc.GetComponent<NPCComponent>();
         if (bohyunNPC != null && bohyunNPC.bohyunData != null)
@@ -327,15 +311,15 @@ public class BohyunQueueManager : MonoBehaviour
             }
         }
         
-        // 기존 NPCData 사용 (OwenSin 호환)
-        if (npc.data != null)
-        {
-            NPCData data = npc.data;
-            if (data.speechLines != null && data.speechLines.Length > 0)
-            {
-                return data.speechLines[Random.Range(0, data.speechLines.Length)];
-            }
-        }
+        // 기존 NPCData 사용 (OwenSin 호환) - NPC.cs가 삭제되어 사용 불가
+        // if (npc.data != null)
+        // {
+        //     NPCData data = npc.data;
+        //     if (data.speechLines != null && data.speechLines.Length > 0)
+        //     {
+        //         return data.speechLines[Random.Range(0, data.speechLines.Length)];
+        //     }
+        // }
 
         // 기본 대사 사용
         return testLines[Random.Range(0, testLines.Length)];
@@ -349,7 +333,7 @@ public class BohyunQueueManager : MonoBehaviour
     {
         if (activeNPCs.Count == 0) return;
 
-        NPC front = activeNPCs[0];
+        GameObject front = activeNPCs[0];
         string npcName = GetNPCName(front);
         bool requestedMedicine = DidNPCRequestMedicine(front);
         
@@ -366,8 +350,9 @@ public class BohyunQueueManager : MonoBehaviour
 
         if (front != null)
         {
-            // 왼쪽 화면 밖으로 나가도록 설정
-            front.LeaveScene();
+            // NPC.cs가 삭제되어 LeaveScene 메서드 사용 불가
+            // 왼쪽 화면 밖으로 이동하도록 타겟 설정
+            npcTargetPositions[front] = new Vector3(-14f, front.transform.position.y, front.transform.position.z);
         }
         
         // 다음 NPC들이 앞으로 이동하도록 타겟 업데이트
@@ -385,7 +370,7 @@ public class BohyunQueueManager : MonoBehaviour
             inventory.UseLotusRice();
         }
 
-        NPC front = activeNPCs[0];
+        GameObject front = activeNPCs[0];
         string npcName = GetNPCName(front);
         
         // 밥을 주었으므로 상태 기록 (약 요청이었으면 거절로 기록)
@@ -405,8 +390,9 @@ public class BohyunQueueManager : MonoBehaviour
 
         if (front != null)
         {
-            // 왼쪽 화면 밖으로 나가도록 설정
-            front.AcceptAndLeave();
+            // NPC.cs가 삭제되어 AcceptAndLeave 메서드 사용 불가
+            // 왼쪽 화면 밖으로 이동하도록 타겟 설정
+            npcTargetPositions[front] = new Vector3(-14f, front.transform.position.y, front.transform.position.z);
         }
         
         // 다음 NPC들이 앞으로 이동하도록 타겟 업데이트
@@ -424,7 +410,7 @@ public class BohyunQueueManager : MonoBehaviour
             inventory.UseHerbalMedicine();
         }
 
-        NPC front = activeNPCs[0];
+        GameObject front = activeNPCs[0];
         string npcName = GetNPCName(front);
         
         // 약을 주었으므로 상태 기록
@@ -440,8 +426,9 @@ public class BohyunQueueManager : MonoBehaviour
 
         if (front != null)
         {
-            // 왼쪽 화면 밖으로 나가도록 설정
-            front.AcceptAndLeave();
+            // NPC.cs가 삭제되어 AcceptAndLeave 메서드 사용 불가
+            // 왼쪽 화면 밖으로 이동하도록 타겟 설정
+            npcTargetPositions[front] = new Vector3(-14f, front.transform.position.y, front.transform.position.z);
         }
         
         // 다음 NPC들이 앞으로 이동하도록 타겟 업데이트
@@ -449,9 +436,9 @@ public class BohyunQueueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// NPC의 이름을 가져옵니다 (BohyunNPCData 또는 NPCData 또는 GameObject 이름).
+    /// NPC의 이름을 가져옵니다 (BohyunNPCData 또는 GameObject 이름).
     /// </summary>
-    string GetNPCName(NPC npc)
+    string GetNPCName(GameObject npc)
     {
         if (npc == null) return "Unknown";
         
@@ -462,18 +449,19 @@ public class BohyunQueueManager : MonoBehaviour
             return bohyunNPC.GetNPCName();
         }
         
-        // 기존 NPCData 확인 (OwenSin 호환)
-        if (npc.data != null && !string.IsNullOrEmpty(npc.data.npcName))
-            return npc.data.npcName;
-            
-        return npc.gameObject.name.Replace("(Clone)", "").Trim();
+        // 기존 NPCData 확인 (OwenSin 호환) - NPC.cs가 삭제되어 사용 불가
+        // if (npc.data != null && !string.IsNullOrEmpty(npc.data.npcName))
+        //     return npc.data.npcName;
+        
+        return npc.name.Replace("(Clone)", "").Trim();
     }
     
     /// <summary>
     /// NPC가 약을 요청했는지 확인합니다.
     /// </summary>
-    bool DidNPCRequestMedicine(NPC npc)
+    bool DidNPCRequestMedicine(GameObject npc)
     {
+        if (npc == null) return false;
         // NPCComponent 확인 (우선)
         NPCComponent bohyunNPC = npc.GetComponent<NPCComponent>();
         if (bohyunNPC != null && bohyunNPC.bohyunData != null)
@@ -526,11 +514,12 @@ public class BohyunQueueManager : MonoBehaviour
     /// </summary>
     private void ClearAllNPCs()
     {
-        foreach (NPC npc in activeNPCs)
+        foreach (GameObject npc in activeNPCs)
         {
             if (npc != null)
             {
-                npc.LeaveScene();
+                // NPC.cs가 삭제되어 LeaveScene 메서드 사용 불가
+                // Destroy(npc);
             }
         }
         activeNPCs.Clear();

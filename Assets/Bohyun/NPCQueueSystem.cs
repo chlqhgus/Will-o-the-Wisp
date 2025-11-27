@@ -67,6 +67,8 @@ public class NPCQueueSystem : MonoBehaviour
     [Header("Position Settings")]
     [Tooltip("NPC가 목표 위치에 도착했다고 판단하는 거리")]
     public float arrivalDistance = 0.1f;
+    [Tooltip("NPC 이동 속도")]
+    public float npcMoveSpeed = 5f;
     
     [Header("Refusal Settings")]
     [Tooltip("거절당한 NPC가 재요청할 확률 (0.0 ~ 1.0, 예: 0.5 = 50%)")]
@@ -241,17 +243,12 @@ public class NPCQueueSystem : MonoBehaviour
         
         GameObject npc = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         
-        // NPC 컴포넌트가 없으면 자동으로 추가
-        NPC npcComponent = npc.GetComponent<NPC>();
-        if (npcComponent == null)
-        {
-            npcComponent = npc.AddComponent<NPC>();
-            Debug.Log($"BohyunNPCQueueSystem: {prefabToSpawn.name}에 NPC 컴포넌트를 자동으로 추가했습니다.");
-        }
+        // NPC.cs가 삭제되어 NPCComponent만 사용
+        // NPC 컴포넌트는 더 이상 필요 없음
         
         activeNPCs.Add(npc);
         
-        // 스폰 직후 즉시 목표 위치 설정 (첫 번째 위치로 이동)
+        // 스폰 직후 목표 위치 설정 (UpdateNPCPositions에서 자동으로 이동)
         if (queueSlots != null && queueSlots.Length > 0 && activeNPCs.Count <= queueSlots.Length)
         {
             int targetIndex = activeNPCs.Count - 1; // 현재 추가된 NPC의 인덱스
@@ -260,23 +257,12 @@ public class NPCQueueSystem : MonoBehaviour
                 Vector3 targetPos = queueSlots[targetIndex].position;
                 npcTargetPositions[npc] = targetPos;
                 npcArrivedAtPosition[npc] = false; // 아직 도착하지 않음
-                
-                // 즉시 목표 위치로 설정
-                if (npcComponent != null)
-                {
-                    npcComponent.SetTarget(targetPos);
-                }
-                else
-                {
-                    // NPC 컴포넌트가 없으면 직접 위치 설정
-                    npc.transform.position = targetPos;
-                    // 직접 위치 설정한 경우 즉시 도착으로 표시
-                    npcArrivedAtPosition[npc] = true;
-                }
+                // NPC는 UpdateNPCPositions()에서 자동으로 목표 위치로 이동함
             }
         }
         else
         {
+            // 큐가 가득 찬 경우 스폰 위치에 대기
             npcTargetPositions[npc] = spawnPos;
             npcArrivedAtPosition[npc] = false;
         }
@@ -316,30 +302,32 @@ public class NPCQueueSystem : MonoBehaviour
                 // 목표 위치가 변경되면 도착 상태 리셋
                 npcArrivedAtPosition[npc] = false;
                 
-                // NPC 컴포넌트가 있으면 SetTarget 사용
-                NPC npcComponent = npc.GetComponent<NPC>();
-                if (npcComponent != null)
+                // NPC.cs가 삭제되어 SetTarget 메서드 사용 불가
+                // 타겟 위치는 Dictionary에만 저장됨
+                // NPC는 UpdateNPCPositions에서 자동으로 이동함
+            }
+            
+            // NPC를 목표 위치로 이동
+            if (npcTargetPositions.ContainsKey(npc))
+            {
+                Vector3 currentPos = npc.transform.position;
+                Vector3 npcTargetPos = npcTargetPositions[npc];
+                float distanceToTarget = Vector3.Distance(currentPos, npcTargetPos);
+                
+                // 목표 위치에 도착하지 않았으면 이동
+                if (distanceToTarget > arrivalDistance)
                 {
-                    npcComponent.SetTarget(targetPos);
+                    npc.transform.position = Vector3.MoveTowards(
+                        currentPos,
+                        npcTargetPos,
+                        npcMoveSpeed * Time.deltaTime
+                    );
+                    npcArrivedAtPosition[npc] = false;
                 }
                 else
                 {
-                    // NPC 컴포넌트가 없으면 직접 이동 (더 빠른 속도)
-                    float moveSpeed = 5f; // 이동 속도 증가
-                    npc.transform.position = Vector3.MoveTowards(
-                        npc.transform.position, 
-                        targetPos, 
-                        moveSpeed * Time.deltaTime
-                    );
-                }
-            }
-            
-            // NPC가 목표 위치에 도착했는지 확인
-            if (npcTargetPositions.ContainsKey(npc))
-            {
-                float distanceToTarget = Vector3.Distance(npc.transform.position, npcTargetPositions[npc]);
-                if (distanceToTarget <= arrivalDistance)
-                {
+                    // 도착했으면 정확한 위치로 설정
+                    npc.transform.position = npcTargetPos;
                     npcArrivedAtPosition[npc] = true;
                 }
             }
@@ -357,11 +345,13 @@ public class NPCQueueSystem : MonoBehaviour
         {
             if (activeNPCs[i] == null) continue;
             
-            NPC npcComponent = activeNPCs[i].GetComponent<NPC>();
-            if (npcComponent != null)
+            // NPC.cs가 삭제되어 SetSortingOrder 메서드 사용 불가
+            // SpriteRenderer를 직접 사용
+            int order = baseOrder - i; // 앞에 있는 NPC가 더 높은 order
+            SpriteRenderer[] spriteRenderers = activeNPCs[i].GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer sr in spriteRenderers)
             {
-                int order = baseOrder - i; // 앞에 있는 NPC가 더 높은 order
-                npcComponent.SetSortingOrder(order);
+                if (sr != null) sr.sortingOrder = order;
             }
             
             // 뒤로 갈수록 어둡게 만들기
@@ -1514,15 +1504,9 @@ public class NPCQueueSystem : MonoBehaviour
         {
             if (npc != null)
             {
-                NPC npcComponent = npc.GetComponent<NPC>();
-                if (npcComponent != null)
-                {
-                    npcComponent.LeaveScene();
-                }
-                else
-                {
-                    MoveNPCToLeft(npc);
-                }
+                // NPC.cs가 삭제되어 LeaveScene 메서드 사용 불가
+                // MoveNPCToLeft 사용
+                MoveNPCToLeft(npc);
             }
         }
         activeNPCs.Clear();

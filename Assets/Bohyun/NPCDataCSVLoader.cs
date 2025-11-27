@@ -153,13 +153,11 @@ public class NPCDataCSVLoader : MonoBehaviour
     void ApplyToNPCComponents(string npcName, List<string> generalLines, List<string> foodLines, 
                               List<string> medicineLines, BohyunNPCRequestType requestType)
     {
-        // 씬의 모든 NPC 찾기
-        NPC[] allNPCs = FindObjectsOfType<NPC>();
+        // NPC.cs가 삭제되어 NPCComponent를 직접 찾기
+        NPCComponent[] allNPCComponents = FindObjectsByType<NPCComponent>(FindObjectsSortMode.None);
         
-        foreach (NPC npc in allNPCs)
+        foreach (NPCComponent bohyunNPC in allNPCComponents)
         {
-            // NPCComponent 확인
-            NPCComponent bohyunNPC = npc.GetComponent<NPCComponent>();
             if (bohyunNPC != null && bohyunNPC.bohyunData != null && bohyunNPC.bohyunData.npcName == npcName)
             {
                 // BohyunNPCData는 ScriptableObject이므로 런타임 수정 불가

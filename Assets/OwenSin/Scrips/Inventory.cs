@@ -12,7 +12,7 @@ public class Inventory : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<Inventory>();
+                instance = FindFirstObjectByType<Inventory>();
             }
             return instance;
         }

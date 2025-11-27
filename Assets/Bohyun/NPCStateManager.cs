@@ -13,7 +13,7 @@ public class NPCStateManager : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<NPCStateManager>();
+                instance = FindFirstObjectByType<NPCStateManager>();
                 if (instance == null)
                 {
                     GameObject go = new GameObject("NPCStateManager");

@@ -1144,7 +1144,7 @@ MonoBehaviour:
   endDialogFadeInDuration: 1
   buttonFadeInDuration: 0.5
   buttonFadeInDelay: 0.5
-  gameSceneName: prototype_bohyun
+  gameSceneName: MainScene
   sceneTransitionFadeDuration: 3
   typingAudioSource: {fileID: 0}
   typingSound: {fileID: 8300000, guid: e43ca647b96de43ed95e61de72e023bb, type: 3}
