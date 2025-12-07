@@ -77,92 +77,108 @@ public static class CSVReader
 
         // 헤더 파싱
         string[] headers = ParseCSVLine(lines[0]);
+        Debug.Log($"CSVReader: 헤더 파싱 완료. 컬럼 수: {headers.Length}, 컬럼명: {string.Join(", ", headers)}");
 
         // 데이터 파싱
+        int parsedRowCount = 0;
         for (int i = 1; i < lines.Length; i++)
         {
-            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string line = lines[i];
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            
+            // 줄 끝의 \r 제거 (Windows 줄바꿈 처리)
+            line = line.TrimEnd('\r');
 
-            string[] values = ParseCSVLine(lines[i]);
+            string[] values = ParseCSVLine(line);
+            
+            // 컬럼 수가 다르면 경고하지만 계속 진행 (일부 컬럼이 비어있을 수 있음)
             if (values.Length != headers.Length)
             {
-                Debug.LogWarning($"CSVReader: 행 {i + 1}의 컬럼 수가 헤더와 일치하지 않습니다.");
-                continue;
+                Debug.LogWarning($"CSVReader: 행 {i + 1}의 컬럼 수가 헤더와 일치하지 않습니다. (헤더: {headers.Length}, 값: {values.Length})");
+                // 컬럼 수가 부족하면 빈 문자열로 채움
+                if (values.Length < headers.Length)
+                {
+                    string[] paddedValues = new string[headers.Length];
+                    for (int k = 0; k < values.Length; k++)
+                    {
+                        paddedValues[k] = values[k];
+                    }
+                    for (int k = values.Length; k < headers.Length; k++)
+                    {
+                        paddedValues[k] = "";
+                    }
+                    values = paddedValues;
+                }
+                else
+                {
+                    // 컬럼 수가 많으면 잘라냄
+                    string[] trimmedValues = new string[headers.Length];
+                    for (int k = 0; k < headers.Length; k++)
+                    {
+                        trimmedValues[k] = values[k];
+                    }
+                    values = trimmedValues;
+                }
             }
 
             Dictionary<string, string> row = new Dictionary<string, string>();
             for (int j = 0; j < headers.Length; j++)
             {
-                row[headers[j].Trim()] = values[j].Trim();
+                string header = headers[j].Trim();
+                string value = j < values.Length ? values[j].Trim() : "";
+                row[header] = value;
             }
             result.Add(row);
+            parsedRowCount++;
+            
+            // 첫 번째 컬럼(npc-name) 값 로그
+            if (row.ContainsKey("npc-name"))
+            {
+                Debug.Log($"CSVReader: 행 {i + 1} 파싱 완료 - NPC 이름: '{row["npc-name"]}'");
+            }
         }
 
+        Debug.Log($"CSVReader: 총 {parsedRowCount}개의 데이터 행을 파싱했습니다.");
         return result;
     }
 
     /// <summary>
-    /// CSV 라인을 파싱합니다 (쉼표로 구분, 따옴표 처리).
-    /// 큰따옴표(")와 작은따옴표(') 모두 지원합니다.
+    /// CSV 라인을 파싱합니다 (쉼표로 구분, 큰따옴표 처리).
+    /// CSV 표준에 따라 큰따옴표(")만 따옴표로 처리합니다.
     /// </summary>
     private static string[] ParseCSVLine(string line)
     {
         List<string> result = new List<string>();
         bool inDoubleQuotes = false;
-        bool inSingleQuotes = false;
         string currentField = "";
 
         for (int i = 0; i < line.Length; i++)
         {
             char c = line[i];
-            bool inQuotes = inDoubleQuotes || inSingleQuotes;
 
             if (c == '"')
             {
                 if (inDoubleQuotes && i + 1 < line.Length && line[i + 1] == '"')
                 {
-                    // 이스케이프된 큰따옴표
+                    // 이스케이프된 큰따옴표 ("")
                     currentField += '"';
                     i++;
                 }
-                else if (!inSingleQuotes)
+                else
                 {
-                    // 큰따옴표 시작/끝 (작은따옴표 안이 아닐 때만)
+                    // 큰따옴표 시작/끝
                     inDoubleQuotes = !inDoubleQuotes;
                 }
-                else
-                {
-                    // 작은따옴표 안에 있는 큰따옴표는 그대로 추가
-                    currentField += c;
-                }
             }
-            else if (c == '\'')
+            else if (c == ',' && !inDoubleQuotes)
             {
-                if (inSingleQuotes && i + 1 < line.Length && line[i + 1] == '\'')
-                {
-                    // 이스케이프된 작은따옴표
-                    currentField += '\'';
-                    i++;
-                }
-                else if (!inDoubleQuotes)
-                {
-                    // 작은따옴표 시작/끝 (큰따옴표 안이 아닐 때만)
-                    inSingleQuotes = !inSingleQuotes;
-                }
-                else
-                {
-                    // 큰따옴표 안에 있는 작은따옴표는 그대로 추가
-                    currentField += c;
-                }
-            }
-            else if (c == ',' && !inQuotes)
-            {
-                // 필드 구분자 (따옴표 밖일 때만)
+                // 필드 구분자 (큰따옴표 밖일 때만)
                 result.Add(currentField);
                 currentField = "";
             }
             else
             {
+                // 일반 문자 (작은따옴표 포함)
                 currentField += c;
             }
         }

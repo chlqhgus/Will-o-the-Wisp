@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: MerchantData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Merchant
+  foodRequestProbability: 0.65
+  medicineRequestProbability: 0.35
+  reRequestChance: 0.5
+  foodRequestLines:
+  - Got any food to spare? Hard to bargain on an empty belly.
+  medicineRequestLines:
+  - My body's acting up again. Can't make coin if I keel over.
+  foodAcceptLines:
+  - Knew you'd help. Can't bargain right on an empty stomach.
+  medicineAcceptLines:
+  - Good thinking. Healthy merchant means healthy trade.
+  foodRejectLines:
+  - Eh? No food? That's rough. Business runs on strength.
+  medicineRejectLines:
+  - Figures. Then guess business slows today.
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines:
+  - Please...
+  foodReAcceptLines:
+  - Finally! Better late than hungry.
+  medicineReAcceptLines:
+  - At last! Was about to charge fate interest for this delay.
+  foodReRejectLines:
+  - Alright. I get it. No charity for this merchant.,Tough world.
+  medicineReRejectLines: []
+  specialLines: []
+  csvImportPath: 

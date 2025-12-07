@@ -9,24 +9,24 @@ public class NPCComponent : MonoBehaviour
     [Header("Bohyun NPC Data")]
     public BohyunNPCData bohyunData;
     
-    /// <summary>
-    /// NPC 이름을 반환합니다 (BohyunNPCData 또는 GameObject 이름).
-    /// </summary>
     public string GetNPCName()
     {
         if (bohyunData != null && !string.IsNullOrEmpty(bohyunData.npcName))
             return bohyunData.npcName;
         return gameObject.name.Replace("(Clone)", "").Trim();
     }
-    
-    /// <summary>
-    /// 요청 타입을 반환합니다.
-    /// </summary>
-    public BohyunNPCRequestType GetRequestType()
+
+    public bool DetermineRequestType()
     {
-        if (bohyunData != null)
-            return bohyunData.requestType;
-        return BohyunNPCRequestType.Food;
+        if (bohyunData == null) return false;
+        
+        float randomValue = Random.value;
+        float totalProbability = bohyunData.foodRequestProbability + bohyunData.medicineRequestProbability;
+        
+        if (totalProbability <= 0f) return false;
+        
+        float normalizedMedicineProb = bohyunData.medicineRequestProbability / totalProbability;
+        return randomValue < normalizedMedicineProb;
     }
 }
 

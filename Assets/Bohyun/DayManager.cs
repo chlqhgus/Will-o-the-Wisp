@@ -12,7 +12,7 @@ public class DayManager : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<DayManager>();
+                instance = FindFirstObjectByType<DayManager>();
                 if (instance == null)
                 {
                     GameObject go = new GameObject("DayManager");
@@ -43,15 +43,14 @@ public class DayManager : MonoBehaviour
         return currentDay;
     }
 
-    /// <summary>
-    /// 다음 날로 넘어갑니다.
-    /// </summary>
-    public void NextDay()
-    {
-        currentDay++;
-        NPCStateManager.Instance.OnNewDay();
-        Debug.Log($"Day {currentDay} 시작");
-    }
+        /// <summary>
+        /// 다음 날로 넘어갑니다.
+        /// </summary>
+        public void NextDay()
+        {
+            currentDay++;
+            Debug.Log($"Day {currentDay} 시작");
+        }
 
     /// <summary>
     /// 날짜를 리셋합니다.

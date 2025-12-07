@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01.Scenes/NightTimeScene.unity
     guid: 8f0ba55120774412b8753d7db51ba5ec
+  - enabled: 1
+    path: Assets/Bohyun/MainScene_Test.unity
+    guid: eea0d7be90e774c4d9ee3f0eaacebf15
+  - enabled: 1
+    path: Assets/Bohyun/NightTimeScene_Test.unity
+    guid: baff552ec92794ad7b8dda9c1679ceca
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

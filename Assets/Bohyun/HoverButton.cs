@@ -34,7 +34,8 @@ public class HoverButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private Transform spriteTransform;
     private Vector3 originalScale;
     private bool isUIElement = false;
-    private bool isHovering = false;
+    // isHovering은 현재 사용되지 않지만 향후 확장을 위해 남겨둠
+    // private bool isHovering = false;
     private Coroutine hoverScaleCoroutine;
     private Coroutine clickScaleCoroutine;
     
@@ -89,7 +90,7 @@ public class HoverButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        isHovering = true;
+        // isHovering = true; // 현재 사용되지 않음
         
         // 호버 시 이미지 변경
         if (hoverSprite != null)
@@ -117,7 +118,7 @@ public class HoverButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     
     public void OnPointerExit(PointerEventData eventData)
     {
-        isHovering = false;
+        // isHovering = false; // 현재 사용되지 않음
         
         // 호버 해제 시 일반 이미지로 변경
         if (normalSprite != null)

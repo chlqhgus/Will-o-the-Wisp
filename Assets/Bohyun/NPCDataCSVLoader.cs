@@ -81,7 +81,6 @@ public class NPCDataCSVLoader : MonoBehaviour
         List<string> generalLines = new List<string>();
         List<string> foodLines = new List<string>();
         List<string> medicineLines = new List<string>();
-        BohyunNPCRequestType requestType = BohyunNPCRequestType.Food;
 
         foreach (var row in rows)
         {
@@ -104,20 +103,6 @@ public class NPCDataCSVLoader : MonoBehaviour
             {
                 generalLines.Add(dialogue);
             }
-
-            // RequestType 설정 (첫 번째 행에서)
-            if (row.ContainsKey(requestTypeColumn))
-            {
-                string reqType = row[requestTypeColumn].ToLower();
-                if (reqType == "medicine" || reqType == "약")
-                {
-                    requestType = BohyunNPCRequestType.Medicine;
-                }
-                else
-                {
-                    requestType = BohyunNPCRequestType.Food;
-                }
-            }
         }
 
         // NPCData에 적용 (런타임에서는 ScriptableObject를 직접 수정할 수 없으므로 주의)
@@ -125,7 +110,7 @@ public class NPCDataCSVLoader : MonoBehaviour
         Debug.Log($"NPCDataCSVLoader: {npcName} - 일반:{generalLines.Count}, 밥:{foodLines.Count}, 약:{medicineLines.Count}");
         
         // 런타임에서는 NPC 컴포넌트에 직접 적용하는 방식 사용
-        ApplyToNPCComponents(npcName, generalLines, foodLines, medicineLines, requestType);
+        ApplyToNPCComponents(npcName, generalLines, foodLines, medicineLines);
     }
 
     /// <summary>
@@ -151,7 +136,7 @@ public class NPCDataCSVLoader : MonoBehaviour
     /// NPC 컴포넌트에 직접 데이터를 적용합니다 (런타임용).
     /// </summary>
     void ApplyToNPCComponents(string npcName, List<string> generalLines, List<string> foodLines, 
-                              List<string> medicineLines, BohyunNPCRequestType requestType)
+                              List<string> medicineLines)
     {
         // NPC.cs가 삭제되어 NPCComponent를 직접 찾기
         NPCComponent[] allNPCComponents = FindObjectsByType<NPCComponent>(FindObjectsSortMode.None);

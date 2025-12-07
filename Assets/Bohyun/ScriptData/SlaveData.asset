@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: SlaveData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Slave
+  foodRequestProbability: 0.55
+  medicineRequestProbability: 0.45
+  reRequestChance: 0
+  foodRequestLines:
+  - P-please. I haven't eaten. A small bite would save me.
+  medicineRequestLines:
+  - I fear I will not last long so please let me have a little medicine.
+  foodAcceptLines:
+  - Bless you this will keep me alive for another day
+  medicineAcceptLines:
+  - Thank you just knowing someone helps eases my pain
+  foodRejectLines:
+  - Of course I should not have hoped and I beg your forgiveness
+  medicineRejectLines:
+  - I asked too much and I will not trouble you again
+  foodReRequestLines: []
+  medicineReRequestLines: []
+  foodReAcceptLines: []
+  medicineReAcceptLines: []
+  foodReRejectLines: []
+  medicineReRejectLines: []
+  specialLines: []
+  csvImportPath: 

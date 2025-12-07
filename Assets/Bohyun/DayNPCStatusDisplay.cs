@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -14,7 +15,7 @@ public class DayNPCStatusDisplay : MonoBehaviour
     public TextMeshProUGUI remainingNPCText;
     
     [Header("References")]
-    [Tooltip("NPCQueueSystem 참조 (자동으로 찾을 수도 있음)")]
+    [Tooltip("NPCQueueSystem 참조")]
     public NPCQueueSystem npcQueueSystem;
     
     [Header("Display Settings")]
@@ -31,14 +32,24 @@ public class DayNPCStatusDisplay : MonoBehaviour
     
     void Start()
     {
-        // NPCQueueSystem이 할당되지 않았으면 자동으로 찾기
+        // NPCQueueSystem이 Inspector에서 할당되었는지 확인
         if (npcQueueSystem == null)
         {
-            npcQueueSystem = FindObjectOfType<NPCQueueSystem>();
-            if (npcQueueSystem == null)
-            {
-                Debug.LogWarning("DayNPCStatusDisplay: NPCQueueSystem을 찾을 수 없습니다.");
-            }
+            Debug.LogError("DayNPCStatusDisplay: NPCQueueSystem이 Inspector에서 할당되지 않았습니다. Inspector에서 NPCQueueSystem을 할당해주세요.");
+            return;
+        }
+        
+        // 초기 업데이트
+        UpdateDisplay();
+    }
+    
+    void OnEnable()
+    {
+        // NPCQueueSystem이 할당되었는지 확인
+        if (npcQueueSystem == null)
+        {
+            Debug.LogWarning("DayNPCStatusDisplay: NPCQueueSystem이 할당되지 않았습니다. UI가 업데이트되지 않습니다.");
+            return;
         }
         
         // 초기 업데이트
@@ -95,13 +106,13 @@ public class DayNPCStatusDisplay : MonoBehaviour
     }
     
     /// <summary>
-    /// 남은 NPC 수 텍스트를 업데이트합니다.
+    /// 남은 NPC 수 텍스트를 업데이트합니다 (아직 상호작용하지 않은 NPC 수).
     /// </summary>
     void UpdateRemainingNPCText()
     {
         if (remainingNPCText == null || npcQueueSystem == null) return;
         
-        // NPCQueueSystem에서 남은 NPC 수 계산
+        // 남은 NPC 수 계산 (아직 상호작용하지 않은 NPC 수)
         int remainingCount = GetRemainingNPCCount();
         
         // 텍스트 업데이트
@@ -109,21 +120,19 @@ public class DayNPCStatusDisplay : MonoBehaviour
     }
     
     /// <summary>
-    /// 남은 NPC 수를 계산합니다. (상호작용이 완료된 NPC를 제외한 나머지)
+    /// 남은 NPC 수를 계산합니다 (아직 상호작용하지 않은 NPC 수).
     /// </summary>
     int GetRemainingNPCCount()
     {
         if (npcQueueSystem == null) return 0;
         
-        // DaySchedule이 없으면 0 반환
-        if (npcQueueSystem.daySchedule == null || 
-            npcQueueSystem.daySchedule.npcPrefabs == null)
+        // 전체 NPC 수 (랜덤 큐에서 가져오기)
+        int totalNPCs = npcQueueSystem.GetTotalNPCCount();
+        
+        if (totalNPCs == 0)
         {
             return 0;
         }
-        
-        // 전체 NPC 수
-        int totalNPCs = npcQueueSystem.daySchedule.npcPrefabs.Length;
         
         // 현재 스폰 인덱스 (이미 스폰된 NPC 수)
         int spawnedCount = npcQueueSystem.GetCurrentSpawnIndex();
