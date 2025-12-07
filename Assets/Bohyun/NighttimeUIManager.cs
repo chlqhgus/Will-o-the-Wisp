@@ -101,20 +101,20 @@ public class NighttimeUIManager : MonoBehaviour
     
     public void ShowNighttimeUI()
     {
+        // 하루 종료 처리 (사망 처리만 수행, 상태는 리셋하지 않음)
         if (NPCStateManager.Instance != null)
         {
-            Debug.Log("[NighttimeUIManager] ShowNighttimeUI() - 사망 처리 시작");
-            NPCStateManager.Instance.OnNewDay();
-            Debug.Log("[NighttimeUIManager] ShowNighttimeUI() - 사망 처리 완료");
+            Debug.Log("[NighttimeUIManager] ShowNighttimeUI() - 하루 종료 처리 시작");
+            NPCStateManager.Instance.EndDay();
+            Debug.Log("[NighttimeUIManager] ShowNighttimeUI() - 하루 종료 처리 완료");
         }
         
-        // 통계 계산
         if (statisticsCalculator != null)
         {
             statisticsCalculator.CalculateStatistics();
         }
         
-        // 돈 계산 및 추가 (한 번만)
+        // 돈 계산 및 추가 (통계 계산 후)
         if (purchaseSystem != null)
         {
             purchaseSystem.CalculateAndAddMoney();
@@ -230,7 +230,6 @@ public class NighttimeUIManager : MonoBehaviour
     {
         if (statisticsCalculator == null) return;
         
-        // 날짜 표시
         if (dayText != null && DayManager.Instance != null)
         {
             int currentDay = DayManager.Instance.GetCurrentDay();
@@ -264,44 +263,77 @@ public class NighttimeUIManager : MonoBehaviour
         if (merchantCountText != null)
             merchantCountText.text = statisticsCalculator.GetBlessedNPCCount(NPCTypeHelper.NPCType.Merchant).ToString();
         
-        // Day Start 버튼 텍스트 업데이트
+
         if (dayStartButtonText != null && DayManager.Instance != null)
         {
-            int nextDay = DayManager.Instance.GetCurrentDay() + 1;
+            int currentDay = DayManager.Instance.GetCurrentDay();
+            int nextDay = currentDay + 1;
             dayStartButtonText.text = $"Day {nextDay} Start";
+            Debug.Log($"[NighttimeUIManager] UpdateUI() - 버튼 텍스트: Day {nextDay} Start (현재 날짜: {currentDay})");
+        }
+    }
+    
+    void OnDayStartClicked()
+    {
+        NPCQueueSystem queueSystem = FindFirstObjectByType<NPCQueueSystem>();
+        
+        Image fadeOverlay = FindFirstObjectByType<Canvas>()?.GetComponentInChildren<Image>();
+        if (fadeOverlay != null && fadeOverlay.name == "FadeOverlay")
+        {
+            StartCoroutine(FadeInOverlayAndStartNewDay(fadeOverlay, queueSystem));
+        }
+        else
+        {
+            HideNighttimeUI();
+            StartNewDay(queueSystem);
         }
     }
     
     /// <summary>
-    /// Day Start 버튼 클릭 이벤트
+    /// 다음 날을 시작합니다.
     /// </summary>
-    void OnDayStartClicked()
+    void StartNewDay(NPCQueueSystem queueSystem)
     {
-        // 다음 날로 넘어가기
+        // 날짜 증가 (UI 숨긴 후)
         if (DayManager.Instance != null)
         {
+            int currentDayBefore = DayManager.Instance.GetCurrentDay();
             DayManager.Instance.NextDay();
+            int currentDayAfter = DayManager.Instance.GetCurrentDay();
+            Debug.Log($"[NighttimeUIManager] StartNewDay() - 날짜 증가: {currentDayBefore} → {currentDayAfter}");
         }
         
-        // NPCQueueSystem 찾기
-        NPCQueueSystem queueSystem = FindFirstObjectByType<NPCQueueSystem>();
+        // 다음 날 큐 생성
         if (queueSystem != null)
         {
-            // 다음 날 큐 생성
             queueSystem.StartNewDay();
         }
+    }
+    
+    /// <summary>
+    /// 페이드인 후 다음 날을 시작합니다.
+    /// </summary>
+    IEnumerator FadeInOverlayAndStartNewDay(Image overlay, NPCQueueSystem queueSystem)
+    {
+        float elapsedTime = 0f;
+        float fadeDuration = 0.5f;
+        Color startColor = overlay.color;
+        Color targetColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
         
-        // 페이드아웃 오버레이 페이드인 (있는 경우)
-        Image fadeOverlay = FindFirstObjectByType<Canvas>()?.GetComponentInChildren<Image>();
-        if (fadeOverlay != null && fadeOverlay.name == "FadeOverlay")
+        // 페이드인 시작
+        while (elapsedTime < fadeDuration)
         {
-            StartCoroutine(FadeInOverlayAndHideUI(fadeOverlay));
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / fadeDuration;
+            overlay.color = Color.Lerp(startColor, targetColor, t);
+            yield return null;
         }
-        else
-        {
-            // 페이드 오버레이가 없으면 바로 UI 숨기기
-            HideNighttimeUI();
-        }
+        
+        overlay.color = targetColor;
+        
+        // 페이드인 완료 후 UI 숨기고 다음 날 시작
+        HideNighttimeUI();
+        StartNewDay(queueSystem);
     }
     
     /// <summary>

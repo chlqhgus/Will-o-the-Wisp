@@ -217,17 +217,18 @@ public class NPCQueueSystem : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// 다음 날을 시작합니다 (NighttimeManager에서 호출됨).
-    /// </summary>
     public void StartNewDay()
     {
         Debug.Log("[NPCQueueSystem] StartNewDay() - 다음 날 시작");
         
-        // 기존 NPC 모두 제거
+        if (NPCStateManager.Instance != null)
+        {
+            NPCStateManager.Instance.OnNewDay();
+            Debug.Log("[NPCQueueSystem] StartNewDay() - 상태 리셋 완료");
+        }
+        
         ClearAllNPCs();
         
-        // 상태 리셋
         isInitialSpawnComplete = false;
         currentSpawnIndex = 0;
         timer = 0f;
@@ -237,12 +238,10 @@ public class NPCQueueSystem : MonoBehaviour
         frontNPCComponent = null;
         isCurrentNPCShaman = false;
         
-        // 다음 날 큐 생성
         if (NPCRandomQueueManager.Instance != null)
         {
             randomQueuePrefabs = NPCRandomQueueManager.Instance.GenerateDayQueue();
             
-            // NPCStateManager에 오늘 등장할 모든 NPC 이름 목록 설정
             if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0 && NPCStateManager.Instance != null)
             {
                 List<string> npcNames = new List<string>();
@@ -638,9 +637,9 @@ public class NPCQueueSystem : MonoBehaviour
     /// <summary>
     /// 대사를 표시합니다.
     /// </summary>
-    void ShowDialogue(BohyunNPCData npcData)
+    void ShowDialogue(BohyunNPCData bohyunData)
     {
-        if (npcData == null) return;
+        if (bohyunData == null) return;
 
         string dialogue = "";
         int refusalCount = 0;
@@ -653,20 +652,20 @@ public class NPCQueueSystem : MonoBehaviour
         }
         
         // 확률에 따라 요청 타입 결정
-        bool requestedMedicine = DetermineNPCRequestType(npcData);
+        bool requestedMedicine = DetermineNPCRequestType(bohyunData);
         currentNPCRequestedMedicine = requestedMedicine;
         
         // 요청 타입에 따라 대사 선택
         if (requestedMedicine)
         {
             // 한 번 거절 후 재요청 대사가 있으면 재요청 대사 표시
-            if (refusalCount > 0 && npcData.medicineReRequestLines != null && npcData.medicineReRequestLines.Length > 0)
+            if (refusalCount > 0 && bohyunData.medicineReRequestLines != null && bohyunData.medicineReRequestLines.Length > 0)
             {
-                dialogue = npcData.medicineReRequestLines[Random.Range(0, npcData.medicineReRequestLines.Length)];
+                dialogue = bohyunData.medicineReRequestLines[Random.Range(0, bohyunData.medicineReRequestLines.Length)];
             }
-            else if (npcData.medicineRequestLines != null && npcData.medicineRequestLines.Length > 0)
+            else if (bohyunData.medicineRequestLines != null && bohyunData.medicineRequestLines.Length > 0)
             {
-                dialogue = npcData.medicineRequestLines[Random.Range(0, npcData.medicineRequestLines.Length)];
+                dialogue = bohyunData.medicineRequestLines[Random.Range(0, bohyunData.medicineRequestLines.Length)];
             }
             // NPC 상태 매니저에 약 요청 기록 (고유 NPC 이름 사용)
             if (NPCStateManager.Instance != null && frontNPC != null)
@@ -678,13 +677,13 @@ public class NPCQueueSystem : MonoBehaviour
         else
         {
             // 한 번 거절 후 재요청 대사가 있으면 재요청 대사 표시
-            if (refusalCount > 0 && npcData.foodReRequestLines != null && npcData.foodReRequestLines.Length > 0)
+            if (refusalCount > 0 && bohyunData.foodReRequestLines != null && bohyunData.foodReRequestLines.Length > 0)
             {
-                dialogue = npcData.foodReRequestLines[Random.Range(0, npcData.foodReRequestLines.Length)];
+                dialogue = bohyunData.foodReRequestLines[Random.Range(0, bohyunData.foodReRequestLines.Length)];
             }
-            else if (npcData.foodRequestLines != null && npcData.foodRequestLines.Length > 0)
+            else if (bohyunData.foodRequestLines != null && bohyunData.foodRequestLines.Length > 0)
             {
-                dialogue = npcData.foodRequestLines[Random.Range(0, npcData.foodRequestLines.Length)];
+                dialogue = bohyunData.foodRequestLines[Random.Range(0, bohyunData.foodRequestLines.Length)];
             }
         }
 
@@ -701,17 +700,17 @@ public class NPCQueueSystem : MonoBehaviour
     /// <summary>
     /// 확률에 따라 NPC의 요청 타입을 결정합니다 (true = 약 요청, false = 밥 요청).
     /// </summary>
-    bool DetermineNPCRequestType(BohyunNPCData npcData)
+    bool DetermineNPCRequestType(BohyunNPCData bohyunData)
     {
-        if (npcData == null) return false;
+        if (bohyunData == null) return false;
         
         float randomValue = Random.value;
-        float totalProbability = npcData.foodRequestProbability + npcData.medicineRequestProbability;
+        float totalProbability = bohyunData.foodRequestProbability + bohyunData.medicineRequestProbability;
         
         if (totalProbability <= 0f) return false; // 기본값: 밥 요청
         
         // 정규화된 확률로 결정
-        float normalizedMedicineProb = npcData.medicineRequestProbability / totalProbability;
+        float normalizedMedicineProb = bohyunData.medicineRequestProbability / totalProbability;
         return randomValue < normalizedMedicineProb;
     }
 
@@ -855,7 +854,7 @@ public class NPCQueueSystem : MonoBehaviour
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] RefuseFrontNPC() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC); // 고유 NPC 이름
         bool requestedMedicine = false;
         
@@ -868,7 +867,7 @@ public class NPCQueueSystem : MonoBehaviour
         
         Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() - 현재 refusalCount: {refusalCount}");
         
-        if (npcData != null)
+        if (bohyunData != null)
         {
             requestedMedicine = currentNPCRequestedMedicine;
             
@@ -876,13 +875,13 @@ public class NPCQueueSystem : MonoBehaviour
             bool hasReRequest = false;
             if (requestedMedicine)
             {
-                hasReRequest = (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0) ||
-                               (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0);
+                hasReRequest = (bohyunData.medicineReAcceptLines != null && bohyunData.medicineReAcceptLines.Length > 0) ||
+                               (bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0);
             }
             else
             {
-                hasReRequest = (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0) ||
-                               (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0);
+                hasReRequest = (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0) ||
+                               (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0);
             }
             
             // 재요청 가능하고 첫 거절이면, 랜덤으로 재요청 여부 결정
@@ -914,16 +913,16 @@ public class NPCQueueSystem : MonoBehaviour
                     string rejectDialogue = "";
                     if (requestedMedicine)
                     {
-                        if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                        if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                            rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                         }
                     }
                     else
                     {
-                        if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                        if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                            rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                         }
                     }
                     
@@ -958,9 +957,9 @@ public class NPCQueueSystem : MonoBehaviour
                     // 두 번 거절당했을 때 (RecordRefusal 호출 후이므로 refusalCount >= 1)
                     if (refusalCount >= 1)
                     {
-                        if (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                        if (bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                            rejectDialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
                         }
                         else
                         {
@@ -969,9 +968,9 @@ public class NPCQueueSystem : MonoBehaviour
                         }
                     }
                     // 첫 거절
-                    else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                    else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                     {
-                        rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                        rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                     }
                 }
                 else
@@ -979,9 +978,9 @@ public class NPCQueueSystem : MonoBehaviour
                     // 두 번 거절당했을 때
                     if (refusalCount >= 1)
                     {
-                        if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                        if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                            rejectDialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
                         }
                         else
                         {
@@ -990,9 +989,9 @@ public class NPCQueueSystem : MonoBehaviour
                         }
                     }
                     // 첫 거절
-                    else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                    else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                     {
-                        rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                        rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                     }
                 }
                 
@@ -1065,11 +1064,11 @@ public class NPCQueueSystem : MonoBehaviour
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] GiveLotusRice() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
         
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
-        isCurrentNPCShaman = IsShamanNPC(npcData);
+        isCurrentNPCShaman = IsShamanNPC(bohyunData);
         
         // 거절 횟수 확인
         int refusalCount = 0;
@@ -1081,7 +1080,7 @@ public class NPCQueueSystem : MonoBehaviour
         string dialogue = "";
         bool isAccept = false;
         
-        if (npcData != null)
+        if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
             if (!currentNPCRequestedMedicine) // 밥 요청
@@ -1099,9 +1098,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
-                    if (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0)
+                    if (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0)
                     {
-                        dialogue = npcData.foodReAcceptLines[Random.Range(0, npcData.foodReAcceptLines.Length)];
+                        dialogue = bohyunData.foodReAcceptLines[Random.Range(0, bohyunData.foodReAcceptLines.Length)];
                     }
                     else
                     {
@@ -1109,9 +1108,9 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "Thank you... Thank you...";
                     }
                 }
-                else if (npcData.foodAcceptLines != null && npcData.foodAcceptLines.Length > 0)
+                else if (bohyunData.foodAcceptLines != null && bohyunData.foodAcceptLines.Length > 0)
                 {
-                    dialogue = npcData.foodAcceptLines[Random.Range(0, npcData.foodAcceptLines.Length)];
+                    dialogue = bohyunData.foodAcceptLines[Random.Range(0, bohyunData.foodAcceptLines.Length)];
                 }
             }
             else // 약 요청
@@ -1124,15 +1123,15 @@ public class NPCQueueSystem : MonoBehaviour
                 }
                 
                 // 거절 대사 표시
-                if (refusalCount >= 1 && npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                if (refusalCount >= 1 && bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
                 {
                     // 두 번 거절당했을 때
-                    dialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                    dialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
                 }
-                else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                 {
                     // 첫 거절
-                    dialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                    dialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                 }
             }
         }
@@ -1213,11 +1212,11 @@ public class NPCQueueSystem : MonoBehaviour
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] GiveHerbalMedicine() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
         
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
-        isCurrentNPCShaman = IsShamanNPC(npcData);
+        isCurrentNPCShaman = IsShamanNPC(bohyunData);
         
         // 거절 횟수 확인
         int refusalCount = 0;
@@ -1229,7 +1228,7 @@ public class NPCQueueSystem : MonoBehaviour
         string dialogue = "";
         bool isAccept = false;
         
-        if (npcData != null)
+        if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
             if (currentNPCRequestedMedicine) // 약 요청
@@ -1245,9 +1244,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
-                    if (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0)
+                    if (bohyunData.medicineReAcceptLines != null && bohyunData.medicineReAcceptLines.Length > 0)
                     {
-                        dialogue = npcData.medicineReAcceptLines[Random.Range(0, npcData.medicineReAcceptLines.Length)];
+                        dialogue = bohyunData.medicineReAcceptLines[Random.Range(0, bohyunData.medicineReAcceptLines.Length)];
                     }
                     else
                     {
@@ -1255,9 +1254,9 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "Thank you... Thank you...";
                     }
                 }
-                else if (npcData.medicineAcceptLines != null && npcData.medicineAcceptLines.Length > 0)
+                else if (bohyunData.medicineAcceptLines != null && bohyunData.medicineAcceptLines.Length > 0)
                 {
-                    dialogue = npcData.medicineAcceptLines[Random.Range(0, npcData.medicineAcceptLines.Length)];
+                    dialogue = bohyunData.medicineAcceptLines[Random.Range(0, bohyunData.medicineAcceptLines.Length)];
                 }
             }
             else // 밥 요청
@@ -1272,9 +1271,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 두 번 거절당했을 때
                 if (refusalCount >= 1)
                 {
-                    if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                    if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
                     {
-                        dialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                        dialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
                     }
                     else
                     {
@@ -1282,9 +1281,9 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "I'm gonna die tomorrow...";
                     }
                 }
-                else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                 {
-                    dialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                    dialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                 }
             }
         }
@@ -1337,22 +1336,22 @@ public class NPCQueueSystem : MonoBehaviour
         }
         
         // 재요청 대사 표시 (이미 RefuseFrontNPC()에서 재요청 확률로 결정되었으므로 무조건 재요청 대사 표시)
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
-        if (npcData != null)
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        if (bohyunData != null)
         {
             string reRequestDialogue = "";
             if (currentNPCRequestedMedicine) // 약 요청
             {
-                if (npcData.medicineReRequestLines != null && npcData.medicineReRequestLines.Length > 0)
+                if (bohyunData.medicineReRequestLines != null && bohyunData.medicineReRequestLines.Length > 0)
                 {
-                    reRequestDialogue = npcData.medicineReRequestLines[Random.Range(0, npcData.medicineReRequestLines.Length)];
+                    reRequestDialogue = bohyunData.medicineReRequestLines[Random.Range(0, bohyunData.medicineReRequestLines.Length)];
                 }
             }
             else 
             {
-                if (npcData.foodReRequestLines != null && npcData.foodReRequestLines.Length > 0)
+                if (bohyunData.foodReRequestLines != null && bohyunData.foodReRequestLines.Length > 0)
                 {
-                    reRequestDialogue = npcData.foodReRequestLines[Random.Range(0, npcData.foodReRequestLines.Length)];
+                    reRequestDialogue = bohyunData.foodReRequestLines[Random.Range(0, bohyunData.foodReRequestLines.Length)];
                 }
             }
             
@@ -1841,10 +1840,10 @@ public class NPCQueueSystem : MonoBehaviour
     /// <summary>
     /// NPC가 무당인지 확인합니다.
     /// </summary>
-    bool IsShamanNPC(BohyunNPCData npcData)
+    bool IsShamanNPC(BohyunNPCData bohyunData)
     {
-        if (npcData == null) return false;
-        return npcData.npcName != null && npcData.npcName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase);
+        if (bohyunData == null) return false;
+        return bohyunData.npcName != null && bohyunData.npcName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase);
     }
     
     /// <summary>

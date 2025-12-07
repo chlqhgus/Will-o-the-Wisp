@@ -70,14 +70,7 @@ public class BohyunChoiceButton : MonoBehaviour
             return;
         }
 
-        // 개수 확인
-        if (itemCount >= 0 && itemCount <= 0)
-        {
-            Debug.Log("아이템이 부족합니다.");
-            return;
-        }
-
-        // Inventory에서 개수 확인 및 차감
+        // Inventory에서 개수 확인 (실제 인벤토리 값 사용)
         if (buttonType == ButtonType.LotusRice || buttonType == ButtonType.HerbalMedicine)
         {
             Inventory inventory = queueSystem.inventory;
@@ -85,18 +78,27 @@ public class BohyunChoiceButton : MonoBehaviour
             {
                 if (buttonType == ButtonType.LotusRice && inventory.lotusRice <= 0)
                 {
-                    Debug.Log("연밥이 부족합니다.");
+                    Debug.Log("아이템이 부족합니다.");
                     return;
                 }
                 if (buttonType == ButtonType.HerbalMedicine && inventory.herbalMedicine <= 0)
                 {
-                    Debug.Log("약초가 부족합니다.");
+                    Debug.Log("아이템이 부족합니다.");
+                    return;
+                }
+            }
+            else
+            {
+                // Inventory가 없으면 itemCount 확인 (하위 호환성)
+                if (itemCount >= 0 && itemCount <= 0)
+                {
+                    Debug.Log("아이템이 부족합니다.");
                     return;
                 }
             }
         }
 
-        // QueueSystem의 메서드 호출
+        // QueueSystem의 메서드 호출 (이 메서드 내부에서 Inventory 차감)
         switch (buttonType)
         {
             case ButtonType.Refuse:
@@ -110,11 +112,8 @@ public class BohyunChoiceButton : MonoBehaviour
                 break;
         }
 
-        // 개수 차감
-        if (itemCount > 0)
-        {
-            itemCount--;
-        }
+        // itemCount는 더 이상 사용하지 않음 (Inventory가 실제 값)
+        // UI는 UpdateButtonUI()에서 Inventory 값을 읽어서 업데이트됨
     }
 
     /// <summary>

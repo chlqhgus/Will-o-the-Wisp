@@ -96,6 +96,7 @@ public class NPCStateManager : MonoBehaviour
     {
         NPCState state = GetOrCreateState(npcName);
         state.daysWithoutMedicine = 0; // 약을 받았으므로 리셋
+        state.daysWithoutFood = 0; // 약을 받았으므로 daysWithoutFood도 리셋 (밥/약 중 하나라도 받으면 생존)
         state.requestedMedicineToday = false;
         state.receivedMedicineToday = true;
     }
@@ -158,7 +159,7 @@ public class NPCStateManager : MonoBehaviour
     {
         NPCState state = GetOrCreateState(npcName);
         state.receivedFoodToday = true;
-        state.daysWithoutFood = 0; // 밥을 받았으므로 리셋
+        state.daysWithoutFood = 0; // 밥을 받았으므로 리셋 (약을 받아도 리셋되지만 여기서도 리셋)
     }
     
     /// <summary>
@@ -198,10 +199,10 @@ public class NPCStateManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 새로운 날이 시작될 때 호출 (모든 NPC의 오늘 요청 상태 리셋 및 사망 체크)
+    /// 하루가 끝날 때 호출 (사망 처리만 수행, 상태는 리셋하지 않음)
     /// 밤이 되었을 때 약을 받지 못한 NPC는 사망 처리됨
     /// </summary>
-    public void OnNewDay()
+    public void EndDay()
     {
         // 사망 처리 (상태 리셋 전에 먼저 처리)
         foreach (var state in npcStates.Values)
@@ -217,26 +218,38 @@ public class NPCStateManager : MonoBehaviour
                 continue; // 이미 사망했으므로 다른 체크는 불필요
             }
             
-            // 오늘 밥을 받지 못한 NPC는 daysWithoutFood 증가
-            if (!state.receivedFoodToday)
+            // 밥 또는 약을 받지 못한 NPC는 daysWithoutFood 증가
+            // (약을 받으면 밥을 안받아도 생존 가능)
+            bool receivedFoodOrMedicine = state.receivedFoodToday || state.receivedMedicineToday;
+            
+            if (!receivedFoodOrMedicine)
             {
                 state.daysWithoutFood++;
                 
-                // 이틀 연속 밥을 못 먹으면 사망
+                // 이틀 연속 밥/약 모두 안받으면 사망
                 if (state.daysWithoutFood >= 2)
                 {
                     state.isDead = true;
-                    Debug.Log($"{state.npcName}이(가) 이틀 연속 밥을 못 먹어 죽었습니다.");
+                    Debug.Log($"{state.npcName}이(가) 이틀 연속 밥/약을 모두 받지 못해 죽었습니다.");
                 }
             }
             else
             {
-                // 밥을 받았으면 리셋 (이미 RecordFoodGiven에서 리셋되지만 안전을 위해)
+                // 밥 또는 약을 받았으면 리셋
                 state.daysWithoutFood = 0;
             }
         }
         
-        // 상태 리셋 (사망 처리 후)
+        // 상태는 리셋하지 않음 (통계 계산을 위해 유지)
+    }
+    
+    /// <summary>
+    /// 새로운 날이 시작될 때 호출 (모든 NPC의 오늘 요청 상태 리셋)
+    /// EndDay()에서 사망 처리가 완료된 후 호출됨
+    /// </summary>
+    public void OnNewDay()
+    {
+        // 상태 리셋 (사망 처리는 EndDay()에서 이미 완료됨)
         foreach (var state in npcStates.Values)
         {
             // 오늘 상태 리셋

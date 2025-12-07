@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Nighttime 통계 계산만 담당하는 클래스
-/// 생존자 수, 사망자 수, 도움받은 NPC 수 등을 계산합니다.
-/// </summary>
 public class NighttimeStatisticsCalculator : MonoBehaviour
 {
     private Dictionary<NPCTypeHelper.NPCType, int> blessedNPCs = new Dictionary<NPCTypeHelper.NPCType, int>();
@@ -46,8 +42,24 @@ public class NighttimeStatisticsCalculator : MonoBehaviour
             return;
         }
         
-        totalSurvivors = 0;
+        // 총 인원 수
+        int totalNPCs = allNPCNames.Count;
         
+        // 누적된 죽은 사람 수 계산
+        int totalDead = 0;
+        foreach (string npcName in allNPCNames)
+        {
+            if (string.IsNullOrEmpty(npcName)) continue;
+            if (stateManager.IsDead(npcName))
+            {
+                totalDead++;
+            }
+        }
+        
+        // 생존자 수 = 총 인원 수 - 누적된 죽은 사람 수
+        totalSurvivors = totalNPCs - totalDead;
+        
+        // 물자를 준 사람 class별 카운트 계산
         foreach (string npcName in allNPCNames)
         {
             if (string.IsNullOrEmpty(npcName)) continue;
@@ -57,23 +69,30 @@ public class NighttimeStatisticsCalculator : MonoBehaviour
             bool receivedMedicine = stateManager.ReceivedMedicineToday(npcName);
             bool receivedHelp = receivedFood || receivedMedicine;
             
+            // 죽지 않았고 도움을 받은 NPC만 카운트
             if (!isDead && receivedHelp)
             {
-                totalSurvivors++;
                 NPCTypeHelper.NPCType type = NPCTypeHelper.GetNPCType(npcName);
+                Debug.Log($"NighttimeStatisticsCalculator: NPC {npcName} - Type: {type}, receivedHelp: {receivedHelp}");
                 if (blessedNPCs.ContainsKey(type))
                 {
                     blessedNPCs[type]++;
+                    Debug.Log($"NighttimeStatisticsCalculator: {type} 카운트 증가: {blessedNPCs[type]}");
+                }
+                else
+                {
+                    Debug.LogWarning($"NighttimeStatisticsCalculator: {type} 타입이 blessedNPCs에 없습니다.");
                 }
             }
         }
         
-        Debug.Log($"NighttimeStatisticsCalculator: 총 생존자 수: {totalSurvivors}");
+        Debug.Log($"NighttimeStatisticsCalculator: 총 인원 수: {totalNPCs}, 누적 사망자 수: {totalDead}, 총 생존자 수: {totalSurvivors}");
+        foreach (var kvp in blessedNPCs)
+        {
+            Debug.Log($"NighttimeStatisticsCalculator: {kvp.Key} - {kvp.Value}명 도움받음");
+        }
     }
-    
-    /// <summary>
-    /// 오늘 사망한 사람 수를 계산합니다.
-    /// </summary>
+
     void CalculateTodayDeathToll()
     {
         NPCStateManager stateManager = NPCStateManager.Instance;

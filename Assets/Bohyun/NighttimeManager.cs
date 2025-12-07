@@ -364,8 +364,9 @@ public class NighttimeManager : MonoBehaviour
         if (buyMedicineButton != null)
             buyMedicineButton.onClick.AddListener(OnBuyMedicineClicked);
         
-        if (dayStartButton != null)
-            dayStartButton.onClick.AddListener(OnDayStartClicked);
+        // NighttimeUIManager에서 처리하므로 버튼 리스너 제거
+        // if (dayStartButton != null)
+        //     dayStartButton.onClick.AddListener(OnDayStartClicked);
     }
     
     /// <summary>
@@ -444,23 +445,12 @@ public class NighttimeManager : MonoBehaviour
     
     /// <summary>
     /// Day Start 버튼 클릭 이벤트
+    /// (사용하지 않음 - NighttimeUIManager에서 처리)
     /// </summary>
     void OnDayStartClicked()
     {
-        // 다음 날로 넘어가기
-        if (DayManager.Instance != null)
-        {
-            DayManager.Instance.NextDay();
-        }
-        
-        // 메인 씬으로 전환
-        // if (!string.IsNullOrEmpty(mainSceneName))
-        // {
-        //     SceneManager.LoadScene(mainSceneName);
-        // }
-        // else
-        // {
-        //     Debug.LogWarning("NighttimeManager: 메인 씬 이름이 설정되지 않았습니다.");
-        // }
+        // NighttimeUIManager에서 처리하므로 여기서는 아무것도 하지 않음
+        // NextDay()는 NighttimeUIManager.StartNewDay()에서 호출됨
+        Debug.LogWarning("[NighttimeManager] OnDayStartClicked()는 더 이상 사용되지 않습니다. NighttimeUIManager를 사용하세요.");
     }
 }

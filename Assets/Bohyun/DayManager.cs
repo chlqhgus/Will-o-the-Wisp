@@ -43,18 +43,12 @@ public class DayManager : MonoBehaviour
         return currentDay;
     }
 
-        /// <summary>
-        /// 다음 날로 넘어갑니다.
-        /// </summary>
-        public void NextDay()
-        {
-            currentDay++;
-            Debug.Log($"Day {currentDay} 시작");
-        }
+    public void NextDay()
+    {
+        currentDay++;
+        Debug.Log($"Day {currentDay} 시작");
+    }
 
-    /// <summary>
-    /// 날짜를 리셋합니다.
-    /// </summary>
     public void ResetDay()
     {
         currentDay = 1;

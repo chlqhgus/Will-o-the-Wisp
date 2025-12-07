@@ -1799,6 +1799,37 @@ RectTransform:
   m_AnchoredPosition: {x: 722, y: -85.5}
   m_SizeDelta: {x: 557, y: 209}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &577158175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 577158176}
+  m_Layer: 0
+  m_Name: '------------------------ '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &577158176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577158175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14.49846, y: 2.01412, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &586784081
 GameObject:
   m_ObjectHideFlags: 0
@@ -2579,7 +2610,7 @@ GameObject:
   - component: {fileID: 713361605}
   - component: {fileID: 713361604}
   m_Layer: 5
-  m_Name: Canvas_Day
+  m_Name: Canvas(Day)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4971,34 +5002,16 @@ MonoBehaviour:
   - {fileID: 4037160813224588927, guid: 0357f916f80044b70ae2cbebb107caca, type: 3}
   - {fileID: 8914953879124222673, guid: de30fc3f446e845a887c9154f7293b7d, type: 3}
   - {fileID: 8914953879124222673, guid: 3ed8f1c0db29b439b8f0e856ea9dfbf0, type: 3}
-  - {fileID: 3331030340175329738, guid: 69125af467a044982a601549d1bbbda9, type: 3}
-  - {fileID: 3331030340175329738, guid: 63a986487d89d4695bbbe6066eed3769, type: 3}
   - {fileID: 217054088062350000, guid: 34bc78beaafb243429ba11d80963a8f0, type: 3}
   - {fileID: 217054088062350000, guid: eb0f21e83cc134ad18b54b42627d26f9, type: 3}
-  - {fileID: 1600793333435452931, guid: b13df325961ff4cd39073a541f226d5a, type: 3}
-  - {fileID: 1600793333435452931, guid: 7f864ba06378a4aa182603f13e398b7f, type: 3}
-  - {fileID: 1600793333435452931, guid: b2e1f8af97823491b8e5829e20ba9847, type: 3}
   - {fileID: 6643116713686459958, guid: bd7a713b3b5cc4d4fa0ab91136f962fb, type: 3}
   - {fileID: 6643116713686459958, guid: 2fe3136784d8a4e4cad778ebd14ee6fd, type: 3}
   - {fileID: 6643116713686459958, guid: 4788b2c78ec904e0b880e9183012af87, type: 3}
-  - {fileID: 6643116713686459958, guid: 8915eaa77ab494b4c846b8de952336e8, type: 3}
-  - {fileID: 6643116713686459958, guid: 4ce4cb618417643729b2481ec5578e5c, type: 3}
-  - {fileID: 6643116713686459958, guid: fbd9754d987284c0bad189132144d52a, type: 3}
-  - {fileID: 6643116713686459958, guid: 282275d3990104a7081de7f8b880d4d3, type: 3}
-  - {fileID: 6643116713686459958, guid: bbdfcbc35285d4259a2120ccdf6e512b, type: 3}
   - {fileID: 7716212944933369802, guid: 9ecdd10bae4cc49e1a33ff1ed9a87a28, type: 3}
   - {fileID: 7716212944933369802, guid: 76bfcad091aa246b087cf3c525403a80, type: 3}
   - {fileID: 7716212944933369802, guid: f0a077b768e1846c68acf24c4510df52, type: 3}
-  - {fileID: 7716212944933369802, guid: 0033507300c744c2cbeeb05a90330662, type: 3}
-  - {fileID: 7716212944933369802, guid: d29e53053f0c14920a8b5ed91ff7641e, type: 3}
-  - {fileID: 8063579809778003454, guid: 1d536c5b5c9654b38848c13745e817d6, type: 3}
-  - {fileID: 8063579809778003454, guid: 9e5af60d3d60b47278294a5154780001, type: 3}
-  - {fileID: 8063579809778003454, guid: e54be0d7d862c42099fa0a3b1cf39830, type: 3}
-  - {fileID: 8063579809778003454, guid: 8ecdaf45743bc4f0c8351434ce4c3b5d, type: 3}
-  - {fileID: 8063579809778003454, guid: 77c26e40d80584292906f3ae0552a7e1, type: 3}
   - {fileID: 1173175363873446436, guid: 9fc1b23d982634515a92fbe449536c01, type: 3}
-  - {fileID: 1173175363873446436, guid: 6ee0258c5176c4373a9542ed20c285a4, type: 3}
-  shamanEarlyPositionLimit: 10
+  shamanEarlyPositionLimit: 5
 --- !u!4 &1373411997
 Transform:
   m_ObjectHideFlags: 0
@@ -7704,6 +7717,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1409868341}
+  - {fileID: 577158176}
   - {fileID: 1353612478}
   - {fileID: 713361607}
   - {fileID: 1805387394}

@@ -5,9 +5,9 @@ using System.IO;
 using System.Collections.Generic;
 
 /// <summary>
-/// NPCData를 CSV 파일에서 자동으로 임포트하는 에디터 윈도우
+/// BohyunNPCData를 CSV 파일에서 자동으로 임포트하는 에디터 윈도우
 /// </summary>
-public class NPCDataCSVImporter : EditorWindow
+public class BohyunNPCDataCSVImporter : EditorWindow
 {
     private string csvFilePath = "Assets/Bohyun/HumanNPC_Script.csv";
     private string npcNameColumn = "npc-name";
@@ -16,7 +16,7 @@ public class NPCDataCSVImporter : EditorWindow
     [MenuItem("Tools/NPC Data CSV Importer")]
     public static void ShowWindow()
     {
-        GetWindow<NPCDataCSVImporter>("NPC Data CSV Importer");
+        GetWindow<BohyunNPCDataCSVImporter>("NPC Data CSV Importer");
     }
 
     void OnGUI()
@@ -33,9 +33,9 @@ public class NPCDataCSVImporter : EditorWindow
 
         EditorGUILayout.Space();
 
-        if (GUILayout.Button("CSV에서 모든 NPCData 업데이트", GUILayout.Height(30)))
+        if (GUILayout.Button("CSV에서 모든 BohyunNPCData 업데이트", GUILayout.Height(30)))
         {
-            ImportAllNPCData();
+            ImportAllBohyunNPCData();
         }
 
         EditorGUILayout.Space();
@@ -55,7 +55,7 @@ public class NPCDataCSVImporter : EditorWindow
                                 "\n재요청 대사(Please...)는 자동으로 추가됩니다.", MessageType.Info);
     }
 
-    void ImportAllNPCData()
+    void ImportAllBohyunNPCData()
     {
         var csvData = CSVReader.ReadCSV(csvFilePath);
         if (csvData == null || csvData.Count == 0)
@@ -64,7 +64,7 @@ public class NPCDataCSVImporter : EditorWindow
             return;
         }
 
-        Debug.Log($"NPCDataCSVImporter: CSV 파일에서 {csvData.Count}개의 행을 읽었습니다.");
+        Debug.Log($"BohyunNPCDataCSVImporter: CSV 파일에서 {csvData.Count}개의 행을 읽었습니다.");
 
         // CSV에서 모든 NPC 이름 수집
         HashSet<string> npcNames = new HashSet<string>();
@@ -76,16 +76,16 @@ public class NPCDataCSVImporter : EditorWindow
                 if (!string.IsNullOrEmpty(npcName))
                 {
                     npcNames.Add(npcName);
-                    Debug.Log($"NPCDataCSVImporter: NPC 이름 발견: '{npcName}'");
+                    Debug.Log($"BohyunNPCDataCSVImporter: NPC 이름 발견: '{npcName}'");
                 }
             }
             else
             {
-                Debug.LogWarning($"NPCDataCSVImporter: 행에서 '{npcNameColumn}' 컬럼을 찾을 수 없습니다. 사용 가능한 컬럼: {string.Join(", ", row.Keys)}");
+                Debug.LogWarning($"BohyunNPCDataCSVImporter: 행에서 '{npcNameColumn}' 컬럼을 찾을 수 없습니다. 사용 가능한 컬럼: {string.Join(", ", row.Keys)}");
             }
         }
 
-        Debug.Log($"NPCDataCSVImporter: 총 {npcNames.Count}개의 고유한 NPC 이름을 찾았습니다: {string.Join(", ", npcNames)}");
+        Debug.Log($"BohyunNPCDataCSVImporter: 총 {npcNames.Count}개의 고유한 NPC 이름을 찾았습니다: {string.Join(", ", npcNames)}");
 
         if (npcNames.Count == 0)
         {
@@ -143,13 +143,13 @@ public class NPCDataCSVImporter : EditorWindow
             }
             
             // CSV에서 데이터 로드
-            Debug.Log($"NPCDataCSVImporter: {npcName}의 데이터를 CSV에서 로드 중...");
+            Debug.Log($"BohyunNPCDataCSVImporter: {npcName}의 데이터를 CSV에서 로드 중...");
             npcData.LoadFromCSV(csvFilePath, npcNameColumn);
             
             // 로드된 대사 수 확인
             int foodRequestCount = npcData.foodRequestLines != null ? npcData.foodRequestLines.Length : 0;
             int medicineRequestCount = npcData.medicineRequestLines != null ? npcData.medicineRequestLines.Length : 0;
-            Debug.Log($"NPCDataCSVImporter: {npcName} 로드 완료 - 밥 요청: {foodRequestCount}개, 약 요청: {medicineRequestCount}개");
+            Debug.Log($"BohyunNPCDataCSVImporter: {npcName} 로드 완료 - 밥 요청: {foodRequestCount}개, 약 요청: {medicineRequestCount}개");
         }
 
         AssetDatabase.SaveAssets();
@@ -189,12 +189,12 @@ public class NPCDataCSVImporter : EditorWindow
         }
         
         EditorUtility.DisplayDialog("완료", 
-            $"{createdCount}개의 NPCData를 생성하고, {updatedCount}개의 NPCData를 업데이트했습니다.\n총 {npcNames.Count}개의 NPC 데이터가 처리되었습니다.\n{assignedCount}개의 NPC 프리팹에 데이터가 할당되었습니다.", 
+            $"{createdCount}개의 BohyunNPCData를 생성하고, {updatedCount}개의 BohyunNPCData를 업데이트했습니다.\n총 {npcNames.Count}개의 NPC 데이터가 처리되었습니다.\n{assignedCount}개의 NPC 프리팹에 데이터가 할당되었습니다.", 
             "확인");
     }
     
     /// <summary>
-    /// 생성된 NPCData를 같은 신분의 NPC 프리팹에 자동으로 할당합니다.
+    /// 생성된 BohyunNPCData를 같은 신분의 NPC 프리팹에 자동으로 할당합니다.
     /// </summary>
     int AssignDataToPrefabs(Dictionary<string, BohyunNPCData> npcDataDict)
     {
@@ -215,7 +215,7 @@ public class NPCDataCSVImporter : EditorWindow
             if (npcComponent == null)
             {
                 npcComponent = prefab.AddComponent<NPCComponent>();
-                Debug.Log($"NPCDataCSVImporter: {prefab.name} 프리팹에 NPCComponent를 추가했습니다.");
+                Debug.Log($"BohyunNPCDataCSVImporter: {prefab.name} 프리팹에 NPCComponent를 추가했습니다.");
             }
             
             // 프리팹 이름에서 신분 추출 (예: "King", "Yangban1", "Shaman" 등)
@@ -224,7 +224,7 @@ public class NPCDataCSVImporter : EditorWindow
             
             if (string.IsNullOrEmpty(npcStatus)) continue;
             
-            // 해당 신분의 NPCData 찾기
+            // 해당 신분의 BohyunNPCData 찾기
             if (npcDataDict.ContainsKey(npcStatus))
             {
                 npcComponent.bohyunData = npcDataDict[npcStatus];

@@ -1,0 +1,1352 @@
+fileFormatVersion: 2
+guid: a7885875bb4a6402ca34869a82d15a3b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3834244311199609112
+    second: refuse_whiteline_0
+  - first:
+      213: -7412411161843567237
+    second: refuse_whiteline_1
+  - first:
+      213: -3197752788006690655
+    second: refuse_whiteline_2
+  - first:
+      213: 6118442004692186223
+    second: refuse_whiteline_3
+  - first:
+      213: 7599103936925276788
+    second: refuse_whiteline_4
+  - first:
+      213: 3931922429566485178
+    second: refuse_whiteline_5
+  - first:
+      213: -3474687416301681829
+    second: refuse_whiteline_6
+  - first:
+      213: 8348038544517204660
+    second: refuse_whiteline_7
+  - first:
+      213: -5829103202094211185
+    second: refuse_whiteline_8
+  - first:
+      213: 365685706266455234
+    second: refuse_whiteline_9
+  - first:
+      213: 6794850242483091721
+    second: refuse_whiteline_10
+  - first:
+      213: 8017048612861170648
+    second: refuse_whiteline_11
+  - first:
+      213: 4559007829757062631
+    second: refuse_whiteline_12
+  - first:
+      213: -5941451290870207910
+    second: refuse_whiteline_13
+  - first:
+      213: 4878366046450455261
+    second: refuse_whiteline_14
+  - first:
+      213: -7689715920087905949
+    second: refuse_whiteline_15
+  - first:
+      213: -8369694100094500651
+    second: refuse_whiteline_16
+  - first:
+      213: -4869044843411754941
+    second: refuse_whiteline_17
+  - first:
+      213: -8497579100385012515
+    second: refuse_whiteline_18
+  - first:
+      213: -4221547290422817592
+    second: refuse_whiteline_19
+  - first:
+      213: -5586378899938017940
+    second: refuse_whiteline_20
+  - first:
+      213: -5935263587758828653
+    second: refuse_whiteline_21
+  - first:
+      213: 4715112265252242361
+    second: refuse_whiteline_22
+  - first:
+      213: 8457130542588063570
+    second: refuse_whiteline_23
+  - first:
+      213: -8533463446581624080
+    second: refuse_whiteline_24
+  - first:
+      213: -4506190039087623144
+    second: refuse_whiteline_25
+  - first:
+      213: -7747713502723940501
+    second: refuse_whiteline_26
+  - first:
+      213: -493718703927592564
+    second: refuse_whiteline_27
+  - first:
+      213: 4539200618024707004
+    second: refuse_whiteline_28
+  - first:
+      213: -8804728128677256984
+    second: refuse_whiteline_29
+  - first:
+      213: -3923546970976072653
+    second: refuse_whiteline_30
+  - first:
+      213: 7926543440149393456
+    second: refuse_whiteline_31
+  - first:
+      213: -2685787957743780037
+    second: refuse_whiteline_32
+  - first:
+      213: 7641490872801552370
+    second: refuse_whiteline_33
+  - first:
+      213: -7587485670041967160
+    second: refuse_whiteline_34
+  - first:
+      213: -5847260230219936804
+    second: refuse_whiteline_35
+  - first:
+      213: -1346524307899977766
+    second: refuse_whiteline_36
+  - first:
+      213: -6237184556474718044
+    second: refuse_whiteline_37
+  - first:
+      213: -824040870637060030
+    second: refuse_whiteline_38
+  - first:
+      213: -2285166017861800931
+    second: refuse_whiteline_39
+  - first:
+      213: -400941759836685201
+    second: refuse_whiteline_40
+  - first:
+      213: 1746550297529360676
+    second: refuse_whiteline_41
+  - first:
+      213: -5594028966294202703
+    second: refuse_whiteline_42
+  - first:
+      213: -6879049658385555785
+    second: refuse_whiteline_43
+  - first:
+      213: 8996297758628021417
+    second: refuse_whiteline_44
+  - first:
+      213: -8290313138858062464
+    second: refuse_whiteline_45
+  - first:
+      213: 6958969742228698098
+    second: refuse_whiteline_46
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: refuse_whiteline_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 1001
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8117d17e2e8f53530800000000000000
+      internalID: 3834244311199609112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_1
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 0
+        width: 804
+        height: 1024
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b757c292253d12990800000000000000
+      internalID: -7412411161843567237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_2
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 911
+        width: 71
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a0a85f18cc4f93d0800000000000000
+      internalID: -3197752788006690655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_3
+      rect:
+        serializedVersion: 2
+        x: 1002
+        y: 1011
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f64b18c169219e450800000000000000
+      internalID: 6118442004692186223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_4
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 974
+        width: 42
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47a14b3d4c0757960800000000000000
+      internalID: 7599103936925276788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_5
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 983
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab283b21e9ef09630800000000000000
+      internalID: 3931922429566485178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_6
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 967
+        width: 23
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5381dd543e67cfc0800000000000000
+      internalID: -3474687416301681829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_7
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 957
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ba873193d03ad370800000000000000
+      internalID: 8348038544517204660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_8
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 913
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8f1518858dda1fa0800000000000000
+      internalID: -5829103202094211185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_9
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 889
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cc237d563d231500800000000000000
+      internalID: 365685706266455234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_10
+      rect:
+        serializedVersion: 2
+        x: 923
+        y: 765
+        width: 24
+        height: 147
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9097e2d7b482c4e50800000000000000
+      internalID: 6794850242483091721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_11
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 879
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d3d0acbc37424f60800000000000000
+      internalID: 8017048612861170648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_12
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 871
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ede4ec6779d44f30800000000000000
+      internalID: 4559007829757062631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_13
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 858
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5a2565b789bb8da0800000000000000
+      internalID: -5941451290870207910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_14
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 847
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd29103921073b340800000000000000
+      internalID: 4878366046450455261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_15
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 823
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3698e7fcc14a84590800000000000000
+      internalID: -7689715920087905949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_16
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 783
+        width: 23
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d04f2d7f8fd8db80800000000000000
+      internalID: -8369694100094500651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_17
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 799
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 340bef0238dad6cb0800000000000000
+      internalID: -4869044843411754941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_18
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 769
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd494ce84d8821a80800000000000000
+      internalID: -8497579100385012515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_19
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 729
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ccc5d72b1d0a65c0800000000000000
+      internalID: -4221547290422817592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_20
+      rect:
+        serializedVersion: 2
+        x: 921
+        y: 677
+        width: 25
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6df4780df13972b0800000000000000
+      internalID: -5586378899938017940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_21
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 703
+        width: 23
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 393135b9635b1ada0800000000000000
+      internalID: -5935263587758828653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_22
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 705
+        width: 40
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b3827e9f917f6140800000000000000
+      internalID: 4715112265252242361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_23
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 669
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25f6112bb63cd5570800000000000000
+      internalID: 8457130542588063570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_24
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 373
+        width: 54
+        height: 303
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f2c8b2253c039980800000000000000
+      internalID: -8533463446581624080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_25
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 647
+        width: 23
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81457c5c80cc671c0800000000000000
+      internalID: -4506190039087623144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_26
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 645
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6f54a05e979a7490800000000000000
+      internalID: -7747713502723940501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_27
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 613
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c89fd616475f529f0800000000000000
+      internalID: -493718703927592564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_28
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 487
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb3a89199ea7efe30800000000000000
+      internalID: 4539200618024707004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_29
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 495
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e06d4a9a625fc580800000000000000
+      internalID: -8804728128677256984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_30
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 383
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33c496751d2cc89c0800000000000000
+      internalID: -3923546970976072653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_31
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 353
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 030bece134db00e60800000000000000
+      internalID: 7926543440149393456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_32
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 0
+        width: 54
+        height: 374
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3ff8a4151a2abad0800000000000000
+      internalID: -2685787957743780037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_33
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 297
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f7e9b366770c0a60800000000000000
+      internalID: 7641490872801552370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_34
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 289
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c528cabbf5d3b690800000000000000
+      internalID: -7587485670041967160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_35
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 303
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdbc87cfccb5adea0800000000000000
+      internalID: -5847260230219936804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_36
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 225
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adf6132b64f205de0800000000000000
+      internalID: -1346524307899977766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_37
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 177
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a8a5c021b11179a0800000000000000
+      internalID: -6237184556474718044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_38
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 161
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2404641b13b6094f0800000000000000
+      internalID: -824040870637060030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_39
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 75
+        width: 24
+        height: 119
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1cad843d957940e0800000000000000
+      internalID: -2285166017861800931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_40
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 137
+        width: 23
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6c705df7919f6af0800000000000000
+      internalID: -400941759836685201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_41
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 127
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4212792fd3efc3810800000000000000
+      internalID: 1746550297529360676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_42
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b6d9c82b440e52b0800000000000000
+      internalID: -5594028966294202703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_43
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 89
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7be18af48c4b880a0800000000000000
+      internalID: -6879049658385555785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_44
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 65
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a48aa4a52549dc70800000000000000
+      internalID: 8996297758628021417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_45
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 63
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08d8c99cf14e2fc80800000000000000
+      internalID: -8290313138858062464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: refuse_whiteline_46
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 9
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f3bb304c1a339060800000000000000
+      internalID: 6958969742228698098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      refuse_whiteline_0: 3834244311199609112
+      refuse_whiteline_1: -7412411161843567237
+      refuse_whiteline_10: 6794850242483091721
+      refuse_whiteline_11: 8017048612861170648
+      refuse_whiteline_12: 4559007829757062631
+      refuse_whiteline_13: -5941451290870207910
+      refuse_whiteline_14: 4878366046450455261
+      refuse_whiteline_15: -7689715920087905949
+      refuse_whiteline_16: -8369694100094500651
+      refuse_whiteline_17: -4869044843411754941
+      refuse_whiteline_18: -8497579100385012515
+      refuse_whiteline_19: -4221547290422817592
+      refuse_whiteline_2: -3197752788006690655
+      refuse_whiteline_20: -5586378899938017940
+      refuse_whiteline_21: -5935263587758828653
+      refuse_whiteline_22: 4715112265252242361
+      refuse_whiteline_23: 8457130542588063570
+      refuse_whiteline_24: -8533463446581624080
+      refuse_whiteline_25: -4506190039087623144
+      refuse_whiteline_26: -7747713502723940501
+      refuse_whiteline_27: -493718703927592564
+      refuse_whiteline_28: 4539200618024707004
+      refuse_whiteline_29: -8804728128677256984
+      refuse_whiteline_3: 6118442004692186223
+      refuse_whiteline_30: -3923546970976072653
+      refuse_whiteline_31: 7926543440149393456
+      refuse_whiteline_32: -2685787957743780037
+      refuse_whiteline_33: 7641490872801552370
+      refuse_whiteline_34: -7587485670041967160
+      refuse_whiteline_35: -5847260230219936804
+      refuse_whiteline_36: -1346524307899977766
+      refuse_whiteline_37: -6237184556474718044
+      refuse_whiteline_38: -824040870637060030
+      refuse_whiteline_39: -2285166017861800931
+      refuse_whiteline_4: 7599103936925276788
+      refuse_whiteline_40: -400941759836685201
+      refuse_whiteline_41: 1746550297529360676
+      refuse_whiteline_42: -5594028966294202703
+      refuse_whiteline_43: -6879049658385555785
+      refuse_whiteline_44: 8996297758628021417
+      refuse_whiteline_45: -8290313138858062464
+      refuse_whiteline_46: 6958969742228698098
+      refuse_whiteline_5: 3931922429566485178
+      refuse_whiteline_6: -3474687416301681829
+      refuse_whiteline_7: 8348038544517204660
+      refuse_whiteline_8: -5829103202094211185
+      refuse_whiteline_9: 365685706266455234
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

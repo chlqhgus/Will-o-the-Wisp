@@ -74,40 +74,27 @@ public class DayNPCStatusDisplay : MonoBehaviour
             UpdateDisplay();
         }
     }
-    
-    /// <summary>
-    /// UI 표시를 업데이트합니다.
-    /// </summary>
     void UpdateDisplay()
     {
-        // Day 표시
         UpdateDayText();
-        
-        // 남은 NPC 수 표시
         UpdateRemainingNPCText();
     }
     
-    /// <summary>
-    /// Day 텍스트를 업데이트합니다.
-    /// </summary>
+
     void UpdateDayText()
     {
         if (dayText == null) return;
         
-        // DayManager에서 현재 Day 가져오기
         int currentDay = 1;
         if (DayManager.Instance != null)
         {
             currentDay = DayManager.Instance.GetCurrentDay();
+             Debug.Log($"current day {currentDay}");
         }
         
-        // 텍스트 업데이트
         dayText.text = string.Format(dayFormat, currentDay);
     }
-    
-    /// <summary>
-    /// 남은 NPC 수 텍스트를 업데이트합니다 (아직 상호작용하지 않은 NPC 수).
-    /// </summary>
+ 
     void UpdateRemainingNPCText()
     {
         if (remainingNPCText == null || npcQueueSystem == null) return;
@@ -119,9 +106,6 @@ public class DayNPCStatusDisplay : MonoBehaviour
         remainingNPCText.text = string.Format(remainingNPCFormat, remainingCount);
     }
     
-    /// <summary>
-    /// 남은 NPC 수를 계산합니다 (아직 상호작용하지 않은 NPC 수).
-    /// </summary>
     int GetRemainingNPCCount()
     {
         if (npcQueueSystem == null) return 0;
@@ -134,13 +118,8 @@ public class DayNPCStatusDisplay : MonoBehaviour
             return 0;
         }
         
-        // 현재 스폰 인덱스 (이미 스폰된 NPC 수)
         int spawnedCount = npcQueueSystem.GetCurrentSpawnIndex();
-        
-        // 현재 큐에 있는 NPC 수 (아직 상호작용하지 않은 NPC)
         int activeCount = npcQueueSystem.GetActiveNPCCount();
-        
-        // 상호작용이 완료된 NPC 수 = 스폰된 수 - 현재 큐에 있는 수
         int completedCount = spawnedCount - activeCount;
         
         // 남은 NPC 수 = 전체 - 상호작용 완료된 수
