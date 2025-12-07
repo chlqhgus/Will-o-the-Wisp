@@ -10,8 +10,14 @@ using TMPro;
 public class NighttimeManager : MonoBehaviour
 {
     [Header("UI References - Main Info")]
+    [Tooltip("현재 날짜를 표시할 텍스트 (DAY 1, DAY 2 등)")]
+    public TextMeshProUGUI dayText;
+    
     [Tooltip("생존자 수를 표시할 텍스트 (Number of survivors)")]
     public TextMeshProUGUI survivorsCountText;
+    
+    [Tooltip("오늘 사망한 사람 수를 표시할 텍스트 (Today's death toll)")]
+    public TextMeshProUGUI deathTollText;
     
     [Tooltip("은혜를 입은 사람 메시지 텍스트")]
     public TextMeshProUGUI blessedMessageText;
@@ -52,8 +58,11 @@ public class NighttimeManager : MonoBehaviour
     [Tooltip("Medicine 구매 버튼")]
     public UnityEngine.UI.Button buyMedicineButton;
     
-    [Tooltip("Day2 Start 버튼")]
-    public UnityEngine.UI.Button day2StartButton;
+    [Tooltip("Day Start 버튼 (텍스트가 자동으로 업데이트됨)")]
+    public UnityEngine.UI.Button dayStartButton;
+    
+    [Tooltip("Day Start 버튼의 텍스트 컴포넌트 (자동으로 찾음)")]
+    public TextMeshProUGUI dayStartButtonText;
     
     [Header("References")]
     [Tooltip("Inventory 참조 (자동으로 찾음, DontDestroyOnLoad로 설정되어 있어야 함)")]
@@ -71,6 +80,7 @@ public class NighttimeManager : MonoBehaviour
     
     private Dictionary<NPCTypeHelper.NPCType, int> blessedNPCs = new Dictionary<NPCTypeHelper.NPCType, int>();
     private int totalSurvivors = 0;
+    private int todayDeathToll = 0; // 오늘 사망한 사람 수
     private int foodPurchased = 0;
     private int medicinePurchased = 0;
     private bool moneyAdded = false; // 돈이 이미 추가되었는지 확인
@@ -86,8 +96,25 @@ public class NighttimeManager : MonoBehaviour
             Debug.LogWarning("NighttimeManager: Inventory를 찾을 수 없습니다. Inventory가 DontDestroyOnLoad로 설정되어 있는지 확인하세요.");
         }
         
-        // 밥을 준 NPC 수 계산
+        // Day Start 버튼 텍스트 자동 찾기
+        if (dayStartButtonText == null && dayStartButton != null)
+        {
+            dayStartButtonText = dayStartButton.GetComponentInChildren<TextMeshProUGUI>();
+        }
+        
+        // 먼저 사망 처리 (약을 받지 못한 NPC, 이틀 연속 밥을 못 먹은 NPC)
+        if (NPCStateManager.Instance != null)
+        {
+            Debug.Log("[NighttimeManager] Start() - 사망 처리 시작");
+            NPCStateManager.Instance.OnNewDay(); // 사망 처리 및 상태 리셋
+            Debug.Log("[NighttimeManager] Start() - 사망 처리 완료");
+        }
+        
+        // 밥 또는 약을 준 NPC 수 계산 (도움을 준 사람) - 사망 처리 후 계산
         CalculateBlessedNPCs();
+        
+        // 오늘 사망한 사람 수 계산 - 사망 처리 후 계산
+        CalculateTodayDeathToll();
         
         // 돈 계산 및 추가 (한 번만)
         if (!moneyAdded)
@@ -104,7 +131,7 @@ public class NighttimeManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 밥을 준 NPC 수를 계산합니다. (밥을 준 사람만 일할 수 있고 돈을 줄 수 있음)
+    /// 밥 또는 약을 준 NPC 수를 계산합니다. (도움을 준 사람만 일할 수 있고 돈을 줄 수 있음)
     /// </summary>
     void CalculateBlessedNPCs()
     {
@@ -125,6 +152,8 @@ public class NighttimeManager : MonoBehaviour
         
         // NPCStateManager에서 오늘 등장한 모든 NPC 이름 목록 가져오기
         List<string> allNPCNames = stateManager.GetAllNPCNames();
+        Debug.Log($"NighttimeManager: GetAllNPCNames() 결과 - 총 {allNPCNames?.Count ?? 0}개의 NPC");
+        
         if (allNPCNames == null || allNPCNames.Count == 0)
         {
             Debug.LogWarning("NighttimeManager: 등장한 NPC 목록을 찾을 수 없습니다.");
@@ -138,17 +167,78 @@ public class NighttimeManager : MonoBehaviour
         {
             if (string.IsNullOrEmpty(npcName)) continue;
             
-            // 밥을 준 사람만 카운트 (죽지 않았고 밥을 받았어야 함)
-            if (!stateManager.IsDead(npcName) && stateManager.ReceivedFoodToday(npcName))
+            bool isDead = stateManager.IsDead(npcName);
+            bool receivedFood = stateManager.ReceivedFoodToday(npcName);
+            bool receivedMedicine = stateManager.ReceivedMedicineToday(npcName);
+            bool receivedHelp = receivedFood || receivedMedicine;
+            
+            Debug.Log($"NighttimeManager: NPC '{npcName}' - 죽음: {isDead}, 밥: {receivedFood}, 약: {receivedMedicine}, 도움받음: {receivedHelp}");
+            
+            // 죽지 않았고, 밥 또는 약을 받은 사람만 카운트 (도움을 준 사람)
+            if (!isDead && receivedHelp)
             {
                 totalSurvivors++;
                 NPCTypeHelper.NPCType type = NPCTypeHelper.GetNPCType(npcName);
+                Debug.Log($"NighttimeManager: 생존자 추가 - {npcName} (신분: {type}, 원본 이름: '{npcName}')");
                 if (blessedNPCs.ContainsKey(type))
                 {
                     blessedNPCs[type]++;
+                    Debug.Log($"NighttimeManager: {type} 카운트 증가 - 현재: {blessedNPCs[type]}");
+                }
+                else
+                {
+                    Debug.LogWarning($"NighttimeManager: {type}가 blessedNPCs에 없습니다.");
                 }
             }
+            else if (!isDead && !receivedHelp)
+            {
+                Debug.Log($"NighttimeManager: NPC '{npcName}' - 생존했지만 도움을 받지 않음 (카운트 안 됨)");
+            }
         }
+        
+        Debug.Log($"NighttimeManager: 총 생존자 수: {totalSurvivors}");
+    }
+    
+    /// <summary>
+    /// 오늘 사망한 사람 수를 계산합니다.
+    /// </summary>
+    void CalculateTodayDeathToll()
+    {
+        NPCStateManager stateManager = NPCStateManager.Instance;
+        if (stateManager == null)
+        {
+            Debug.LogWarning("NighttimeManager: NPCStateManager를 찾을 수 없습니다.");
+            todayDeathToll = 0;
+            return;
+        }
+        
+        // NPCStateManager에서 오늘 등장한 모든 NPC 이름 목록 가져오기
+        List<string> allNPCNames = stateManager.GetAllNPCNames();
+        Debug.Log($"NighttimeManager: CalculateTodayDeathToll() - 총 {allNPCNames?.Count ?? 0}개의 NPC");
+        
+        if (allNPCNames == null || allNPCNames.Count == 0)
+        {
+            Debug.LogWarning("NighttimeManager: CalculateTodayDeathToll() - 등장한 NPC 목록을 찾을 수 없습니다.");
+            todayDeathToll = 0;
+            return;
+        }
+        
+        todayDeathToll = 0;
+        
+        // 모든 NPC 확인
+        foreach (string npcName in allNPCNames)
+        {
+            if (string.IsNullOrEmpty(npcName)) continue;
+            
+            // 오늘 등장했지만 죽은 사람 카운트
+            if (stateManager.IsDead(npcName))
+            {
+                todayDeathToll++;
+                Debug.Log($"NighttimeManager: 사망자 추가 - {npcName}");
+            }
+        }
+        
+        Debug.Log($"NighttimeManager: 오늘 사망자 수: {todayDeathToll}");
     }
     
     /// <summary>
@@ -178,13 +268,37 @@ public class NighttimeManager : MonoBehaviour
     /// </summary>
     void UpdateUI()
     {
-        // 생존자 수 표시
-        if (survivorsCountText != null)
-            survivorsCountText.text = $"Number of survivors : {totalSurvivors}";
+
+        if (dayText != null && DayManager.Instance != null)
+        {
+            int currentDay = DayManager.Instance.GetCurrentDay();
+            dayText.text = $"DAY {currentDay}";
+        }
+        else if (dayText != null)
+        {
+            // DayManager가 없으면 기본값
+            dayText.text = "DAY 1";
+        }
         
-        // 은혜를 입은 사람 메시지
-        if (blessedMessageText != null)
-            blessedMessageText.text = "People who have been blessed by you want to help you.";
+        // 생존자 수 표시 (숫자만)
+        if (survivorsCountText != null)
+            survivorsCountText.text = totalSurvivors.ToString();
+        
+        // 오늘 사망한 사람 수 표시 (숫자만)
+        if (deathTollText != null)
+            deathTollText.text = todayDeathToll.ToString();
+        
+        // Day Start 버튼 텍스트 업데이트
+        if (dayStartButtonText != null && DayManager.Instance != null)
+        {
+            int nextDay = DayManager.Instance.GetCurrentDay() + 1;
+            dayStartButtonText.text = $"Day{nextDay} Start";
+        }
+        else if (dayStartButtonText != null)
+        {
+            // DayManager가 없으면 기본값
+            dayStartButtonText.text = "Day2 Start";
+        }
         
         // NPC 수 표시 (숫자만)
         if (kingCountText != null)
@@ -250,8 +364,9 @@ public class NighttimeManager : MonoBehaviour
         if (buyMedicineButton != null)
             buyMedicineButton.onClick.AddListener(OnBuyMedicineClicked);
         
-        if (day2StartButton != null)
-            day2StartButton.onClick.AddListener(OnDay2StartClicked);
+        // NighttimeUIManager에서 처리하므로 버튼 리스너 제거
+        // if (dayStartButton != null)
+        //     dayStartButton.onClick.AddListener(OnDayStartClicked);
     }
     
     /// <summary>
@@ -324,28 +439,18 @@ public class NighttimeManager : MonoBehaviour
         medicinePurchased++;
         inventory.AddHerb(1); // Medicine은 herbalMedicine으로 추가
         
+        // Inventory UI도 업데이트 (Inventory.Refresh()가 호출되지만, NighttimeManager UI도 업데이트)
         UpdateUI();
     }
     
     /// <summary>
-    /// Day2 Start 버튼 클릭 이벤트
+    /// Day Start 버튼 클릭 이벤트
+    /// (사용하지 않음 - NighttimeUIManager에서 처리)
     /// </summary>
-    void OnDay2StartClicked()
+    void OnDayStartClicked()
     {
-        // 다음 날로 넘어가기
-        if (DayManager.Instance != null)
-        {
-            DayManager.Instance.NextDay();
-        }
-        
-        // 메인 씬으로 전환
-        if (!string.IsNullOrEmpty(mainSceneName))
-        {
-            SceneManager.LoadScene(mainSceneName);
-        }
-        else
-        {
-            Debug.LogWarning("NighttimeManager: 메인 씬 이름이 설정되지 않았습니다.");
-        }
+        // NighttimeUIManager에서 처리하므로 여기서는 아무것도 하지 않음
+        // NextDay()는 NighttimeUIManager.StartNewDay()에서 호출됨
+        Debug.LogWarning("[NighttimeManager] OnDayStartClicked()는 더 이상 사용되지 않습니다. NighttimeUIManager를 사용하세요.");
     }
 }

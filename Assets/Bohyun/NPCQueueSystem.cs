@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 /// <summary>
@@ -13,11 +12,14 @@ using TMPro;
 public class NPCQueueSystem : MonoBehaviour
 {
     [Header("Spawn Settings")]
-    public Transform spawnPoint; // NPC가 처음 생성되는 위치
-    public Transform[] queueSlots; // 줄서는 위치들 (첫 번째가 가장 앞)
+    public Transform spawnPoint; 
+    public Transform[] queueSlots; 
+
     
-    [Header("Day Schedule")]
-    public DaySchedule daySchedule; // 하루별 NPC 순서
+    [Header("Random Queue Settings")]
+    [Tooltip("랜덤 큐를 사용할지 여부 (true면 NPCRandomQueueManager에서 자동으로 큐 생성)")]
+    public bool useRandomQueue = true; // 기본값: true (랜덤 큐 사용)
+    private List<GameObject> randomQueuePrefabs = new List<GameObject>();
     
     [Header("Speech Bubble UI")]
     [Tooltip("말풍선 배경 이미지 (씬에 있는 UI)")]
@@ -41,6 +43,10 @@ public class NPCQueueSystem : MonoBehaviour
     [Header("Inventory (선택사항)")]
     public Inventory inventory;
     
+    [Header("Nighttime UI Manager")]
+    [Tooltip("NighttimeUIManager 참조 (비어있으면 자동으로 찾음)")]
+    public NighttimeUIManager nighttimeUIManager;
+    
     private List<GameObject> activeNPCs = new List<GameObject>(); // 활성 NPC들 (순서대로)
     private Dictionary<GameObject, Vector3> npcTargetPositions = new Dictionary<GameObject, Vector3>();
     private Dictionary<GameObject, bool> npcArrivedAtPosition = new Dictionary<GameObject, bool>(); // NPC가 목표 위치에 도착했는지
@@ -58,6 +64,9 @@ public class NPCQueueSystem : MonoBehaviour
     private GameObject frontNPC = null;
     private NPCComponent frontNPCComponent = null;
     
+    // 현재 NPC의 요청 타입 (true = 약 요청, false = 밥 요청)
+    private bool currentNPCRequestedMedicine = false;
+    
     // 상호작용 처리 중인지 여부 (대사 표시 중에는 다음 상호작용 방지)
     private bool isProcessingInteraction = false;
     
@@ -69,6 +78,8 @@ public class NPCQueueSystem : MonoBehaviour
     public float arrivalDistance = 0.1f;
     [Tooltip("NPC 이동 속도")]
     public float npcMoveSpeed = 5f;
+    [Tooltip("NPC 스폰 간격 (초 단위, 작을수록 빠르게 스폰)")]
+    public float spawnInterval = 3f;
     
     [Header("Refusal Settings")]
     [Tooltip("거절당한 NPC가 재요청할 확률 (0.0 ~ 1.0, 예: 0.5 = 50%)")]
@@ -82,23 +93,71 @@ public class NPCQueueSystem : MonoBehaviour
 
     void Start()
     {
-        // NPCStateManager에 오늘 등장할 모든 NPC 이름 목록 설정
-        if (daySchedule != null && daySchedule.npcPrefabs != null && NPCStateManager.Instance != null)
+        // 랜덤 큐 사용 시 NPCRandomQueueManager에서 직접 큐 가져오기
+        if (useRandomQueue)
         {
-            List<string> npcNames = new List<string>();
-            foreach (GameObject prefab in daySchedule.npcPrefabs)
+            Debug.Log("NPCQueueSystem: useRandomQueue가 true입니다. NPCRandomQueueManager를 찾는 중...");
+            
+            if (NPCRandomQueueManager.Instance != null)
             {
-                if (prefab != null)
+                Debug.Log($"NPCQueueSystem: NPCRandomQueueManager.Instance를 찾았습니다. 큐 생성 중...");
+                randomQueuePrefabs = NPCRandomQueueManager.Instance.GenerateDayQueue();
+                
+                Debug.Log($"NPCQueueSystem: 큐 생성 완료. 생성된 NPC 수: {randomQueuePrefabs?.Count ?? 0}");
+                
+                if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0)
                 {
-                    NPCComponent npcComponent = prefab.GetComponent<NPCComponent>();
-                    if (npcComponent != null && npcComponent.bohyunData != null && !string.IsNullOrEmpty(npcComponent.bohyunData.npcName))
+                    Debug.Log($"NPCQueueSystem: NPCRandomQueueManager에서 랜덤 큐를 가져왔습니다. ({randomQueuePrefabs.Count}개의 NPC)");
+                    
+                    // NPCStateManager에 오늘 등장할 모든 NPC 이름 목록 설정 (고유 ID 사용)
+                    if (NPCStateManager.Instance != null)
                     {
-                        npcNames.Add(npcComponent.bohyunData.npcName);
+                        List<string> npcNames = new List<string>();
+                        int validNPCs = 0;
+                        int invalidNPCs = 0;
+                        
+                        foreach (GameObject prefab in randomQueuePrefabs)
+                        {
+                            if (prefab != null)
+                            {
+                                // 고유 ID 가져오기 (프리팹 이름 사용)
+                                string npcUniqueName = GetNPCName(prefab);
+                                if (!string.IsNullOrEmpty(npcUniqueName))
+                                {
+                                    npcNames.Add(npcUniqueName);
+                                    validNPCs++;
+                                    Debug.Log($"NPCQueueSystem: NPC 이름 추가 - {npcUniqueName}");
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"NPCQueueSystem: 프리팹 '{prefab.name}'의 고유 이름을 가져올 수 없습니다.");
+                                    invalidNPCs++;
+                                }
+                            }
+                        }
+                        
+                        Debug.Log($"NPCQueueSystem: 유효한 NPC: {validNPCs}개, 유효하지 않은 NPC: {invalidNPCs}개");
+                        Debug.Log($"NPCQueueSystem: NPC 이름 목록 설정 - 총 {npcNames.Count}개");
+                        NPCStateManager.Instance.SetAllNPCNames(npcNames);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("NPCQueueSystem: NPCStateManager.Instance를 찾을 수 없습니다.");
                     }
                 }
+                else
+                {
+                    Debug.LogError($"NPCQueueSystem: 랜덤 큐 생성에 실패했습니다. randomQueuePrefabs가 null이거나 비어있습니다. (Count: {randomQueuePrefabs?.Count ?? 0})");
+                    Debug.LogError("NPCQueueSystem: NPCRandomQueueManager의 NPC 프리팹 설정을 확인해주세요.");
+                }
             }
-            NPCStateManager.Instance.SetAllNPCNames(npcNames);
+            else
+            {
+                Debug.LogError("NPCQueueSystem: useRandomQueue가 true이지만 NPCRandomQueueManager를 찾을 수 없습니다.");
+                Debug.LogError("NPCQueueSystem: 씬에 NPCRandomQueueManager 컴포넌트가 있는 GameObject를 추가해주세요.");
+            }
         }
+        // DaySchedule은 더 이상 사용하지 않음 (랜덤 큐만 사용)
         
         // 말풍선 초기화
         // 타이핑 코루틴 중지
@@ -126,6 +185,24 @@ public class NPCQueueSystem : MonoBehaviour
             typingAudioSource.playOnAwake = false;
             typingAudioSource.loop = true;
             typingAudioSource.volume = typingSoundVolume;
+            typingAudioSource.clip = typingSound;
+            
+            Debug.Log($"NPCQueueSystem: 타이핑 소리 초기화 완료. Clip: {typingSound.name}, Volume: {typingSoundVolume}");
+        }
+        else
+        {
+            Debug.LogWarning("NPCQueueSystem: Typing Sound가 할당되지 않았습니다. Inspector에서 할당해주세요.");
+        }
+        
+        // AudioListener 확인
+        AudioListener listener = FindFirstObjectByType<AudioListener>();
+        if (listener == null)
+        {
+            Debug.LogError("NPCQueueSystem: 씬에 AudioListener가 없습니다! Main Camera에 AudioListener 컴포넌트를 추가해주세요.");
+        }
+        else
+        {
+            Debug.Log($"NPCQueueSystem: AudioListener 발견 - {listener.gameObject.name}");
         }
         
         // 초기화
@@ -133,10 +210,60 @@ public class NPCQueueSystem : MonoBehaviour
         currentSpawnIndex = 0;
         timer = 0f;
         
-        // daySchedule이 없으면 스폰 완료로 표시
-        if (daySchedule == null || daySchedule.npcPrefabs == null || daySchedule.npcPrefabs.Length == 0)
+        // NPC 프리팹이 없으면 스폰 완료로 표시
+        if (randomQueuePrefabs == null || randomQueuePrefabs.Count == 0)
         {
             isInitialSpawnComplete = true;
+        }
+    }
+    
+    public void StartNewDay()
+    {
+        Debug.Log("[NPCQueueSystem] StartNewDay() - 다음 날 시작");
+        
+        if (NPCStateManager.Instance != null)
+        {
+            NPCStateManager.Instance.OnNewDay();
+            Debug.Log("[NPCQueueSystem] StartNewDay() - 상태 리셋 완료");
+        }
+        
+        ClearAllNPCs();
+        
+        isInitialSpawnComplete = false;
+        currentSpawnIndex = 0;
+        timer = 0f;
+        isTransitioning = false;
+        isProcessingInteraction = false;
+        frontNPC = null;
+        frontNPCComponent = null;
+        isCurrentNPCShaman = false;
+        
+        if (NPCRandomQueueManager.Instance != null)
+        {
+            randomQueuePrefabs = NPCRandomQueueManager.Instance.GenerateDayQueue();
+            
+            if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0 && NPCStateManager.Instance != null)
+            {
+                List<string> npcNames = new List<string>();
+                foreach (GameObject prefab in randomQueuePrefabs)
+                {
+                    if (prefab != null)
+                    {
+                        // 고유 ID 가져오기 (프리팹 이름 사용)
+                        string npcUniqueName = GetNPCName(prefab);
+                        if (!string.IsNullOrEmpty(npcUniqueName))
+                        {
+                            npcNames.Add(npcUniqueName);
+                        }
+                    }
+                }
+                NPCStateManager.Instance.SetAllNPCNames(npcNames);
+                Debug.Log($"[NPCQueueSystem] StartNewDay() - 새로운 큐 생성 완료: {randomQueuePrefabs.Count}명, NPC 이름 목록 설정: {npcNames.Count}개");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[NPCQueueSystem] StartNewDay() - NPCRandomQueueManager를 찾을 수 없습니다.");
         }
     }
 
@@ -145,22 +272,26 @@ public class NPCQueueSystem : MonoBehaviour
         // 초기 스폰만 수행 (한 번만 실행)
         if (!isInitialSpawnComplete)
         {
-            // daySchedule에 등록된 NPC 수만큼만 스폰
-            if (daySchedule != null && daySchedule.npcPrefabs != null && daySchedule.npcPrefabs.Length > 0)
+            int maxSpawnCount = 0;
+            
+            // 랜덤 큐 사용
+            if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0)
             {
-                int maxSpawnCount = daySchedule.npcPrefabs.Length; // daySchedule에 등록된 NPC 수
+                maxSpawnCount = randomQueuePrefabs.Count;
+            }
+            
+            if (maxSpawnCount > 0)
+            {
                 int maxQueueSize = queueSlots != null ? queueSlots.Length : 0;
-                
-                // daySchedule의 NPC 수와 queueSlots 수 중 작은 값만큼만 스폰
                 int targetCount = Mathf.Min(maxSpawnCount, maxQueueSize);
-                
+                                
                 if (activeNPCs.Count < targetCount && currentSpawnIndex < maxSpawnCount)
                 {
                     timer += Time.deltaTime;
-                    float interval = daySchedule.spawnInterval > 0 ? daySchedule.spawnInterval : 1f;
                     
-                    if (timer >= interval)
+                    if (timer >= spawnInterval)
                     {
+                        Debug.Log($"[NPCQueueSystem] Update() - NPC 스폰 시도: currentSpawnIndex={currentSpawnIndex}");
                         SpawnNextNPC();
                         timer = 0;
                     }
@@ -168,11 +299,13 @@ public class NPCQueueSystem : MonoBehaviour
                 else if (currentSpawnIndex >= maxSpawnCount)
                 {
                     // 모든 NPC 스폰 완료
+                    Debug.Log($"[NPCQueueSystem] Update() - 모든 NPC 스폰 완료: currentSpawnIndex={currentSpawnIndex}, maxSpawnCount={maxSpawnCount}");
                     isInitialSpawnComplete = true;
                 }
             }
             else
             {
+                Debug.LogWarning($"[NPCQueueSystem] Update() - maxSpawnCount가 0입니다. randomQueuePrefabs가 null이거나 비어있습니다. (Count: {randomQueuePrefabs?.Count ?? 0})");
                 isInitialSpawnComplete = true;
             }
         }
@@ -197,28 +330,38 @@ public class NPCQueueSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// 다음 NPC를 스폰합니다. (daySchedule에 등록된 순서대로만 스폰, 순환 없음)
+    /// 다음 NPC를 스폰합니다. (랜덤 큐 순서대로 스폰)
     /// </summary>
     void SpawnNextNPC()
     {
-        if (daySchedule == null || daySchedule.npcPrefabs == null || daySchedule.npcPrefabs.Length == 0)
+        // 랜덤 큐 사용
+        if (randomQueuePrefabs == null || randomQueuePrefabs.Count == 0)
             return;
+        
+        List<GameObject> prefabList = randomQueuePrefabs;
+        int maxCount = randomQueuePrefabs.Count;
 
-        // daySchedule에 등록된 NPC 수를 초과하면 스폰하지 않음
-        if (currentSpawnIndex >= daySchedule.npcPrefabs.Length)
+        // NPC 수를 초과하면 스폰하지 않음
+        if (currentSpawnIndex >= maxCount)
             return;
 
         // 큐가 가득 찼으면 스폰하지 않음
         int maxQueueSize = queueSlots != null ? queueSlots.Length : 0;
         if (activeNPCs.Count >= maxQueueSize)
+        {
+            Debug.Log($"NPCQueueSystem: 큐가 가득 찼습니다. (현재: {activeNPCs.Count}/{maxQueueSize})");
             return;
+        }
 
-        GameObject prefabToSpawn = daySchedule.npcPrefabs[currentSpawnIndex];
+        GameObject prefabToSpawn = prefabList[currentSpawnIndex];
         if (prefabToSpawn == null)
         {
+            Debug.LogWarning($"NPCQueueSystem: SpawnNextNPC - 프리팹이 null입니다. (인덱스: {currentSpawnIndex})");
             currentSpawnIndex++;
             return;
         }
+        
+        Debug.Log($"NPCQueueSystem: SpawnNextNPC - '{prefabToSpawn.name}' 스폰 중... (인덱스: {currentSpawnIndex}/{maxCount}, 큐: {activeNPCs.Count}/{maxQueueSize})");
 
         // 죽은 NPC는 스폰하지 않고 다음으로 넘어감
         NPCComponent prefabComponent = prefabToSpawn.GetComponent<NPCComponent>();
@@ -230,7 +373,7 @@ public class NPCQueueSystem : MonoBehaviour
                 Debug.Log($"{npcName}은(는) 죽어서 스폰되지 않습니다.");
                 currentSpawnIndex++;
                 // 다음 NPC 시도 (죽은 NPC는 건너뛰고 다음으로)
-                if (currentSpawnIndex < daySchedule.npcPrefabs.Length)
+                if (currentSpawnIndex < maxCount)
                 {
                     SpawnNextNPC(); // 재귀 호출로 다음 NPC 시도
                 }
@@ -446,8 +589,14 @@ public class NPCQueueSystem : MonoBehaviour
         if (newFrontNPC != frontNPC)
         {
             // center NPC가 변경되었으면
+            Debug.Log($"[NPCQueueSystem] frontNPC 변경됨 - 이전: {(frontNPC != null ? frontNPC.name : "null")}, 새: {(newFrontNPC != null ? newFrontNPC.name : "null")}");
             frontNPC = newFrontNPC;
             frontNPCComponent = frontNPC != null ? frontNPC.GetComponent<NPCComponent>() : null;
+            
+            if (frontNPCComponent == null && frontNPC != null)
+            {
+                Debug.LogWarning($"[NPCQueueSystem] frontNPC '{frontNPC.name}'에 NPCComponent가 없습니다.");
+            }
             
             // 도착했을 때만 대사 표시
             if (hasArrived && frontNPC != null && frontNPCComponent != null && frontNPCComponent.bohyunData != null)
@@ -455,10 +604,15 @@ public class NPCQueueSystem : MonoBehaviour
                 // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
                 isCurrentNPCShaman = IsShamanNPC(frontNPCComponent.bohyunData);
                 
+                Debug.Log($"[NPCQueueSystem] 새 frontNPC 도착 및 대사 표시 - {frontNPC.name}, 신분: {frontNPCComponent.bohyunData.npcName}");
                 ShowDialogue(frontNPCComponent.bohyunData);
             }
             else
             {
+                if (!hasArrived)
+                {
+                    Debug.Log($"[NPCQueueSystem] 새 frontNPC 아직 도착하지 않음 - {frontNPC?.name}");
+                }
                 HideSpeechBubble();
             }
         }
@@ -483,47 +637,53 @@ public class NPCQueueSystem : MonoBehaviour
     /// <summary>
     /// 대사를 표시합니다.
     /// </summary>
-    void ShowDialogue(BohyunNPCData npcData)
+    void ShowDialogue(BohyunNPCData bohyunData)
     {
-        if (npcData == null) return;
+        if (bohyunData == null) return;
 
         string dialogue = "";
         int refusalCount = 0;
         
-        // 거절 횟수 확인
-        if (NPCStateManager.Instance != null)
+        // 거절 횟수 확인 (고유 NPC 이름 사용 - 프리팹 이름 기반)
+        if (NPCStateManager.Instance != null && frontNPC != null)
         {
-            refusalCount = NPCStateManager.Instance.GetRefusalCount(npcData.npcName);
+            string uniqueNPCName = GetNPCName(frontNPC);
+            refusalCount = NPCStateManager.Instance.GetRefusalCount(uniqueNPCName);
         }
         
+        // 확률에 따라 요청 타입 결정
+        bool requestedMedicine = DetermineNPCRequestType(bohyunData);
+        currentNPCRequestedMedicine = requestedMedicine;
+        
         // 요청 타입에 따라 대사 선택
-        if (npcData.requestType == BohyunNPCRequestType.Medicine)
+        if (requestedMedicine)
         {
             // 한 번 거절 후 재요청 대사가 있으면 재요청 대사 표시
-            if (refusalCount > 0 && npcData.medicineReRequestLines != null && npcData.medicineReRequestLines.Length > 0)
+            if (refusalCount > 0 && bohyunData.medicineReRequestLines != null && bohyunData.medicineReRequestLines.Length > 0)
             {
-                dialogue = npcData.medicineReRequestLines[Random.Range(0, npcData.medicineReRequestLines.Length)];
+                dialogue = bohyunData.medicineReRequestLines[Random.Range(0, bohyunData.medicineReRequestLines.Length)];
             }
-            else if (npcData.medicineRequestLines != null && npcData.medicineRequestLines.Length > 0)
+            else if (bohyunData.medicineRequestLines != null && bohyunData.medicineRequestLines.Length > 0)
             {
-                dialogue = npcData.medicineRequestLines[Random.Range(0, npcData.medicineRequestLines.Length)];
+                dialogue = bohyunData.medicineRequestLines[Random.Range(0, bohyunData.medicineRequestLines.Length)];
             }
-            // NPC 상태 매니저에 약 요청 기록
-            if (NPCStateManager.Instance != null)
+            // NPC 상태 매니저에 약 요청 기록 (고유 NPC 이름 사용)
+            if (NPCStateManager.Instance != null && frontNPC != null)
             {
-                NPCStateManager.Instance.RecordMedicineRequest(npcData.npcName);
+                string uniqueNPCName = GetNPCName(frontNPC);
+                NPCStateManager.Instance.RecordMedicineRequest(uniqueNPCName);
             }
         }
-        else if (npcData.requestType == BohyunNPCRequestType.Food)
+        else
         {
             // 한 번 거절 후 재요청 대사가 있으면 재요청 대사 표시
-            if (refusalCount > 0 && npcData.foodReRequestLines != null && npcData.foodReRequestLines.Length > 0)
+            if (refusalCount > 0 && bohyunData.foodReRequestLines != null && bohyunData.foodReRequestLines.Length > 0)
             {
-                dialogue = npcData.foodReRequestLines[Random.Range(0, npcData.foodReRequestLines.Length)];
+                dialogue = bohyunData.foodReRequestLines[Random.Range(0, bohyunData.foodReRequestLines.Length)];
             }
-            else if (npcData.foodRequestLines != null && npcData.foodRequestLines.Length > 0)
+            else if (bohyunData.foodRequestLines != null && bohyunData.foodRequestLines.Length > 0)
             {
-                dialogue = npcData.foodRequestLines[Random.Range(0, npcData.foodRequestLines.Length)];
+                dialogue = bohyunData.foodRequestLines[Random.Range(0, bohyunData.foodRequestLines.Length)];
             }
         }
 
@@ -535,6 +695,23 @@ public class NPCQueueSystem : MonoBehaviour
 
         // 말풍선 표시 (타이핑 효과 포함)
         ShowDialogueText(dialogue);
+    }
+    
+    /// <summary>
+    /// 확률에 따라 NPC의 요청 타입을 결정합니다 (true = 약 요청, false = 밥 요청).
+    /// </summary>
+    bool DetermineNPCRequestType(BohyunNPCData bohyunData)
+    {
+        if (bohyunData == null) return false;
+        
+        float randomValue = Random.value;
+        float totalProbability = bohyunData.foodRequestProbability + bohyunData.medicineRequestProbability;
+        
+        if (totalProbability <= 0f) return false; // 기본값: 밥 요청
+        
+        // 정규화된 확률로 결정
+        float normalizedMedicineProb = bohyunData.medicineRequestProbability / totalProbability;
+        return randomValue < normalizedMedicineProb;
     }
 
     /// <summary>
@@ -640,93 +817,149 @@ public class NPCQueueSystem : MonoBehaviour
     
     public void RefuseFrontNPC()
     {
-        if (activeNPCs.Count == 0 || frontNPC == null || isProcessingInteraction) return;
+        Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
+        
+        if (activeNPCs.Count == 0)
+        {
+            Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: activeNPCs가 비어있습니다.");
+            return;
+        }
+        
+        if (frontNPC == null)
+        {
+            Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: frontNPC가 null입니다.");
+            return;
+        }
+        
+        // NPC가 목표 위치에 도착했는지 확인
+        bool hasArrived = false;
+        if (npcArrivedAtPosition.ContainsKey(frontNPC))
+        {
+            hasArrived = npcArrivedAtPosition[frontNPC];
+        }
+        
+        if (!hasArrived)
+        {
+            Debug.LogWarning($"[NPCQueueSystem] RefuseFrontNPC() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
+            return;
+        }
+        
+        if (isProcessingInteraction)
+        {
+            Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: 이미 상호작용 처리 중입니다.");
+            return;
+        }
         
         // 상호작용 시작
         isProcessingInteraction = true;
+        Debug.Log("[NPCQueueSystem] RefuseFrontNPC() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
-        string npcName = GetNPCName(frontNPC);
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        string npcName = GetNPCName(frontNPC); // 고유 NPC 이름
         bool requestedMedicine = false;
         
-        // 거절 횟수 확인
+        // 거절 횟수 확인 (고유 NPC 이름 사용) - RecordRefusal 호출 전에 확인해야 함
         int refusalCount = 0;
         if (NPCStateManager.Instance != null)
         {
             refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
         }
         
-        if (npcData != null)
+        Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() - 현재 refusalCount: {refusalCount}");
+        
+        if (bohyunData != null)
         {
-            requestedMedicine = npcData.requestType == BohyunNPCRequestType.Medicine;
+            requestedMedicine = currentNPCRequestedMedicine;
             
             // 재요청 가능 여부 확인 (re-accept나 re-reject 대사가 있으면 재요청 가능)
             bool hasReRequest = false;
             if (requestedMedicine)
             {
-                hasReRequest = (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0) ||
-                               (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0);
+                hasReRequest = (bohyunData.medicineReAcceptLines != null && bohyunData.medicineReAcceptLines.Length > 0) ||
+                               (bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0);
             }
             else
             {
-                hasReRequest = (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0) ||
-                               (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0);
-            }
-            
-            // 상태 기록
-            if (NPCStateManager.Instance != null)
-            {
-                NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
+                hasReRequest = (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0) ||
+                               (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0);
             }
             
             // 재요청 가능하고 첫 거절이면, 랜덤으로 재요청 여부 결정
+            // (약 요청 거절도 재요청 가능, 밤에 사망 처리됨)
             if (hasReRequest && refusalCount == 0)
             {
                 // 랜덤으로 재요청할지 결정
                 if (Random.value <= reRequestChance)
                 {
+                    // 상태 기록 (재요청하기 전에 기록)
+                    if (NPCStateManager.Instance != null)
+                    {
+                        NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
+                    }
+                    
                     // 재요청하는 경우: 거절 대사 건너뛰고 바로 재요청 대사만 표시
+                    // isProcessingInteraction은 ProcessRefusalAndReRequest에서 유지됨 (재요청 대사 표시 후에도 유지)
                     StartCoroutine(ProcessRefusalAndReRequest(frontNPC, skipRejectDialogue: true));
+                    return; // 재요청 코루틴이 플래그를 관리하므로 여기서 리턴
                 }
                 else
                 {
-                    // 재요청하지 않는 경우: 거절 대사 표시 후 지나감
+                    // 재요청하지 않는 경우: 상태 기록 후 거절 대사 표시 후 지나감
+                    if (NPCStateManager.Instance != null)
+                    {
+                        NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
+                    }
+                    
                     string rejectDialogue = "";
                     if (requestedMedicine)
                     {
-                        if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                        if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                            rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                         }
                     }
                     else
                     {
-                        if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                        if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                            rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                         }
                     }
                     
                     if (!string.IsNullOrEmpty(rejectDialogue))
                     {
                         ShowDialogueText(rejectDialogue);
+                        // 타이핑 완료와 대사 표시 시간을 기다린 후 제거 시작
+                        StartCoroutine(WaitForDialogueAndRemove(frontNPC));
                     }
-                    
-                    StartCoroutine(ProcessInteractionAndRemove(frontNPC));
+                    else
+                    {
+                        // 대사가 없으면 바로 제거
+                        Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() ProcessInteractionAndRemove 시작 (재요청 없음, 대사 없음) - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
+                        StartCoroutine(ProcessInteractionAndRemove(frontNPC));
+                    }
+                    return;
                 }
             }
             else
             {
-                // 두 번째 거절이거나 재요청 불가능: 거절 대사 표시 후 제거
+                // 두 번째 거절이거나 재요청 불가능: 상태 기록 후 거절 대사 표시 후 제거
+                if (NPCStateManager.Instance != null)
+                {
+                    NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
+                    // RecordRefusal 호출 후 refusalCount가 증가했으므로 다시 확인
+                    refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
+                }
+                
                 string rejectDialogue = "";
                 if (requestedMedicine)
                 {
-                    // 두 번 거절당했을 때
+                    // 두 번 거절당했을 때 (RecordRefusal 호출 후이므로 refusalCount >= 1)
                     if (refusalCount >= 1)
                     {
-                        if (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
+                        if (bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
+                            rejectDialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
                         }
                         else
                         {
@@ -735,9 +968,9 @@ public class NPCQueueSystem : MonoBehaviour
                         }
                     }
                     // 첫 거절
-                    else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                    else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                     {
-                        rejectDialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                        rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                     }
                 }
                 else
@@ -745,9 +978,9 @@ public class NPCQueueSystem : MonoBehaviour
                     // 두 번 거절당했을 때
                     if (refusalCount >= 1)
                     {
-                        if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                        if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
                         {
-                            rejectDialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                            rejectDialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
                         }
                         else
                         {
@@ -756,46 +989,86 @@ public class NPCQueueSystem : MonoBehaviour
                         }
                     }
                     // 첫 거절
-                    else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                    else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                     {
-                        rejectDialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                        rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                     }
                 }
                 
                 if (!string.IsNullOrEmpty(rejectDialogue))
                 {
                     ShowDialogueText(rejectDialogue);
+                    // 타이핑 완료와 대사 표시 시간을 기다린 후 제거 시작
+                    StartCoroutine(WaitForDialogueAndRemove(frontNPC));
                 }
-                
-                StartCoroutine(ProcessInteractionAndRemove(frontNPC));
+                else
+                {
+                    // 대사가 없으면 바로 제거
+                    Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() ProcessInteractionAndRemove 시작 (재요청 없음, 대사 없음) - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
+                    StartCoroutine(ProcessInteractionAndRemove(frontNPC));
+                }
             }
         }
         else
         {
             // NPC 데이터가 없으면 그냥 제거
+            Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() ProcessInteractionAndRemove 시작 (NPC 데이터 없음) - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
             StartCoroutine(ProcessInteractionAndRemove(frontNPC));
         }
     }
 
     public void GiveLotusRice()
     {
-        if (activeNPCs.Count == 0 || frontNPC == null || isProcessingInteraction) return;
+        Debug.Log($"[NPCQueueSystem] GiveLotusRice() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
+        
+        if (activeNPCs.Count == 0)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: activeNPCs가 비어있습니다.");
+            return;
+        }
+        
+        if (frontNPC == null)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: frontNPC가 null입니다.");
+            return;
+        }
+        
+        // NPC가 목표 위치에 도착했는지 확인
+        bool hasArrived = false;
+        if (npcArrivedAtPosition.ContainsKey(frontNPC))
+        {
+            hasArrived = npcArrivedAtPosition[frontNPC];
+        }
+        
+        if (!hasArrived)
+        {
+            Debug.LogWarning($"[NPCQueueSystem] GiveLotusRice() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
+            return;
+        }
+        
+        if (isProcessingInteraction)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: 이미 상호작용 처리 중입니다.");
+            return;
+        }
         
         // Inventory 확인
         if (inventory != null && inventory.lotusRice <= 0)
         {
+            Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: 연밥이 부족합니다.");
             ShowDialogueText("연밥이 부족합니다.");
             return;
         }
         
         // 상호작용 시작
         isProcessingInteraction = true;
+        Debug.Log("[NPCQueueSystem] GiveLotusRice() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
         
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
-        isCurrentNPCShaman = IsShamanNPC(npcData);
+        isCurrentNPCShaman = IsShamanNPC(bohyunData);
         
         // 거절 횟수 확인
         int refusalCount = 0;
@@ -807,10 +1080,10 @@ public class NPCQueueSystem : MonoBehaviour
         string dialogue = "";
         bool isAccept = false;
         
-        if (npcData != null)
+        if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
-            if (npcData.requestType == BohyunNPCRequestType.Food)
+            if (!currentNPCRequestedMedicine) // 밥 요청
             {
                 // 밥을 요청했고 밥을 줌 = Accept
                 isAccept = true;
@@ -825,9 +1098,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
-                    if (npcData.foodReAcceptLines != null && npcData.foodReAcceptLines.Length > 0)
+                    if (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0)
                     {
-                        dialogue = npcData.foodReAcceptLines[Random.Range(0, npcData.foodReAcceptLines.Length)];
+                        dialogue = bohyunData.foodReAcceptLines[Random.Range(0, bohyunData.foodReAcceptLines.Length)];
                     }
                     else
                     {
@@ -835,36 +1108,30 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "Thank you... Thank you...";
                     }
                 }
-                else if (npcData.foodAcceptLines != null && npcData.foodAcceptLines.Length > 0)
+                else if (bohyunData.foodAcceptLines != null && bohyunData.foodAcceptLines.Length > 0)
                 {
-                    dialogue = npcData.foodAcceptLines[Random.Range(0, npcData.foodAcceptLines.Length)];
+                    dialogue = bohyunData.foodAcceptLines[Random.Range(0, bohyunData.foodAcceptLines.Length)];
                 }
             }
-            else if (npcData.requestType == BohyunNPCRequestType.Medicine)
+            else // 약 요청
             {
-                // 약을 요청했는데 밥을 줌 = 거절로 간주
+                // 약을 요청했는데 밥을 줌 = 거절로 간주 (밤에 사망 처리됨)
                 isAccept = false;
                 if (NPCStateManager.Instance != null)
                 {
                     NPCStateManager.Instance.RecordRefusal(npcName, true);
                 }
                 
-                // 두 번 거절당했을 때
-                if (refusalCount >= 1)
+                // 거절 대사 표시
+                if (refusalCount >= 1 && bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
                 {
-                    if (npcData.medicineReRejectLines != null && npcData.medicineReRejectLines.Length > 0)
-                    {
-                        dialogue = npcData.medicineReRejectLines[Random.Range(0, npcData.medicineReRejectLines.Length)];
-                    }
-                    else
-                    {
-                        // re-reject 대사가 없으면 기본 메시지
-                        dialogue = "I'm gonna die tomorrow...";
-                    }
+                    // 두 번 거절당했을 때
+                    dialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
                 }
-                else if (npcData.medicineRejectLines != null && npcData.medicineRejectLines.Length > 0)
+                else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                 {
-                    dialogue = npcData.medicineRejectLines[Random.Range(0, npcData.medicineRejectLines.Length)];
+                    // 첫 거절
+                    dialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                 }
             }
         }
@@ -880,38 +1147,76 @@ public class NPCQueueSystem : MonoBehaviour
             ShowDialogueText("Thank you!");
         }
 
-        // Inventory 소모
-        if (inventory != null)
+        // Inventory 소모 (실제로 NPC에게 줄 때만, isAccept이 true일 때만)
+        if (isAccept && inventory != null)
         {
             inventory.UseLotusRice();
+            Debug.Log("[NPCQueueSystem] GiveLotusRice() - 연밥 소모됨");
         }
 
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
-
+        
+        // 무당 플래그 리셋 (다음 NPC를 위해)
+        isCurrentNPCShaman = false;
+        
         // 대사 표시 후 페이드아웃 및 제거
+        Debug.Log($"[NPCQueueSystem] GiveLotusRice() ProcessInteractionAndRemove 시작 - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
 
     public void GiveHerbalMedicine()
     {
-        if (activeNPCs.Count == 0 || frontNPC == null || isProcessingInteraction) return;
+        Debug.Log($"[NPCQueueSystem] GiveHerbalMedicine() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
+        
+        if (activeNPCs.Count == 0)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: activeNPCs가 비어있습니다.");
+            return;
+        }
+        
+        if (frontNPC == null)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: frontNPC가 null입니다.");
+            return;
+        }
+        
+        // NPC가 목표 위치에 도착했는지 확인
+        bool hasArrived = false;
+        if (npcArrivedAtPosition.ContainsKey(frontNPC))
+        {
+            hasArrived = npcArrivedAtPosition[frontNPC];
+        }
+        
+        if (!hasArrived)
+        {
+            Debug.LogWarning($"[NPCQueueSystem] GiveHerbalMedicine() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
+            return;
+        }
+        
+        if (isProcessingInteraction)
+        {
+            Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: 이미 상호작용 처리 중입니다.");
+            return;
+        }
         
         // Inventory 확인
         if (inventory != null && inventory.herbalMedicine <= 0)
         {
+            Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: 약초가 부족합니다.");
             ShowDialogueText("약초가 부족합니다.");
             return;
         }
         
         // 상호작용 시작
         isProcessingInteraction = true;
+        Debug.Log("[NPCQueueSystem] GiveHerbalMedicine() 상호작용 시작");
 
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
         
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
-        isCurrentNPCShaman = IsShamanNPC(npcData);
+        isCurrentNPCShaman = IsShamanNPC(bohyunData);
         
         // 거절 횟수 확인
         int refusalCount = 0;
@@ -923,10 +1228,10 @@ public class NPCQueueSystem : MonoBehaviour
         string dialogue = "";
         bool isAccept = false;
         
-        if (npcData != null)
+        if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
-            if (npcData.requestType == BohyunNPCRequestType.Medicine)
+            if (currentNPCRequestedMedicine) // 약 요청
             {
                 // 약을 요청했고 약을 줌 = Accept
                 isAccept = true;
@@ -939,9 +1244,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
-                    if (npcData.medicineReAcceptLines != null && npcData.medicineReAcceptLines.Length > 0)
+                    if (bohyunData.medicineReAcceptLines != null && bohyunData.medicineReAcceptLines.Length > 0)
                     {
-                        dialogue = npcData.medicineReAcceptLines[Random.Range(0, npcData.medicineReAcceptLines.Length)];
+                        dialogue = bohyunData.medicineReAcceptLines[Random.Range(0, bohyunData.medicineReAcceptLines.Length)];
                     }
                     else
                     {
@@ -949,12 +1254,12 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "Thank you... Thank you...";
                     }
                 }
-                else if (npcData.medicineAcceptLines != null && npcData.medicineAcceptLines.Length > 0)
+                else if (bohyunData.medicineAcceptLines != null && bohyunData.medicineAcceptLines.Length > 0)
                 {
-                    dialogue = npcData.medicineAcceptLines[Random.Range(0, npcData.medicineAcceptLines.Length)];
+                    dialogue = bohyunData.medicineAcceptLines[Random.Range(0, bohyunData.medicineAcceptLines.Length)];
                 }
             }
-            else if (npcData.requestType == BohyunNPCRequestType.Food)
+            else // 밥 요청
             {
                 // 밥을 요청했는데 약을 줌 = 거절로 간주
                 isAccept = false;
@@ -966,9 +1271,9 @@ public class NPCQueueSystem : MonoBehaviour
                 // 두 번 거절당했을 때
                 if (refusalCount >= 1)
                 {
-                    if (npcData.foodReRejectLines != null && npcData.foodReRejectLines.Length > 0)
+                    if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
                     {
-                        dialogue = npcData.foodReRejectLines[Random.Range(0, npcData.foodReRejectLines.Length)];
+                        dialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
                     }
                     else
                     {
@@ -976,9 +1281,9 @@ public class NPCQueueSystem : MonoBehaviour
                         dialogue = "I'm gonna die tomorrow...";
                     }
                 }
-                else if (npcData.foodRejectLines != null && npcData.foodRejectLines.Length > 0)
+                else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                 {
-                    dialogue = npcData.foodRejectLines[Random.Range(0, npcData.foodRejectLines.Length)];
+                    dialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                 }
             }
         }
@@ -994,16 +1299,21 @@ public class NPCQueueSystem : MonoBehaviour
             ShowDialogueText("Thank you!");
         }
 
-        // Inventory 소모
-        if (inventory != null)
+        // Inventory 소모 (실제로 NPC에게 줄 때만, isAccept이 true일 때만)
+        if (isAccept && inventory != null)
         {
             inventory.UseHerbalMedicine();
+            Debug.Log("[NPCQueueSystem] GiveHerbalMedicine() - 약초 소모됨");
         }
 
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
-
+        
+        // 무당 플래그 리셋 (다음 NPC를 위해)
+        isCurrentNPCShaman = false;
+        
         // 대사 표시 후 페이드아웃 및 제거
+        Debug.Log($"[NPCQueueSystem] GiveHerbalMedicine() ProcessInteractionAndRemove 시작 - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
 
@@ -1016,6 +1326,8 @@ public class NPCQueueSystem : MonoBehaviour
     /// </summary>
     System.Collections.IEnumerator ProcessRefusalAndReRequest(GameObject npc, bool skipRejectDialogue = false)
     {
+        Debug.Log($"[NPCQueueSystem] ProcessRefusalAndReRequest() 시작 - NPC: {(npc != null ? npc.name : "null")}, skipRejectDialogue: {skipRejectDialogue}");
+        
         // 거절 대사를 건너뛰지 않는 경우에만 대기
         if (!skipRejectDialogue)
         {
@@ -1023,37 +1335,85 @@ public class NPCQueueSystem : MonoBehaviour
             yield return new WaitForSeconds(dialogueDisplayDuration);
         }
         
-        // 재요청 대사 표시
-        BohyunNPCData npcData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
-        if (npcData != null)
+        // 재요청 대사 표시 (이미 RefuseFrontNPC()에서 재요청 확률로 결정되었으므로 무조건 재요청 대사 표시)
+        BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
+        if (bohyunData != null)
         {
             string reRequestDialogue = "";
-            if (npcData.requestType == BohyunNPCRequestType.Medicine)
+            if (currentNPCRequestedMedicine) // 약 요청
             {
-                if (npcData.medicineReRequestLines != null && npcData.medicineReRequestLines.Length > 0)
+                if (bohyunData.medicineReRequestLines != null && bohyunData.medicineReRequestLines.Length > 0)
                 {
-                    reRequestDialogue = npcData.medicineReRequestLines[Random.Range(0, npcData.medicineReRequestLines.Length)];
+                    reRequestDialogue = bohyunData.medicineReRequestLines[Random.Range(0, bohyunData.medicineReRequestLines.Length)];
                 }
             }
-            else if (npcData.requestType == BohyunNPCRequestType.Food)
+            else 
             {
-                if (npcData.foodReRequestLines != null && npcData.foodReRequestLines.Length > 0)
+                if (bohyunData.foodReRequestLines != null && bohyunData.foodReRequestLines.Length > 0)
                 {
-                    reRequestDialogue = npcData.foodReRequestLines[Random.Range(0, npcData.foodReRequestLines.Length)];
+                    reRequestDialogue = bohyunData.foodReRequestLines[Random.Range(0, bohyunData.foodReRequestLines.Length)];
                 }
             }
             
             if (!string.IsNullOrEmpty(reRequestDialogue))
             {
                 ShowDialogueText(reRequestDialogue);
+                Debug.Log($"[NPCQueueSystem] ProcessRefusalAndReRequest() 재요청 대사 표시: {reRequestDialogue}");
+                
+                // 타이핑이 완료될 때까지 대기
+                // 재요청 대사 표시 후 바로 플래그 리셋 (버튼 클릭 가능하도록)
+                // 타이핑은 백그라운드에서 계속 진행되지만, 상호작용은 즉시 가능해야 함
+                isProcessingInteraction = false;
+                Debug.Log("[NPCQueueSystem] ProcessRefusalAndReRequest() 재요청 대사 표시 완료, isProcessingInteraction 리셋됨 (즉시 상호작용 가능)");
             }
+            else
+            {
+                Debug.LogWarning("[NPCQueueSystem] ProcessRefusalAndReRequest() 재요청 대사가 없습니다.");
+                // 재요청 대사가 없으면 바로 플래그 리셋
+                isProcessingInteraction = false;
+            }
+        }
+        else
+        {
+            // NPC 데이터가 없으면 바로 플래그 리셋
+            isProcessingInteraction = false;
         }
         
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
         
-        // 상호작용 처리 완료 (NPC는 큐에 남아있음)
-        isProcessingInteraction = false;
+        Debug.Log("[NPCQueueSystem] ProcessRefusalAndReRequest() 완료 - 재요청 대사 표시 완료, NPC는 큐에 남아있음");
+    }
+    
+    /// <summary>
+    /// 대사 타이핑 완료와 표시 시간을 기다린 후 NPC를 제거합니다.
+    /// </summary>
+    System.Collections.IEnumerator WaitForDialogueAndRemove(GameObject npcToRemove)
+    {
+        Debug.Log($"[NPCQueueSystem] WaitForDialogueAndRemove() 시작 - NPC: {(npcToRemove != null ? npcToRemove.name : "null")}");
+        
+        // 타이핑이 완료될 때까지 대기
+        float typingWaitTime = 0f;
+        float maxTypingWaitTime = 10f; // 최대 10초 대기 (무한 대기 방지)
+        while (!isTypingComplete && typingWaitTime < maxTypingWaitTime)
+        {
+            typingWaitTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (typingWaitTime >= maxTypingWaitTime)
+        {
+            Debug.LogWarning("[NPCQueueSystem] WaitForDialogueAndRemove() 타이핑 완료 대기 시간 초과. 강제 진행합니다.");
+            isTypingComplete = true;
+        }
+        
+        // 대사 표시 시간 대기
+        yield return new WaitForSeconds(dialogueDisplayDuration);
+        
+        Debug.Log($"[NPCQueueSystem] WaitForDialogueAndRemove() 대사 표시 완료, ProcessInteractionAndRemove 시작 - NPC: {(npcToRemove != null ? npcToRemove.name : "null")}");
+        
+        // 이제 NPC 제거 시작
+        StartCoroutine(ProcessInteractionAndRemove(npcToRemove));
     }
 
     /// <summary>
@@ -1061,10 +1421,21 @@ public class NPCQueueSystem : MonoBehaviour
     /// </summary>
     System.Collections.IEnumerator ProcessInteractionAndRemove(GameObject npcToRemove)
     {
+        Debug.Log($"[NPCQueueSystem] ProcessInteractionAndRemove() 시작 - NPC: {(npcToRemove != null ? npcToRemove.name : "null")}");
+        
         // 타이핑이 완료될 때까지 대기
-        while (!isTypingComplete)
+        float typingWaitTime = 0f;
+        float maxTypingWaitTime = 10f; // 최대 10초 대기 (무한 대기 방지)
+        while (!isTypingComplete && typingWaitTime < maxTypingWaitTime)
         {
+            typingWaitTime += Time.deltaTime;
             yield return null;
+        }
+        
+        if (typingWaitTime >= maxTypingWaitTime)
+        {
+            Debug.LogWarning("[NPCQueueSystem] ProcessInteractionAndRemove() 타이핑 완료 대기 시간 초과. 강제 진행합니다.");
+            isTypingComplete = true;
         }
         
         // 대사 표시 시간 대기
@@ -1073,7 +1444,9 @@ public class NPCQueueSystem : MonoBehaviour
         // center에 있는 NPC (activeNPCs[0]) 확인 및 제거
         if (activeNPCs.Count == 0)
         {
+            Debug.LogWarning("[NPCQueueSystem] ProcessInteractionAndRemove() activeNPCs가 비어있습니다.");
             isProcessingInteraction = false;
+            Debug.Log("[NPCQueueSystem] ProcessInteractionAndRemove() isProcessingInteraction 리셋됨 (activeNPCs 비어있음)");
             yield break;
         }
 
@@ -1081,10 +1454,13 @@ public class NPCQueueSystem : MonoBehaviour
         GameObject centerNPC = activeNPCs[0];
         if (centerNPC == null || centerNPC != npcToRemove)
         {
-            Debug.LogWarning($"ProcessInteractionAndRemove: center NPC가 일치하지 않습니다. center={centerNPC?.name}, toRemove={npcToRemove?.name}");
+            Debug.LogWarning($"[NPCQueueSystem] ProcessInteractionAndRemove() center NPC가 일치하지 않습니다. center={(centerNPC != null ? centerNPC.name : "null")}, toRemove={(npcToRemove != null ? npcToRemove.name : "null")}");
             isProcessingInteraction = false;
+            Debug.Log("[NPCQueueSystem] ProcessInteractionAndRemove() isProcessingInteraction 리셋됨 (NPC 불일치)");
             yield break;
         }
+
+        Debug.Log($"[NPCQueueSystem] ProcessInteractionAndRemove() NPC 제거 시작 - {npcToRemove.name}");
 
         // 리스트에서 제거 (첫 번째 요소 제거)
         activeNPCs.RemoveAt(0);
@@ -1104,12 +1480,16 @@ public class NPCQueueSystem : MonoBehaviour
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
         
+        // 무당 플래그 리셋 (다음 NPC를 위해)
+        isCurrentNPCShaman = false;
+        
         // frontNPC 초기화
         frontNPC = null;
         frontNPCComponent = null;
         
         // 상호작용 처리 완료
         isProcessingInteraction = false;
+        Debug.Log("[NPCQueueSystem] ProcessInteractionAndRemove() 완료 및 isProcessingInteraction 리셋됨");
         
         // 모든 상호작용이 끝났는지 확인
         CheckAndTransitionToNighttime();
@@ -1118,9 +1498,6 @@ public class NPCQueueSystem : MonoBehaviour
         // 끝에 새 NPC 생성 (Update에서 자동으로 처리)
     }
     
-    [Header("Nighttime Settings")]
-    [Tooltip("Nighttime 씬 이름")]
-    public string nighttimeSceneName = "Nighttime";
     
     [Tooltip("페이드아웃 오버레이 (자동 생성 가능)")]
     public Image fadeOverlay;
@@ -1134,29 +1511,97 @@ public class NPCQueueSystem : MonoBehaviour
     private bool isTransitioning = false; // 전환 중인지 여부
     
     /// <summary>
-    /// 모든 상호작용이 끝났는지 확인하고 Nighttime으로 전환합니다.
+    /// 모든 생존자와 상호작용이 끝났는지 확인하고 Nighttime으로 전환합니다.
     /// </summary>
     void CheckAndTransitionToNighttime()
     {
         // 이미 전환 중이면 무시
         if (isTransitioning) return;
         
+        // 상호작용 처리 중이면 무시
+        if (isProcessingInteraction) return;
+        
         // 큐에 NPC가 없고, 모든 NPC가 스폰되었는지 확인
-        if (daySchedule == null || daySchedule.npcPrefabs == null)
-            return;
-        
-        int totalNPCs = daySchedule.npcPrefabs.Length;
-        bool allSpawned = currentSpawnIndex >= totalNPCs;
-        bool queueEmpty = activeNPCs.Count == 0;
-        bool notProcessing = !isProcessingInteraction;
-        
-        if (allSpawned && queueEmpty && notProcessing)
+        if (randomQueuePrefabs == null || randomQueuePrefabs.Count == 0)
         {
-            // 모든 상호작용 완료 - Nighttime으로 전환
-            Debug.Log("모든 상호작용이 완료되었습니다. Nighttime으로 전환합니다.");
+            return;
+        }
+        
+        // 생존자 수 계산
+        int totalSurvivors = GetTotalSurvivorCount();
+        int remainingSurvivors = GetRemainingSurvivorCount();
+        
+        Debug.Log($"[NPCQueueSystem] CheckAndTransitionToNighttime() - totalSurvivors: {totalSurvivors}, remainingSurvivors: {remainingSurvivors}, queueEmpty: {activeNPCs.Count == 0}, notProcessing: {!isProcessingInteraction}");
+        
+        // 모든 생존자와 상호작용 완료 (남은 생존자가 0명이고 큐가 비어있음)
+        if (totalSurvivors > 0 && remainingSurvivors == 0 && activeNPCs.Count == 0)
+        {
+            // 모든 생존자와 상호작용 완료 - Nighttime으로 전환
+            Debug.Log("[NPCQueueSystem] 모든 생존자와 상호작용이 완료되었습니다. Nighttime으로 전환합니다.");
             isTransitioning = true;
             StartCoroutine(TransitionToNighttime());
         }
+    }
+    
+    /// <summary>
+    /// 전체 생존자 수를 계산합니다 (죽지 않은 NPC 수).
+    /// </summary>
+    int GetTotalSurvivorCount()
+    {
+        if (NPCStateManager.Instance == null) return 0;
+        
+        List<string> allNPCNames = NPCStateManager.Instance.GetAllNPCNames();
+        if (allNPCNames == null || allNPCNames.Count == 0) return 0;
+        
+        int survivorCount = 0;
+        foreach (string npcName in allNPCNames)
+        {
+            if (string.IsNullOrEmpty(npcName)) continue;
+            if (!NPCStateManager.Instance.IsDead(npcName))
+            {
+                survivorCount++;
+            }
+        }
+        
+        return survivorCount;
+    }
+    
+    /// <summary>
+    /// 아직 상호작용하지 않은 생존자 수를 계산합니다.
+    /// </summary>
+    int GetRemainingSurvivorCount()
+    {
+        if (NPCStateManager.Instance == null) return 0;
+        
+        List<string> allNPCNames = NPCStateManager.Instance.GetAllNPCNames();
+        if (allNPCNames == null || allNPCNames.Count == 0) return 0;
+        
+        int remainingCount = 0;
+        foreach (string npcName in allNPCNames)
+        {
+            if (string.IsNullOrEmpty(npcName)) continue;
+            
+            // 죽은 NPC는 제외
+            if (NPCStateManager.Instance.IsDead(npcName)) continue;
+            
+            // 상호작용 완료 조건:
+            // 1. 밥을 받았거나
+            // 2. 약을 받았거나
+            // 3. 거절당했거나 (refusalCount > 0이면 상호작용 완료)
+            bool receivedFood = NPCStateManager.Instance.ReceivedFoodToday(npcName);
+            bool receivedMedicine = NPCStateManager.Instance.ReceivedMedicineToday(npcName);
+            int refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
+            
+            // 상호작용 완료 여부 확인
+            bool hasInteracted = receivedFood || receivedMedicine || refusalCount > 0;
+            
+            if (!hasInteracted)
+            {
+                remainingCount++;
+            }
+        }
+        
+        return remainingCount;
     }
     
     /// <summary>
@@ -1193,65 +1638,51 @@ public class NPCQueueSystem : MonoBehaviour
         // 가장 위에 표시되도록 설정
         fadeObj.transform.SetAsLastSibling();
     }
-    
-    /// <summary>
-    /// 페이드아웃 효과와 함께 Nighttime 씬으로 전환합니다.
-    /// </summary>
+
     IEnumerator TransitionToNighttime()
     {
-        // 페이드아웃 오버레이가 없으면 생성
-        if (fadeOverlay == null)
-        {
-            CreateFadeOverlay();
-        }
+        Debug.Log("[NPCQueueSystem] TransitionToNighttime() - Nighttime UI 표시 (카메라 전환)");
         
-        if (fadeOverlay == null)
+        // NighttimeUIManager 찾기 (Inspector에서 할당되었으면 사용, 아니면 자동으로 찾기)
+        NighttimeUIManager nighttimeUI = nighttimeUIManager;
+        
+        if (nighttimeUI == null)
         {
-            // 오버레이를 생성할 수 없으면 바로 씬 전환
-            Debug.LogWarning("NPCQueueSystem: 페이드아웃 오버레이를 생성할 수 없어 바로 씬을 전환합니다.");
-            if (!string.IsNullOrEmpty(nighttimeSceneName))
+            // Inspector에서 할당되지 않았으면 GameObject 이름으로 찾기
+            GameObject nighttimeUIGameObject = GameObject.Find("NighttimeUIManager");
+            if (nighttimeUIGameObject != null)
             {
-                SceneManager.LoadScene(nighttimeSceneName);
+                nighttimeUI = nighttimeUIGameObject.GetComponent<NighttimeUIManager>();
             }
-            yield break;
         }
         
-        float elapsedTime = 0f;
-        Color startColor = fadeOverlay.color;
-        Color targetColor = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 1f);
-        
-        // 페이드아웃 시작
-        while (elapsedTime < sceneTransitionFadeDuration)
+        if (nighttimeUI == null)
         {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / sceneTransitionFadeDuration;
-            
-            // Ease in quadratic
-            t = t * t;
-            
-            fadeOverlay.color = Color.Lerp(startColor, targetColor, t);
-            
-            yield return null;
+            // GameObject 이름으로도 못 찾았으면 컴포넌트 타입으로 찾기 (최후의 수단)
+            nighttimeUI = FindFirstObjectByType<NighttimeUIManager>();
         }
         
-        // 최종 색상 설정
-        fadeOverlay.color = targetColor;
-        
-        // 씬 전환
-        if (!string.IsNullOrEmpty(nighttimeSceneName))
+        // Day BGM 중지
+        if (nighttimeUI != null && nighttimeUI.dayBGMAudioSource != null)
         {
-            SceneManager.LoadScene(nighttimeSceneName);
+            nighttimeUI.dayBGMAudioSource.Stop();
+            Debug.Log("[NPCQueueSystem] Day BGM 중지됨");
+        }
+        
+        if (nighttimeUI != null)
+        {
+            nighttimeUI.ShowNighttimeUI();
+            Debug.Log("[NPCQueueSystem] NighttimeUIManager 활성화 및 UI 표시");
         }
         else
         {
-            Debug.LogWarning("Nighttime 씬 이름이 설정되지 않았습니다.");
-            isTransitioning = false; // 전환 실패 시 플래그 리셋
+            Debug.LogWarning("[NPCQueueSystem] NighttimeUIManager를 찾을 수 없습니다. 씬에 'NighttimeUIManager'라는 이름의 GameObject가 있는지 확인하세요.");
+            isTransitioning = false; 
         }
+        
+        yield return null;
     }
 
-    /// <summary>
-    /// 대사 텍스트를 표시합니다 (타이핑 효과 포함).
-    /// </summary>
     void ShowDialogueText(string dialogue)
     {
         if (speechBubbleBG != null)
@@ -1292,6 +1723,11 @@ public class NPCQueueSystem : MonoBehaviour
             typingAudioSource.clip = typingSound;
             typingAudioSource.volume = typingSoundVolume;
             typingAudioSource.Play();
+            
+            if (!typingAudioSource.isPlaying)
+            {
+                Debug.LogWarning($"NPCQueueSystem: 타이핑 소리 재생 실패. AudioSource.isPlaying = {typingAudioSource.isPlaying}, Volume: {typingAudioSource.volume}, Clip: {typingAudioSource.clip?.name ?? "null"}");
+            }
             isPlayingTypingSound = true;
         }
         
@@ -1362,11 +1798,26 @@ public class NPCQueueSystem : MonoBehaviour
     }
     
     /// <summary>
-    /// NPC 이름을 가져옵니다.
+    /// NPC 이름을 가져옵니다. (고유 ID로 사용 - 프리팹 이름만 사용)
+    /// 프리팹 이름이 이미 고유하므로 (예: "Shaman 1", "Slave 2") 그대로 사용합니다.
     /// </summary>
     string GetNPCName(GameObject npc)
     {
         if (npc == null) return "Unknown";
+        
+        // 프리팹 이름을 고유 ID로 사용 (예: "Shaman 1", "Slave 2")
+        // "(Clone)" 제거하고 공백 정리
+        string prefabName = npc.name.Replace("(Clone)", "").Trim();
+        
+        return prefabName;
+    }
+    
+    /// <summary>
+    /// NPC 신분을 가져옵니다 (대사용).
+    /// </summary>
+    string GetNPCStatus(GameObject npc)
+    {
+        if (npc == null) return "";
         
         NPCComponent component = npc.GetComponent<NPCComponent>();
         if (component != null && component.bohyunData != null)
@@ -1374,16 +1825,25 @@ public class NPCQueueSystem : MonoBehaviour
             return component.bohyunData.npcName;
         }
         
-        return npc.name.Replace("(Clone)", "").Trim();
+        // 프리팹 이름에서 신분 추출
+        string prefabName = npc.name.Replace("(Clone)", "").Trim();
+        if (prefabName.StartsWith("King", System.StringComparison.OrdinalIgnoreCase)) return "King";
+        if (prefabName.StartsWith("Yangban", System.StringComparison.OrdinalIgnoreCase)) return "Yangban";
+        if (prefabName.StartsWith("Physician", System.StringComparison.OrdinalIgnoreCase)) return "Physician";
+        if (prefabName.StartsWith("Merchant", System.StringComparison.OrdinalIgnoreCase)) return "Merchant";
+        if (prefabName.StartsWith("Slave", System.StringComparison.OrdinalIgnoreCase)) return "Slave";
+        if (prefabName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase)) return "Shaman";
+        
+        return "";
     }
 
     /// <summary>
     /// NPC가 무당인지 확인합니다.
     /// </summary>
-    bool IsShamanNPC(BohyunNPCData npcData)
+    bool IsShamanNPC(BohyunNPCData bohyunData)
     {
-        if (npcData == null) return false;
-        return npcData.npcName != null && npcData.npcName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase);
+        if (bohyunData == null) return false;
+        return bohyunData.npcName != null && bohyunData.npcName.StartsWith("Shaman", System.StringComparison.OrdinalIgnoreCase);
     }
     
     /// <summary>
@@ -1455,18 +1915,51 @@ public class NPCQueueSystem : MonoBehaviour
     }
     
     /// <summary>
-    /// 새로운 DaySchedule로 하루를 시작합니다.
+    /// 하루를 시작합니다 (랜덤 큐 사용).
     /// </summary>
-    public void StartDay(DaySchedule newSchedule)
+    public void StartDay()
+    {
+        StartDayWithRandomQueue();
+    }
+    
+    /// <summary>
+    /// 랜덤 큐로 하루를 시작합니다 (NPCRandomQueueManager 사용).
+    /// </summary>
+    public void StartDayWithRandomQueue()
     {
         // 기존 NPC들 모두 제거
         ClearAllNPCs();
         
-        // 새로운 스케줄 설정
-        daySchedule = newSchedule;
+        // NPCRandomQueueManager에서 새로운 큐 생성
+        if (NPCRandomQueueManager.Instance != null)
+        {
+            randomQueuePrefabs = NPCRandomQueueManager.Instance.GenerateDayQueue();
+            
+            // NPCStateManager에 오늘 등장할 모든 NPC 이름 목록 설정
+            if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0 && NPCStateManager.Instance != null)
+            {
+                List<string> npcNames = new List<string>();
+                foreach (GameObject prefab in randomQueuePrefabs)
+                {
+                    if (prefab != null)
+                    {
+                        // 고유 ID 가져오기 (프리팹 이름 사용)
+                        string npcUniqueName = GetNPCName(prefab);
+                        if (!string.IsNullOrEmpty(npcUniqueName))
+                        {
+                            npcNames.Add(npcUniqueName);
+                            Debug.Log($"NPCQueueSystem: OnSceneLoaded - NPC 이름 추가 - {npcUniqueName}");
+                        }
+                    }
+                }
+                Debug.Log($"NPCQueueSystem: OnSceneLoaded - NPC 이름 목록 설정 - 총 {npcNames.Count}개");
+                NPCStateManager.Instance.SetAllNPCNames(npcNames);
+            }
+        }
+        
         currentSpawnIndex = 0;
         timer = 0f;
-        isInitialSpawnComplete = false; // 새 날이 시작되면 초기 스폰 다시 시작
+        isInitialSpawnComplete = false;
         frontNPC = null;
         frontNPCComponent = null;
         
@@ -1474,7 +1967,7 @@ public class NPCQueueSystem : MonoBehaviour
         HideSpeechBubble();
         
         // 첫 NPC 스폰
-        if (daySchedule != null && daySchedule.npcPrefabs != null && daySchedule.npcPrefabs.Length > 0)
+        if (randomQueuePrefabs != null && randomQueuePrefabs.Count > 0)
         {
             SpawnNextNPC();
         }
@@ -1485,14 +1978,11 @@ public class NPCQueueSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 하루를 리셋합니다 (같은 스케줄로 다시 시작).
+    /// 현재 하루를 리셋합니다 (랜덤 큐로 다시 시작).
     /// </summary>
     public void ResetDay()
     {
-        if (daySchedule != null)
-        {
-            StartDay(daySchedule);
-        }
+        StartDayWithRandomQueue();
     }
 
     /// <summary>
@@ -1536,6 +2026,18 @@ public class NPCQueueSystem : MonoBehaviour
     public int GetCurrentSpawnIndex()
     {
         return currentSpawnIndex;
+    }
+    
+    /// <summary>
+    /// 전체 NPC 수를 반환합니다 (랜덤 큐의 총 NPC 수).
+    /// </summary>
+    public int GetTotalNPCCount()
+    {
+        if (randomQueuePrefabs != null)
+        {
+            return randomQueuePrefabs.Count;
+        }
+        return 0;
     }
 }
 

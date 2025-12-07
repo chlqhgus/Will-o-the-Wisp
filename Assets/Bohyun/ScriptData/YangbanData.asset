@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: YangbanData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Yangban
+  foodRequestProbability: 0.7
+  medicineRequestProbability: 0.3
+  reRequestChance: 0.5
+  foodRequestLines:
+  - I expect a decent meal. Surely you know your duty.
+  medicineRequestLines:
+  - See that a proper remedy is set aside for me.
+  foodAcceptLines:
+  - Sensible choice. Yangban should not be kept hungry after all.
+  medicineAcceptLines:
+  - I knew you'd recognize the importance of my condition.
+  foodRejectLines:
+  - Mind your manners. It's hardly proper toward your betters.
+  medicineRejectLines:
+  - I suppose some folk forget their place.
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines:
+  - Please...
+  foodReAcceptLines:
+  - Tardy but acceptable. Yangban won't nitpick.
+  medicineReAcceptLines:
+  - Finally. I trust you won't make me ask a third time.
+  foodReRejectLines:
+  - So you persist-Very well. I'll remember this discourtesy.
+  medicineReRejectLines:
+  - So even a second request is denied. Quite ungracious of you.
+  specialLines: []
+  csvImportPath: 

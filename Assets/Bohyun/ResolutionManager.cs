@@ -57,7 +57,9 @@ public class ResolutionManager : MonoBehaviour
     /// </summary>
     private void SetResolution()
     {
-        Screen.SetResolution(targetWidth, targetHeight, Screen.fullScreenMode, Screen.currentResolution.refreshRate);
+        // Unity 최신 API 사용 (refreshRate 대신 refreshRateRatio 사용)
+        RefreshRate refreshRate = Screen.currentResolution.refreshRateRatio;
+        Screen.SetResolution(targetWidth, targetHeight, Screen.fullScreenMode, refreshRate);
         Debug.Log($"Resolution set to: {targetWidth}x{targetHeight}");
     }
     

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: KingData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: King
+  foodRequestProbability: 0.8
+  medicineRequestProbability: 0.2
+  reRequestChance: 0.5
+  foodRequestLines:
+  - Bring me food at once. See that my dish reflects the dignity of the throne.
+  medicineRequestLines:
+  - Fetch the medicine. Even a king's body must be maintained to uphold Joseon.
+  foodAcceptLines:
+  - As expected. A king is served without delay.
+  medicineAcceptLines:
+  - As it should be. My health is not yours to ignore.
+  foodRejectLines:
+  - Such defiance is bold. Do not make me repeat it.
+  medicineRejectLines:
+  - You deny the king medicine? This borders on treason.
+  foodReRequestLines:
+  - 'What? '
+  medicineReRequestLines:
+  - What?
+  foodReAcceptLines:
+  - Only now you obey? See that it's worthy.
+  medicineReAcceptLines:
+  - You choose wisely. Bring it with the respect my station demands.
+  foodReRejectLines:
+  - A second plea yet still you defy my will? Begone from my sight.
+  medicineReRejectLines:
+  - Enough. To refuse your king again is an offense not easily forgiven.
+  specialLines: []
+  csvImportPath: 
