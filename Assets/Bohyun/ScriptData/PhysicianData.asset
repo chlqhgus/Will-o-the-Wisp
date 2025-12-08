@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: PhysicianData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Physician
+  foodRequestProbability: 0.65
+  medicineRequestProbability: 0.35
+  reRequestChance: 0.5
+  foodRequestLines:
+  - I haven't the strength to treat anyone. A meal please.
+  medicineRequestLines:
+  - My pulse feels strained. A prepared remedy would be wise.
+  foodAcceptLines:
+  - Thank you. Proper nourishment will help me tend to others.
+  medicineAcceptLines:
+  - Thank you. This dose will keep my condition balanced.
+  foodRejectLines:
+  - Very well. But understand that fatigue dulls a healer's hand.
+  medicineRejectLines:
+  - Then I will proceed cautiously with what strength remains.
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines:
+  - Please...
+  foodReAcceptLines:
+  - Good. Even a belated meal will restore my focus.
+  medicineReAcceptLines:
+  - I'm relieved you agreed. The remedy will steady my pulse.
+  foodReRejectLines:
+  - I suppose I must endure. Such is the body's test.
+  medicineReRejectLines:
+  - Then I shall rely on my own regimen.
+  specialLines: []
+  csvImportPath: 

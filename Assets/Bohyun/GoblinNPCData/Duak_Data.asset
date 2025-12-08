@@ -12,24 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Duak_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: "Duak(\uFFFD\uFFFD)"
-  requestType: 0
-  foodRequestLines:
-  - Please... spare me some food...
+  npcName: Heoju
+  foodRequestProbability: 1
+  medicineRequestProbability: 0
+  reRequestChance: 1
+  foodRequestLines: []
   medicineRequestLines: []
-  foodAcceptLines:
-  - Thank you... truly.
+  foodAcceptLines: []
   medicineAcceptLines: []
-  foodRejectLines:
-  - I beg you... I'm starving...
+  foodRejectLines: []
   medicineRejectLines: []
   foodReRequestLines: []
   medicineReRequestLines: []
-  foodReAcceptLines:
-  - "Thank you\u2026 I won\u2019t forget this."
+  foodReAcceptLines: []
   medicineReAcceptLines: []
-  foodReRejectLines:
-  - "Then\u2026 I suppose there's nothing I can do\u2026"
+  foodReRejectLines: []
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

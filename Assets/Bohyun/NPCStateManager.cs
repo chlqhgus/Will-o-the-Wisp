@@ -27,12 +27,14 @@ public class NPCStateManager : MonoBehaviour
     [System.Serializable]
     public class NPCState
     {
-        public string npcName; // NPC 이름 (prefab 이름 또는 고유 ID)
+        public string npcName; // NPC 이름 (prefab 이름 또는 고유 ID, 예: "Shaman 1_Shaman")
         public int daysWithoutMedicine = 0; // 약을 받지 못한 연속 날 수
+        public int daysWithoutFood = 0; // 밥을 받지 못한 연속 날 수
         public bool isDead = false; // 죽었는지 여부
         public bool requestedMedicineToday = false; // 오늘 약을 요청했는지
         public int refusalCount = 0; // 오늘 거절당한 횟수 (재요청 가능 여부 판단용)
         public bool receivedFoodToday = false; // 오늘 밥을 받았는지
+        public bool receivedMedicineToday = false; // 오늘 약을 받았는지
     }
 
     private Dictionary<string, NPCState> npcStates = new Dictionary<string, NPCState>();
@@ -67,10 +69,12 @@ public class NPCStateManager : MonoBehaviour
             {
                 npcName = npcName,
                 daysWithoutMedicine = 0,
+                daysWithoutFood = 0,
                 isDead = false,
                 requestedMedicineToday = false,
                 refusalCount = 0,
-                receivedFoodToday = false
+                receivedFoodToday = false,
+                receivedMedicineToday = false
             };
         }
         return npcStates[npcName];
@@ -92,7 +96,9 @@ public class NPCStateManager : MonoBehaviour
     {
         NPCState state = GetOrCreateState(npcName);
         state.daysWithoutMedicine = 0; // 약을 받았으므로 리셋
+        state.daysWithoutFood = 0; // 약을 받았으므로 daysWithoutFood도 리셋 (밥/약 중 하나라도 받으면 생존)
         state.requestedMedicineToday = false;
+        state.receivedMedicineToday = true;
     }
 
     /// <summary>
@@ -105,16 +111,16 @@ public class NPCStateManager : MonoBehaviour
         
         if (requestedMedicine)
         {
-            // 약을 요청했는데 거절당함
-            state.daysWithoutMedicine++;
-            state.requestedMedicineToday = false;
-            
-            // 이틀 연속 약을 받지 못하면 죽음
-            if (state.daysWithoutMedicine >= 2)
-            {
-                state.isDead = true;
-                Debug.Log($"{npcName}이(가) 약을 받지 못해 죽었습니다.");
-            }
+            // 약을 요청했는데 거절당함 = 약을 받지 못함 (밤에 사망 처리됨)
+            // requestedMedicineToday는 유지 (재요청 가능하므로)
+            // receivedMedicineToday는 false로 유지 (약을 받지 못했으므로)
+            state.receivedMedicineToday = false;
+            // 사망은 OnNewDay()에서 처리됨
+        }
+        else
+        {
+            // 밥을 요청했는데 거절당함 (이틀 연속 못 먹으면 사망은 OnNewDay에서 처리)
+            // 오늘 밥을 못 받은 것은 OnNewDay에서 처리됨
         }
     }
 
@@ -153,6 +159,7 @@ public class NPCStateManager : MonoBehaviour
     {
         NPCState state = GetOrCreateState(npcName);
         state.receivedFoodToday = true;
+        state.daysWithoutFood = 0; // 밥을 받았으므로 리셋 (약을 받아도 리셋되지만 여기서도 리셋)
     }
     
     /// <summary>
@@ -163,6 +170,16 @@ public class NPCStateManager : MonoBehaviour
         if (!npcStates.ContainsKey(npcName))
             return false;
         return npcStates[npcName].receivedFoodToday;
+    }
+    
+    /// <summary>
+    /// NPC가 오늘 약을 받았는지 확인합니다.
+    /// </summary>
+    public bool ReceivedMedicineToday(string npcName)
+    {
+        if (!npcStates.ContainsKey(npcName))
+            return false;
+        return npcStates[npcName].receivedMedicineToday;
     }
     
     /// <summary>
@@ -182,17 +199,68 @@ public class NPCStateManager : MonoBehaviour
     }
     
     /// <summary>
+    /// 하루가 끝날 때 호출 (사망 처리만 수행, 상태는 리셋하지 않음)
+    /// 밤이 되었을 때 약을 받지 못한 NPC는 사망 처리됨
+    /// </summary>
+    public void EndDay()
+    {
+        // 사망 처리 (상태 리셋 전에 먼저 처리)
+        foreach (var state in npcStates.Values)
+        {
+            // 이미 죽은 NPC는 건너뛰기
+            if (state.isDead) continue;
+            
+            // 약을 요청했는데 받지 못한 NPC는 사망 (밤에 사망 처리)
+            if (state.requestedMedicineToday && !state.receivedMedicineToday)
+            {
+                state.isDead = true;
+                Debug.Log($"{state.npcName}이(가) 약을 받지 못해 밤에 죽었습니다.");
+                continue; // 이미 사망했으므로 다른 체크는 불필요
+            }
+            
+            // 밥 또는 약을 받지 못한 NPC는 daysWithoutFood 증가
+            // (약을 받으면 밥을 안받아도 생존 가능)
+            bool receivedFoodOrMedicine = state.receivedFoodToday || state.receivedMedicineToday;
+            
+            if (!receivedFoodOrMedicine)
+            {
+                state.daysWithoutFood++;
+                
+                // 이틀 연속 밥/약 모두 안받으면 사망
+                if (state.daysWithoutFood >= 2)
+                {
+                    state.isDead = true;
+                    Debug.Log($"{state.npcName}이(가) 이틀 연속 밥/약을 모두 받지 못해 죽었습니다.");
+                }
+            }
+            else
+            {
+                // 밥 또는 약을 받았으면 리셋
+                state.daysWithoutFood = 0;
+            }
+        }
+        
+        // 상태는 리셋하지 않음 (통계 계산을 위해 유지)
+    }
+    
+    /// <summary>
     /// 새로운 날이 시작될 때 호출 (모든 NPC의 오늘 요청 상태 리셋)
+    /// EndDay()에서 사망 처리가 완료된 후 호출됨
     /// </summary>
     public void OnNewDay()
     {
+        // 상태 리셋 (사망 처리는 EndDay()에서 이미 완료됨)
         foreach (var state in npcStates.Values)
         {
+            // 오늘 상태 리셋
             state.requestedMedicineToday = false;
-            state.refusalCount = 0; // 거절 횟수도 리셋
-            state.receivedFoodToday = false; // 밥 받은 상태도 리셋
+            state.refusalCount = 0;
+            state.receivedFoodToday = false;
+            state.receivedMedicineToday = false;
         }
-        allNPCNames.Clear(); // NPC 목록도 리셋
+        
+        // allNPCNames는 Nighttime 씬에서 사용하므로 여기서 클리어하지 않음
+        // SetAllNPCNames()가 호출되면 자동으로 새로운 리스트로 교체되므로 별도 클리어 불필요
     }
 
     /// <summary>

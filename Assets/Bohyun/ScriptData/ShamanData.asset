@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
+  m_Name: ShamanData
+  m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
+  npcName: Shaman
+  foodRequestProbability: 0.7
+  medicineRequestProbability: 0.3
+  reRequestChance: 0.5
+  foodRequestLines:
+  - My spirit weakens and I need warm food or the divine voice will fade.
+  medicineRequestLines:
+  - A murky aura clings to my breath and a remedy could clear the path.
+  foodAcceptLines:
+  - Well done a gentle light will hover near you tonight.
+  medicineAcceptLines:
+  - A wise act a soft light will rest upon your steps.
+  foodRejectLines:
+  - Then the shadows will linger a little longer around us.
+  medicineRejectLines:
+  - So be it my strength will tremble yet I will endure the shift.
+  foodReRequestLines:
+  - Please...
+  medicineReRequestLines:
+  - Please...
+  foodReAcceptLines:
+  - Even late mercy changes the flow my body will find warmth again.
+  medicineReAcceptLines:
+  - Good the departing energy was close yet your hand pulled it back.
+  foodReRejectLines:
+  - Very well a faint shadow will follow your path for a while.
+  medicineReRejectLines:
+  - Understood this wavering aura is now mine to bear and you must stay cautious.
+  specialLines: []
+  csvImportPath: 
