@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4565513251380621363}
   - component: {fileID: 4225918545970466474}
   - component: {fileID: 474307889621934008}
+  - component: {fileID: 7344411673886223046}
+  - component: {fileID: 7769633996822236220}
   m_Layer: 0
   m_Name: Gaksi
   m_TagString: Untagged
@@ -113,3 +115,28 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7344411673886223046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7545750991201754317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08ffbc78b05064b40b50c23409a5d251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GaksiEffect
+--- !u!114 &7769633996822236220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7545750991201754317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: f1f5343c5c38e4029bab354f554b9eca, type: 2}

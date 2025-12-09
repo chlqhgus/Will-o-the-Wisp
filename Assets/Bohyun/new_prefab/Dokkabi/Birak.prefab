@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 5989132127077402090}
   - component: {fileID: 6877610224859253194}
   - component: {fileID: 7124745831710541901}
+  - component: {fileID: -4500473523877728256}
+  - component: {fileID: -1745639720973607615}
   m_Layer: 0
   m_Name: Birak
   m_TagString: Untagged
@@ -113,3 +115,28 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4500473523877728256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886968207125377418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8122ff85bcd42eca94902b6cf35b86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BirakEffect
+--- !u!114 &-1745639720973607615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886968207125377418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: d9274c12b876848fd85e2a326e27e34a, type: 2}

@@ -12,27 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Birak_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: Slave(Birak)
+  npcName: Birak
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1
   foodRequestLines:
-  - "My dear don\xA1\xAFt you have something for me?"
+  - Hey. Hand over the food. Now.
   medicineRequestLines: []
   foodAcceptLines:
-  - Hehe, thank you.
-  - Kindness has a way of returning, even if it takes the long road.
+  - "Tch. Not meat? Fine. I\xA1\xAFll let it slide just this once."
   medicineAcceptLines: []
   foodRejectLines:
-  - Are you truly sincere?
+  - "You messing with me? Why can\xA1\xAFt you give it to me?"
   medicineRejectLines: []
-  foodReRequestLines: []
+  foodReRequestLines:
+  - "You messing with me? Why can\xA1\xAFt you give it to me?"
   medicineReRequestLines: []
   foodReAcceptLines:
-  - Hmm. Thank you though your hesitation is a little disappointing.
+  - "Tch. Should\xA1\xAFve done that from the start."
   medicineReAcceptLines: []
   foodReRejectLines:
-  - "This wasn\xA1\xAFt part of my plan but very well."
+  - How dare you, you filthy human!!
+  - Give me meat! Real meat I can sink my teeth into!
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

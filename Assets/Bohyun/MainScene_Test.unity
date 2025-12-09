@@ -5012,10 +5012,10 @@ MonoBehaviour:
   - {fileID: 7716212944933369802, guid: f0a077b768e1846c68acf24c4510df52, type: 3}
   - {fileID: 1173175363873446436, guid: 9fc1b23d982634515a92fbe449536c01, type: 3}
   shamanEarlyPositionLimit: 5
-  Heoju: {fileID: 3331030340175329738, guid: 4a407618ce497447892a8e362b5bffc3, type: 3}
-  Duak: {fileID: 986257671831114905, guid: 6081b642d4f244907acffc2e3161b986, type: 3}
-  Birak: {fileID: 0}
-  Gaksi: {fileID: 0}
+  Heoju: {fileID: 4374663384757819332, guid: fe9b00bd7c7dc4d149816ba65dda8f89, type: 3}
+  Duak: {fileID: 6990160488798596737, guid: 6dcab5474cfa748738872a38d1e23501, type: 3}
+  Birak: {fileID: 7886968207125377418, guid: 3637a1077efdb4ff193c65c1684b6175, type: 3}
+  Gaksi: {fileID: 7545750991201754317, guid: d0fd164d3551d409e84d759edb973b1f, type: 3}
   Hoesa: {fileID: 0}
   Nolgae: {fileID: 0}
 --- !u!4 &1373411997

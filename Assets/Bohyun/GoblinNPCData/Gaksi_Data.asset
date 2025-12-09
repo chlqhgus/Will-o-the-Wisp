@@ -12,21 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Gaksi_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: 
+  npcName: Gaksi
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1
-  foodRequestLines: []
+  foodRequestLines:
+  - "My dear don\xA1\xAFt you have something for me?"
   medicineRequestLines: []
-  foodAcceptLines: []
+  foodAcceptLines:
+  - Hehe, thank you.
+  - Kindness has a way of returning, even if it takes the long road.
   medicineAcceptLines: []
   foodRejectLines: []
   medicineRejectLines: []
-  foodReRequestLines: []
+  foodReRequestLines:
+  - Are you truly sincere?
   medicineReRequestLines: []
-  foodReAcceptLines: []
+  foodReAcceptLines:
+  - Hmm. Thank you though your hesitation is a little disappointing.
   medicineReAcceptLines: []
-  foodReRejectLines: []
+  foodReRejectLines:
+  - "This wasn\xA1\xAFt part of my plan but very well."
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 
