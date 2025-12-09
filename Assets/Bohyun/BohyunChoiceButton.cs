@@ -170,13 +170,10 @@ public class BohyunChoiceButton : MonoBehaviour
         return itemCount; // Inventory가 없으면 직접 설정한 개수 사용
     }
 
-    /// <summary>
-    /// 버튼을 사용할 수 있는지 확인합니다.
-    /// </summary>
+  
     bool CanUseButton()
     {
-        // NPC가 없으면 사용 불가
-        if (queueSystem == null)
+        if (queueSystem == null || !queueSystem.HasFrontNPC())
             return false;
 
         // 개수 확인

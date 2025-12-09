@@ -634,12 +634,12 @@ public class NPCQueueSystem : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 대사를 표시합니다.
-    /// </summary>
     void ShowDialogue(BohyunNPCData bohyunData)
     {
-        if (bohyunData == null) return;
+        if (bohyunData == null)
+        {
+            return;
+        }
 
         string dialogue = "";
         int refusalCount = 0;
@@ -668,7 +668,7 @@ public class NPCQueueSystem : MonoBehaviour
                 dialogue = bohyunData.medicineRequestLines[Random.Range(0, bohyunData.medicineRequestLines.Length)];
             }
             // NPC 상태 매니저에 약 요청 기록 (고유 NPC 이름 사용)
-            if (NPCStateManager.Instance != null && frontNPC != null)
+            if (!string.IsNullOrEmpty(dialogue) && NPCStateManager.Instance != null && frontNPC != null)
             {
                 string uniqueNPCName = GetNPCName(frontNPC);
                 NPCStateManager.Instance.RecordMedicineRequest(uniqueNPCName);
@@ -717,7 +717,7 @@ public class NPCQueueSystem : MonoBehaviour
     /// <summary>
     /// 말풍선을 숨깁니다.
     /// </summary>
-    void HideSpeechBubble()
+    public void HideSpeechBubble()
     {
         // 타이핑 코루틴 중지
         if (typingCoroutine != null)
@@ -742,9 +742,6 @@ public class NPCQueueSystem : MonoBehaviour
     [Tooltip("NPC가 사라질 때 페이드아웃 시간")]
     public float fadeOutDuration = 0.5f;
 
-    /// <summary>
-    /// NPC를 왼쪽 끝으로 이동시키고 페이드아웃합니다.
-    /// </summary>
     void MoveNPCToLeft(GameObject npc)
     {
         if (npc == null) return;
@@ -752,13 +749,9 @@ public class NPCQueueSystem : MonoBehaviour
         Vector3 leftExitPos = new Vector3(-14f, npc.transform.position.y, npc.transform.position.z);
         npcTargetPositions[npc] = leftExitPos;
         
-        // 페이드아웃과 함께 이동
         StartCoroutine(FadeOutAndMove(npc, leftExitPos));
     }
 
-    /// <summary>
-    /// NPC를 페이드아웃하며 왼쪽으로 이동시킵니다.
-    /// </summary>
     System.Collections.IEnumerator FadeOutAndMove(GameObject npc, Vector3 targetPos)
     {
         if (npc == null) yield break;
@@ -814,6 +807,11 @@ public class NPCQueueSystem : MonoBehaviour
     // -------------------------------------------------------------------
     // 선택지: 거절 / 음식 주기 / 약 주기
     // -------------------------------------------------------------------
+    
+    public bool HasFrontNPC()
+    {
+        return frontNPC != null && activeNPCs.Count > 0;
+    }
     
     public void RefuseFrontNPC()
     {

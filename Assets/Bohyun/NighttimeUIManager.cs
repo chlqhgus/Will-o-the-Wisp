@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class NighttimeUIManager : MonoBehaviour
@@ -51,12 +53,19 @@ public class NighttimeUIManager : MonoBehaviour
     [Tooltip("Day Start 버튼 텍스트 (자동으로 찾을 수 있음)")]
     private TextMeshProUGUI dayStartButtonText;
     
+    [Header("UI References - Ending Button")]
+    [Tooltip("Go to Ending 버튼")]
+    public Button goToEndingButton;
+    
     [Header("Audio Management")]
     [Tooltip("Day BGM용 AudioSource (SoundManager에 있는 AudioSource)")]
     public AudioSource dayBGMAudioSource;
     
     [Tooltip("Night BGM용 AudioSource (Canvas(Night)에 있는 Audio Source(Night))")]
     public AudioSource nightBGMAudioSource;
+    
+    [Tooltip("엔딩 씬 이름")]
+    public string endingSceneName = "EndingScene";
     
     private NighttimeStatisticsCalculator statisticsCalculator;
     private NighttimePurchaseSystem purchaseSystem;
@@ -73,23 +82,24 @@ public class NighttimeUIManager : MonoBehaviour
         if (purchaseSystem == null)
             purchaseSystem = GetComponent<NighttimePurchaseSystem>();
         
-        // Canvas 초기 설정
         SetupCanvases();
         
-        // Day Start 버튼 이벤트 설정
         if (dayStartButton != null)
             dayStartButton.onClick.AddListener(OnDayStartClicked);
         
-        // Day Start 버튼 텍스트 자동 찾기
         if (dayStartButtonText == null && dayStartButton != null)
         {
             dayStartButtonText = dayStartButton.GetComponentInChildren<TextMeshProUGUI>();
         }
+        
+        if (goToEndingButton != null)
+            goToEndingButton.onClick.AddListener(OnGoToEndingClicked);
+        
+        if (goToEndingButton != null)
+            goToEndingButton.gameObject.SetActive(false);
     }
     
-    /// <summary>
-    /// Canvas를 초기 설정합니다.
-    /// </summary>
+
     void SetupCanvases()
     {
         if (mainGameCanvas != null)
@@ -101,7 +111,6 @@ public class NighttimeUIManager : MonoBehaviour
     
     public void ShowNighttimeUI()
     {
-        // 하루 종료 처리 (사망 처리만 수행, 상태는 리셋하지 않음)
         if (NPCStateManager.Instance != null)
         {
             Debug.Log("[NighttimeUIManager] ShowNighttimeUI() - 하루 종료 처리 시작");
@@ -135,10 +144,35 @@ public class NighttimeUIManager : MonoBehaviour
         // UI 업데이트
         UpdateUI();
         
-        // 구매 시스템 버튼 업데이트
+        // 구매 시스템 버튼 업데이트 (엔딩 조건이 아닐 때만)
         if (purchaseSystem != null)
         {
-            purchaseSystem.UpdateButtons();
+            if (DayManager.Instance != null)
+            {
+                int currentDay = DayManager.Instance.GetCurrentDay();
+                int survivors = GetSurvivorCount();
+                
+                if (currentDay >= 7 || survivors == 0)
+                {
+                    if (purchaseSystem.buyFoodButton != null)
+                        purchaseSystem.buyFoodButton.gameObject.SetActive(false);
+                    if (purchaseSystem.buyMedicineButton != null)
+                        purchaseSystem.buyMedicineButton.gameObject.SetActive(false);
+                }
+                else
+                {
+                    if (purchaseSystem.buyFoodButton != null)
+                        purchaseSystem.buyFoodButton.gameObject.SetActive(true);
+                    if (purchaseSystem.buyMedicineButton != null)
+                        purchaseSystem.buyMedicineButton.gameObject.SetActive(true);
+                    purchaseSystem.UpdateButtons();
+                }
+            }
+            else
+            {
+                purchaseSystem.UpdateButtons();
+            }
+            
             purchaseSystem.UpdateResourceUI();
         }
     }
@@ -264,12 +298,50 @@ public class NighttimeUIManager : MonoBehaviour
             merchantCountText.text = statisticsCalculator.GetBlessedNPCCount(NPCTypeHelper.NPCType.Merchant).ToString();
         
 
-        if (dayStartButtonText != null && DayManager.Instance != null)
+        if (DayManager.Instance != null)
         {
             int currentDay = DayManager.Instance.GetCurrentDay();
-            int nextDay = currentDay + 1;
-            dayStartButtonText.text = $"Day {nextDay} Start";
-            Debug.Log($"[NighttimeUIManager] UpdateUI() - 버튼 텍스트: Day {nextDay} Start (현재 날짜: {currentDay})");
+            int survivors = GetSurvivorCount();
+            
+            if (currentDay >= 7 || survivors == 0)
+            {
+                if (dayStartButton != null)
+                    dayStartButton.gameObject.SetActive(false);
+                
+                if (goToEndingButton != null)
+                    goToEndingButton.gameObject.SetActive(true);
+                
+                if (purchaseSystem != null)
+                {
+                    if (purchaseSystem.buyFoodButton != null)
+                        purchaseSystem.buyFoodButton.gameObject.SetActive(false);
+                    if (purchaseSystem.buyMedicineButton != null)
+                        purchaseSystem.buyMedicineButton.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (dayStartButton != null)
+                    dayStartButton.gameObject.SetActive(true);
+                
+                if (goToEndingButton != null)
+                    goToEndingButton.gameObject.SetActive(false);
+                
+                if (purchaseSystem != null)
+                {
+                    if (purchaseSystem.buyFoodButton != null)
+                        purchaseSystem.buyFoodButton.gameObject.SetActive(true);
+                    if (purchaseSystem.buyMedicineButton != null)
+                        purchaseSystem.buyMedicineButton.gameObject.SetActive(true);
+                }
+                
+                if (dayStartButtonText != null)
+                {
+                    int nextDay = currentDay + 1;
+                    dayStartButtonText.text = $"Day {nextDay} Start";
+                    Debug.Log($"[NighttimeUIManager] UpdateUI() - 버튼 텍스트: Day {nextDay} Start (현재 날짜: {currentDay})");
+                }
+            }
         }
     }
     
@@ -289,30 +361,110 @@ public class NighttimeUIManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// 다음 날을 시작합니다.
-    /// </summary>
+    void OnGoToEndingClicked()
+    {
+        if (purchaseSystem != null)
+        {
+            if (purchaseSystem.buyFoodButton != null)
+                purchaseSystem.buyFoodButton.gameObject.SetActive(false);
+            if (purchaseSystem.buyMedicineButton != null)
+                purchaseSystem.buyMedicineButton.gameObject.SetActive(false);
+        }
+        
+        int survivors = GetSurvivorCount();
+        EndingDataManager.EndingType endingType = DetermineEndingType(survivors);
+        
+        if (EndingDataManager.Instance != null)
+        {
+            EndingDataManager.Instance.SetEndingType(endingType);
+        }
+        
+        SceneManager.LoadScene(endingSceneName);
+    }
+    
     void StartNewDay(NPCQueueSystem queueSystem)
     {
-        // 날짜 증가 (UI 숨긴 후)
+        if (queueSystem != null)
+        {
+            queueSystem.HideSpeechBubble();
+        }
+        
         if (DayManager.Instance != null)
         {
             int currentDayBefore = DayManager.Instance.GetCurrentDay();
+            
+            if (currentDayBefore >= 7)
+            {
+                int survivors = GetSurvivorCount();
+                EndingDataManager.EndingType endingType = DetermineEndingType(survivors);
+                
+                if (EndingDataManager.Instance != null)
+                {
+                    EndingDataManager.Instance.SetEndingType(endingType);
+                }
+                
+                SceneManager.LoadScene(endingSceneName);
+                return;
+            }
+            
             DayManager.Instance.NextDay();
             int currentDayAfter = DayManager.Instance.GetCurrentDay();
             Debug.Log($"[NighttimeUIManager] StartNewDay() - 날짜 증가: {currentDayBefore} → {currentDayAfter}");
         }
         
-        // 다음 날 큐 생성
         if (queueSystem != null)
         {
             queueSystem.StartNewDay();
         }
     }
     
-    /// <summary>
-    /// 페이드인 후 다음 날을 시작합니다.
-    /// </summary>
+    private int GetSurvivorCount()
+    {
+        NPCStateManager stateManager = NPCStateManager.Instance;
+        if (stateManager == null)
+        {
+            return 0;
+        }
+        
+        List<string> allNPCNames = stateManager.GetAllNPCNames();
+        if (allNPCNames == null || allNPCNames.Count == 0)
+        {
+            return 0;
+        }
+        
+        int survivors = 0;
+        foreach (string npcName in allNPCNames)
+        {
+            if (string.IsNullOrEmpty(npcName)) continue;
+            if (!stateManager.IsDead(npcName))
+            {
+                survivors++;
+            }
+        }
+        
+        return survivors;
+    }
+    
+    private EndingDataManager.EndingType DetermineEndingType(int survivors)
+    {
+        if (survivors == 0)
+        {
+            return EndingDataManager.EndingType.Dead;
+        }
+        else if (survivors >= 13)
+        {
+            return EndingDataManager.EndingType.Good;
+        }
+        else if (survivors >= 6)
+        {
+            return EndingDataManager.EndingType.Normal;
+        }
+        else
+        {
+            return EndingDataManager.EndingType.Bad;
+        }
+    }
+    
     IEnumerator FadeInOverlayAndStartNewDay(Image overlay, NPCQueueSystem queueSystem)
     {
         float elapsedTime = 0f;
@@ -335,11 +487,7 @@ public class NighttimeUIManager : MonoBehaviour
         HideNighttimeUI();
         StartNewDay(queueSystem);
     }
-    
-    /// <summary>
-    /// 페이드인 후 Nighttime UI를 숨깁니다.
-    /// </summary>
-    IEnumerator FadeInOverlayAndHideUI(Image overlay)
+        IEnumerator FadeInOverlayAndHideUI(Image overlay)
     {
         float elapsedTime = 0f;
         float fadeDuration = 0.5f;
@@ -361,9 +509,6 @@ public class NighttimeUIManager : MonoBehaviour
         HideNighttimeUI();
     }
     
-    /// <summary>
-    /// 페이드아웃 오버레이를 페이드인합니다.
-    /// </summary>
     IEnumerator FadeInOverlay(Image overlay)
     {
         float elapsedTime = 0f;

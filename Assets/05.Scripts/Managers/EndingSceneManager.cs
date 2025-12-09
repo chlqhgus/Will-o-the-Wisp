@@ -51,25 +51,29 @@ public class EndingSceneManager : MonoBehaviour
     private List<Graphic> buttonGraphics = new List<Graphic>();
     private bool isTransitioning = false;
     
-    public enum EndingType
-    {
-        Good,
-        Normal,
-        Bad,
-        Dead
-    }
-    
-    private EndingType currentEnding;
+    private EndingDataManager.EndingType currentEnding;
     private string[][] endingTexts = new string[4][];
     
     void Start()
     {
         InitializeEndingTexts();
-        DetermineEnding();
+        LoadEndingType();
         InitializeAudio();
         InitializeScene();
         SetupContinueButton();
         StartCoroutine(PlayEndingSequence());
+    }
+    
+    private void LoadEndingType()
+    {
+        if (EndingDataManager.Instance != null)
+        {
+            currentEnding = EndingDataManager.Instance.GetEndingType();
+        }
+        else
+        {
+            DetermineEnding();
+        }
     }
     
     private void InitializeAudio()
@@ -93,7 +97,7 @@ public class EndingSceneManager : MonoBehaviour
     
     private void InitializeEndingTexts()
     {
-        endingTexts[(int)EndingType.Good] = new string[]
+        endingTexts[(int)EndingDataManager.EndingType.Good] = new string[]
         {
             "At last the promised seventh night comes to an end. A ship of the neighboring nation appears beyond the blood-red sky.",
             "The survivors embrace one another, and their voices tremble with relief. Thanks to your guidance most of them now have a chance to see tomorrow. People look to you with gratitude and respect.",
@@ -101,14 +105,14 @@ public class EndingSceneManager : MonoBehaviour
             "Dokkaebi have not vanished. Yet you stand with the people now. Human will keep Joseon's peace from ever breaking again."
         };
         
-        endingTexts[(int)EndingType.Normal] = new string[]
+        endingTexts[(int)EndingDataManager.EndingType.Normal] = new string[]
         {
             "At last the promised seventh night comes to an end. A ship of the neighboring nation appears beyond the blood-red sky.",
             "Joseon begins to heal with the neighboring nation's aid. Yet the silence reveals the weight of those who could not be saved.",
             "As the night deepens a faint and familiar whisper curls at the edge of the woods—a reminder that Dokkaebi have never truly left."
         };
         
-        endingTexts[(int)EndingType.Bad] = new string[]
+        endingTexts[(int)EndingDataManager.EndingType.Bad] = new string[]
         {
             "At last the promised seventh night comes to an end. A ship of the neighboring nation appears beyond the blood-red sky.",
             "The air is heavy with an unsettling quiet. The few survivors stare at you with hollow eyes. Some whisper accusations—\"Why didn't you save them?\"",
@@ -116,7 +120,7 @@ public class EndingSceneManager : MonoBehaviour
             "And as night falls, the dokkaebi stir once more—stronger than before, feeding on the sorrow left behind. This is only the beginning of what remains."
         };
         
-        endingTexts[(int)EndingType.Dead] = new string[]
+        endingTexts[(int)EndingDataManager.EndingType.Dead] = new string[]
         {
             "At last the promised seventh night comes to an end. A ship of the neighboring nation appears beyond the blood-red sky.",
             "But there is no one left to greet them. The silence is absolute.",
@@ -131,19 +135,39 @@ public class EndingSceneManager : MonoBehaviour
         
         if (survivors == 0)
         {
-            currentEnding = EndingType.Dead;
+            currentEnding = EndingDataManager.EndingType.Dead;
         }
         else if (survivors >= 13)
         {
-            currentEnding = EndingType.Good;
+            currentEnding = EndingDataManager.EndingType.Good;
         }
         else if (survivors >= 6)
         {
-            currentEnding = EndingType.Normal;
+            currentEnding = EndingDataManager.EndingType.Normal;
         }
         else
         {
-            currentEnding = EndingType.Bad;
+            currentEnding = EndingDataManager.EndingType.Bad;
+        }
+    }
+    
+    private EndingDataManager.EndingType DetermineEndingType(int survivors)
+    {
+        if (survivors == 0)
+        {
+            return EndingDataManager.EndingType.Dead;
+        }
+        else if (survivors >= 13)
+        {
+            return EndingDataManager.EndingType.Good;
+        }
+        else if (survivors >= 6)
+        {
+            return EndingDataManager.EndingType.Normal;
+        }
+        else
+        {
+            return EndingDataManager.EndingType.Bad;
         }
     }
     
@@ -247,16 +271,16 @@ public class EndingSceneManager : MonoBehaviour
         Sprite[] backgrounds = null;
         switch (currentEnding)
         {
-            case EndingType.Good:
+            case EndingDataManager.EndingType.Good:
                 backgrounds = goodEndingBackgrounds;
                 break;
-            case EndingType.Normal:
+            case EndingDataManager.EndingType.Normal:
                 backgrounds = normalEndingBackgrounds;
                 break;
-            case EndingType.Bad:
+            case EndingDataManager.EndingType.Bad:
                 backgrounds = badEndingBackgrounds;
                 break;
-            case EndingType.Dead:
+            case EndingDataManager.EndingType.Dead:
                 backgrounds = deadEndingBackgrounds;
                 break;
         }
