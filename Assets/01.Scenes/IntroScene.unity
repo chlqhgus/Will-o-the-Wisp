@@ -269,7 +269,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 19}
+  m_AnchoredPosition: {x: 0, y: 26}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &80211180
@@ -320,8 +320,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -358,7 +358,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -661.6011, y: -56.97992, z: -674.26306, w: -60.145554}
+  m_margin: {x: -661.6011, y: -56.97992, z: -674.26306, w: -39.141113}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -594,7 +594,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.7488714, y: 1.7488714, z: 1.7488714}
+  m_LocalScale: {x: 1.8880816, y: 1.8880816, z: 1.8880816}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -1144,7 +1144,7 @@ MonoBehaviour:
   endDialogFadeInDuration: 1
   buttonFadeInDuration: 0.5
   buttonFadeInDelay: 0.5
-  gameSceneName: MainScene
+  gameSceneName: MainScene_Test
   sceneTransitionFadeDuration: 3
   typingAudioSource: {fileID: 0}
   typingSound: {fileID: 8300000, guid: e43ca647b96de43ed95e61de72e023bb, type: 3}
