@@ -22,8 +22,7 @@ MonoBehaviour:
   foodAcceptLines:
   - "Tch. Not meat? Fine. I\xA1\xAFll let it slide just this once."
   medicineAcceptLines: []
-  foodRejectLines:
-  - "You messing with me? Why can\xA1\xAFt you give it to me?"
+  foodRejectLines: []
   medicineRejectLines: []
   foodReRequestLines:
   - "You messing with me? Why can\xA1\xAFt you give it to me?"

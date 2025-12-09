@@ -5017,7 +5017,7 @@ MonoBehaviour:
   Birak: {fileID: 7886968207125377418, guid: 3637a1077efdb4ff193c65c1684b6175, type: 3}
   Gaksi: {fileID: 7545750991201754317, guid: d0fd164d3551d409e84d759edb973b1f, type: 3}
   Hoesa: {fileID: 0}
-  Nolgae: {fileID: 0}
+  Nolgae: {fileID: 4011724323506509794, guid: fb74c20370f7e465085a4d2603e85d21, type: 3}
 --- !u!4 &1373411997
 Transform:
   m_ObjectHideFlags: 0

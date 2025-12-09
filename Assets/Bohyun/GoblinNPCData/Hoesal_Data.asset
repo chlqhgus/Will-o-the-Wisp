@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Hoesal_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: 
+  npcName: Hoesal
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1

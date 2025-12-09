@@ -15,7 +15,7 @@ MonoBehaviour:
   npcName: Heoju
   foodRequestProbability: 1
   medicineRequestProbability: 0
-  reRequestChance: 1
+  reRequestChance: 0
   foodRequestLines:
   - I heard you give out food if I come here. Is that right?
   medicineRequestLines: []

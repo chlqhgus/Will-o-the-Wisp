@@ -900,6 +900,12 @@ public class NPCQueueSystem : MonoBehaviour
                     // 재요청하는 경우: 거절 대사 건너뛰고 바로 재요청 대사만 표시
                     // isProcessingInteraction은 ProcessRefusalAndReRequest에서 유지됨 (재요청 대사 표시 후에도 유지)
                     StartCoroutine(ProcessRefusalAndReRequest(frontNPC, skipRejectDialogue: true));
+                    // NOLGAE HOOK — Re-Accept
+                    if (npcName == "Nolgae")
+                    {
+                        NolgaeEffect.Instance.OnReAccept();
+                    }
+
                     return; // 재요청 코루틴이 플래그를 관리하므로 여기서 리턴
                 }
                 else
@@ -950,7 +956,12 @@ public class NPCQueueSystem : MonoBehaviour
                     // RecordRefusal 호출 후 refusalCount가 증가했으므로 다시 확인
                     refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
                 }
-                
+
+                if (refusalCount >= 1 && npcName == "Nolgae")
+                {
+                    NolgaeEffect.Instance.OnReReject();
+                }
+
                 string rejectDialogue = "";
                 if (requestedMedicine)
                 {
