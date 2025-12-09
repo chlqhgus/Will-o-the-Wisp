@@ -17,27 +17,28 @@ MonoBehaviour:
   medicineRequestProbability: 0.35
   reRequestChance: 0.5
   foodRequestLines:
-  - Got any food to spare? Hard to bargain on an empty belly.
+  - Please give me some food. It's too hard to bargain on an empty belly.
   medicineRequestLines:
-  - My body's acting up again. Can't make coin if I keel over.
+  - "My body\u2019s acting up again. Can\u2019t save my family if I keel over. Then..."
   foodAcceptLines:
-  - Knew you'd help. Can't bargain right on an empty stomach.
+  - Thanks... Really, thanks...
   medicineAcceptLines:
-  - Good thinking. Healthy merchant means healthy trade.
+  - Thanks... Really, thanks...
   foodRejectLines:
-  - Eh? No food? That's rough. Business runs on strength.
+  - No food? ...Am I just supposed to die?
   medicineRejectLines:
-  - Figures. Then guess business slows today.
+  - No medicine? I'm going to die tomorrow...
   foodReRequestLines:
   - Please...
   medicineReRequestLines:
   - Please...
   foodReAcceptLines:
-  - Finally! Better late than hungry.
+  - Finally...! Thank you so much...
   medicineReAcceptLines:
-  - At last! Was about to charge fate interest for this delay.
+  - Finally...! Thank you so much...
   foodReRejectLines:
-  - Alright. I get it. No charity for this merchant.,Tough world.
-  medicineReRejectLines: []
+  - No charity for this merchant? But you won't get any rice without me...
+  medicineReRejectLines:
+  - No charity for this merchant? But you won't get any rice without me...
   specialLines: []
   csvImportPath: 

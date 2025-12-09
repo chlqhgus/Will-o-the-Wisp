@@ -19,15 +19,15 @@ MonoBehaviour:
   foodRequestLines:
   - P-please. I haven't eaten. A small bite would save me.
   medicineRequestLines:
-  - I fear I will not last long so please let me have a little medicine.
+  - Please let me have a little medicine. I fear that I will not last long...
   foodAcceptLines:
-  - Bless you this will keep me alive for another day
+  - Thank you, Master... Truly, thank you...
   medicineAcceptLines:
-  - Thank you just knowing someone helps eases my pain
+  - Thank you, Master... Truly, thank you...
   foodRejectLines:
-  - Of course I should not have hoped and I beg your forgiveness
+  - O-of course. I should not have hoped. F-forgive me.
   medicineRejectLines:
-  - I asked too much and I will not trouble you again
+  - O-of course. I should not have hoped. F-forgive me.
   foodReRequestLines: []
   medicineReRequestLines: []
   foodReAcceptLines: []

@@ -572,6 +572,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1993872272731239846}
   - component: {fileID: 7314207219054704369}
+  - component: {fileID: 2180624231555819828}
   m_Layer: 5
   m_Name: Dictionary_detail
   m_TagString: Untagged
@@ -664,6 +665,19 @@ MonoBehaviour:
       isBold: 1
     - text: '  not to let that jaw tear your flesh.'
       isBold: 0
+--- !u!114 &2180624231555819828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7559896945622201840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 0}
 --- !u!1 &8872016369440362618
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,27 +17,27 @@ MonoBehaviour:
   medicineRequestProbability: 0.3
   reRequestChance: 0.5
   foodRequestLines:
-  - I expect a decent meal. Surely you know your duty.
+  - I expect a proper meal. I'll compensate you fairly.
   medicineRequestLines:
-  - See that a proper remedy is set aside for me.
+  - Bring me some medicine. I will pay for proper care.
   foodAcceptLines:
-  - Sensible choice. Yangban should not be kept hungry after all.
+  - Sensible choice. Payment will follow.
   medicineAcceptLines:
-  - I knew you'd recognize the importance of my condition.
+  - Sensible choice. Payment will follow.
   foodRejectLines:
-  - Mind your manners. It's hardly proper toward your betters.
+  - Some folk truly forget their place. Even when payment is offered.
   medicineRejectLines:
-  - I suppose some folk forget their place.
+  - Some folk truly forget their place. Even when payment is offered.
   foodReRequestLines:
-  - Please...
+  - Are you sure about that?
   medicineReRequestLines:
-  - Please...
+  - Are you sure about that?
   foodReAcceptLines:
-  - Tardy but acceptable. Yangban won't nitpick.
+  - Too late, but acceptable.
   medicineReAcceptLines:
-  - Finally. I trust you won't make me ask a third time.
+  - Too late, but acceptable.
   foodReRejectLines:
-  - So you persist-Very well. I'll remember this discourtesy.
+  - So even a second request is denied. Quite ungracious of you.
   medicineReRejectLines:
   - So even a second request is denied. Quite ungracious of you.
   specialLines: []

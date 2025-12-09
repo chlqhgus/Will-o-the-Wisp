@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7464407995838985689}
   - component: {fileID: 7688415799684464532}
   - component: {fileID: 93178059759651518}
+  - component: {fileID: 3624553873371490767}
   m_Layer: 0
   m_Name: Slave1
   m_TagString: Untagged
@@ -113,3 +114,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3624553873371490767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7716212944933369802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: 03fa62a6231a143ac95b5459d65e2c0d, type: 2}

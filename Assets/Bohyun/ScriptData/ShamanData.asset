@@ -17,28 +17,28 @@ MonoBehaviour:
   medicineRequestProbability: 0.3
   reRequestChance: 0.5
   foodRequestLines:
-  - My spirit weakens and I need warm food or the divine voice will fade.
+  - ...I need warm food or the divine voice will fade.
   medicineRequestLines:
-  - A murky aura clings to my breath and a remedy could clear the path.
+  - A medicine could help me see Dokkaebi's aura clearly.
   foodAcceptLines:
-  - Well done a gentle light will hover near you tonight.
+  - Good. ...As a reward, I will share a Dokkaebi's secret with you.
   medicineAcceptLines:
-  - A wise act a soft light will rest upon your steps.
+  - Good. ...As a reward, I will share a Dokkaebi's secret with you.
   foodRejectLines:
-  - Then the shadows will linger a little longer around us.
+  - Then my visions will dim. And no Dokkaebi truth will come tonight.
   medicineRejectLines:
-  - So be it my strength will tremble yet I will endure the shift.
+  - Then my visions will dim. And no Dokkaebi truth will come tonight.
   foodReRequestLines:
-  - Please...
+  - You might wanna think that over. Don't you want to know about the Dokkaebi?
   medicineReRequestLines:
-  - Please...
+  - You might wanna think that over. Don't you want to know about the Dokkaebi?
   foodReAcceptLines:
-  - Even late mercy changes the flow my body will find warmth again.
+  - Good. Now I can show you a Dokkaebi sign.
   medicineReAcceptLines:
-  - Good the departing energy was close yet your hand pulled it back.
+  - Good. Now I can show you a Dokkaebi sign.
   foodReRejectLines:
-  - Very well a faint shadow will follow your path for a while.
+  - A  shadow will follow you for a while. Stay cautious tonight.
   medicineReRejectLines:
-  - Understood this wavering aura is now mine to bear and you must stay cautious.
+  - A  shadow will follow you for a while. Stay cautious tonight.
   specialLines: []
   csvImportPath: 

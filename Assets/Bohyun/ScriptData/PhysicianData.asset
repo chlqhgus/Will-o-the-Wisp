@@ -17,28 +17,28 @@ MonoBehaviour:
   medicineRequestProbability: 0.35
   reRequestChance: 0.5
   foodRequestLines:
-  - I haven't the strength to treat anyone. A meal please.
+  - A meal please. I haven't the strength to treat anyone.
   medicineRequestLines:
-  - My pulse feels strained. A prepared remedy would be wise.
+  - A medicine please. My pulse feels strained.
   foodAcceptLines:
-  - Thank you. Proper nourishment will help me tend to others.
+  - Thank you... You didn't just save me, you saved all of us...
   medicineAcceptLines:
-  - Thank you. This dose will keep my condition balanced.
+  - Thank you... You didn't just save me, you saved all of us...
   foodRejectLines:
-  - Very well. But understand that fatigue dulls a healer's hand.
+  - ...Know that a weary physician makes fewer medicines...
   medicineRejectLines:
-  - Then I will proceed cautiously with what strength remains.
+  - ...Know that a weary physician makes fewer medicines...
   foodReRequestLines:
   - Please...
   medicineReRequestLines:
   - Please...
   foodReAcceptLines:
-  - Good. Even a belated meal will restore my focus.
+  - Guess I won't starve tonight...
   medicineReAcceptLines:
-  - I'm relieved you agreed. The remedy will steady my pulse.
+  - Meds! It's the meds!
   foodReRejectLines:
-  - I suppose I must endure. Such is the body's test.
+  - So you have no need for medicine...? Know it is essential for the people...
   medicineReRejectLines:
-  - Then I shall rely on my own regimen.
+  - So you have no need for medicine...? Know it is essential for the people...
   specialLines: []
   csvImportPath: 

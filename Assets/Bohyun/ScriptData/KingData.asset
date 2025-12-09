@@ -17,28 +17,28 @@ MonoBehaviour:
   medicineRequestProbability: 0.2
   reRequestChance: 0.5
   foodRequestLines:
-  - Bring me food at once. See that my dish reflects the dignity of the throne.
+  - Bring me food at once. You'll be rewarded of course.
   medicineRequestLines:
-  - Fetch the medicine. Even a king's body must be maintained to uphold Joseon.
+  - Get the meds. It cannot be that the King of Joseon falls ill.
   foodAcceptLines:
-  - As expected. A king is served without delay.
+  - Hmm. That'll work.
   medicineAcceptLines:
-  - As it should be. My health is not yours to ignore.
+  - As it should be.
   foodRejectLines:
   - Such defiance is bold. Do not make me repeat it.
   medicineRejectLines:
   - You deny the king medicine? This borders on treason.
   foodReRequestLines:
-  - 'What? '
+  - Such defiance is bold. Do not make me repeat it.
   medicineReRequestLines:
-  - What?
+  - Such defiance is bold. Do not make me repeat it.
   foodReAcceptLines:
-  - Only now you obey? See that it's worthy.
+  - Hmm. That'll work. I will forgive you, but only this once.
   medicineReAcceptLines:
-  - You choose wisely. Bring it with the respect my station demands.
+  - Hmm. That'll work. I will forgive you, but only this once.
   foodReRejectLines:
-  - A second plea yet still you defy my will? Begone from my sight.
+  - Enough. To refuse your king again is not easily forgiven.
   medicineReRejectLines:
-  - Enough. To refuse your king again is an offense not easily forgiven.
+  - Enough. To refuse your king again is not easily forgiven.
   specialLines: []
   csvImportPath: 

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 84830412584639785}
   - component: {fileID: 2290884633307579879}
   - component: {fileID: 6877595344088340180}
+  - component: {fileID: 898036968758793494}
   m_Layer: 0
   m_Name: King
   m_TagString: Untagged
@@ -113,3 +114,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &898036968758793494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4037160813224588927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: 0881f95781c334ea28f2010eb8794d12, type: 2}
