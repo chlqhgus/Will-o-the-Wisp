@@ -3,27 +3,31 @@ using System.Collections.Generic;
 
 public class DuakEffect : MonoBehaviour
 {
-    [Header("NPC names that Duak may target")]
-    public List<string> possibleTargets = new List<string>();
-
-    /// <summary>
-    /// Call this when Duak is RE-REJECTED.
-    /// Picks a random NPC from the list and marks them to need medicine tomorrow.
-    /// </summary>
-    public void ApplyDuakCurse()
+    private static DuakEffect instance;
+    public static DuakEffect Instance
     {
-        if (possibleTargets.Count == 0)
+        get
         {
-            Debug.LogWarning("[DuakEffect] No possible targets set.");
-            return;
+            if (instance == null)
+                instance = FindFirstObjectByType<DuakEffect>();
+            return instance;
         }
+    }
 
-        // pick random target
-        string targetName = possibleTargets[Random.Range(0, possibleTargets.Count)];
+    public void ApplyDuak(string duakName)
+    {
+        List<string> npcList = NPCStateManager.Instance.GetAllNPCNames();
+        if (npcList == null || npcList.Count == 0) return;
 
-        var state = NPCStateManager.Instance.GetOrCreateState(targetName);
-        state.forceMedicineTomorrow = true;
+        npcList.Remove(duakName);
+        if (npcList.Count == 0) return;
 
-        Debug.Log($"[DuakEffect] {targetName} has been cursed. They will need medicine tomorrow.");
+        string target = npcList[Random.Range(0, npcList.Count)];
+
+        // FIXED — correct property name
+        NPCStateManager.Instance.GetOrCreateState(target).willNeedMedicineTomorrow = true;
+
+        Debug.Log($"[DUAK CURSE] {duakName} cursed {target} → needs medicine tomorrow.");
     }
 }
+
