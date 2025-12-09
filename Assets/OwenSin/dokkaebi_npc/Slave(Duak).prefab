@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1368830798569161985}
   - component: {fileID: 6650505431133709820}
   - component: {fileID: -4270105611081118193}
+  - component: {fileID: -1499609904933157794}
   m_Layer: 0
   m_Name: Slave(Duak)
   m_TagString: Untagged
@@ -127,3 +128,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
   bohyunData: {fileID: 11400000, guid: 63961ae365711420786fe00eeb62ba7f, type: 2}
+--- !u!114 &-1499609904933157794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 986257671831114905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceee822ecabf94475aa0a51c70ca6cfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DuakEffect
+  possibleTargets:
+  - Slave 2
+  - Slave 3
+  - Slave 1

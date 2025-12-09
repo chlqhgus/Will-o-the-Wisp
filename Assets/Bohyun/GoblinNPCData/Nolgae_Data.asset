@@ -10,28 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
-  m_Name: Duak_Data
+  m_Name: Nolgae_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: Slave(Duak)
+  npcName: 
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1
-  foodRequestLines:
-  - P-please. Spare me s-some food.
+  foodRequestLines: []
   medicineRequestLines: []
-  foodAcceptLines:
-  - T-thank you truly.
+  foodAcceptLines: []
   medicineAcceptLines: []
-  foodRejectLines:
-  - I beg you. I-I am so starving for a long time.
+  foodRejectLines: []
   medicineRejectLines: []
   foodReRequestLines: []
   medicineReRequestLines: []
-  foodReAcceptLines:
-  - "T-thank you. I won\xA1\xAFt forget this."
+  foodReAcceptLines: []
   medicineReAcceptLines: []
-  foodReRejectLines:
-  - Okay. T-then I suppose there's nothing I can do.
+  foodReRejectLines: []
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

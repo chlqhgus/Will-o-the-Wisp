@@ -5012,8 +5012,8 @@ MonoBehaviour:
   - {fileID: 7716212944933369802, guid: f0a077b768e1846c68acf24c4510df52, type: 3}
   - {fileID: 1173175363873446436, guid: 9fc1b23d982634515a92fbe449536c01, type: 3}
   shamanEarlyPositionLimit: 5
-  Heoju: {fileID: 3331030340175329738, guid: 4a407618ce497447892a8e362b5bffc3, type: 3}
-  Duak: {fileID: 986257671831114905, guid: 6081b642d4f244907acffc2e3161b986, type: 3}
+  Heoju: {fileID: 0}
+  Duak: {fileID: 0}
   Birak: {fileID: 0}
   Gaksi: {fileID: 0}
   Hoesa: {fileID: 0}
