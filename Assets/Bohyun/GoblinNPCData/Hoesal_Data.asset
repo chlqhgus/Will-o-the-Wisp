@@ -12,21 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Hoesal_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: 
+  npcName: Hoesai
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1
-  foodRequestLines: []
+  foodRequestLines:
+  - A faint sign drifts toward me. Offer me rice and the veil may lift.
   medicineRequestLines: []
-  foodAcceptLines: []
+  foodAcceptLines:
+  - 'The omen brightens. Your choice bends the path toward safety. '
+  - As the spirits settle one name emerges-{Dokkaebi's name}.
   medicineAcceptLines: []
   foodRejectLines: []
   medicineRejectLines: []
-  foodReRequestLines: []
+  foodReRequestLines:
+  - "Refusal twists the omen. Someone\xA1\xAFs fate dims because of this."
+  - As the spirits settle one name emerges-{Dokkaebi's name}.
   medicineReRequestLines: []
-  foodReAcceptLines: []
+  foodReAcceptLines:
+  - "Balance returns. Hear the name that hid from today\xA1\xAFs daylight."
+  - ' The spirits show me the number-{Dokkaebi number}.'
   medicineReAcceptLines: []
-  foodReRejectLines: []
+  foodReRejectLines:
+  - The omen fractures.
+  - I will not ask again-face what approaches.
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

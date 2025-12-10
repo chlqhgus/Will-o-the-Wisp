@@ -81,7 +81,7 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    void Refresh()
+    public void Refresh()
     {
         if (lotusText != null) lotusText.text = "x" + lotusRice;
         if (herbText != null) herbText.text = "x" + herbalMedicine;

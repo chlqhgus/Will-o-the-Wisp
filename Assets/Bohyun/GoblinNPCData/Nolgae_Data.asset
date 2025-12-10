@@ -12,21 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636995ab3daa04e7aa7c3aab9483c98d, type: 3}
   m_Name: Nolgae_Data
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
-  npcName: 
+  npcName: Nolgae
   foodRequestProbability: 1
   medicineRequestProbability: 0
   reRequestChance: 1
-  foodRequestLines: []
+  foodRequestLines:
+  - I command you-prepare rice for me. Do not make me repeat myself.
   medicineRequestLines: []
-  foodAcceptLines: []
+  foodAcceptLines:
+  - You understand your duty. I shall remember this for now.
   medicineAcceptLines: []
   foodRejectLines: []
   medicineRejectLines: []
-  foodReRequestLines: []
+  foodReRequestLines:
+  - You dare deny me-even pretenders know their place better.
   medicineReRequestLines: []
-  foodReAcceptLines: []
+  foodReAcceptLines:
+  - Your belated obedience will suffice-I expect better next time.
   medicineReAcceptLines: []
-  foodReRejectLines: []
+  foodReRejectLines:
+  - Now the weight of your rebellion will fall elsewhere.
+  - Remember that. Someone's lives will pay for your insolence.
   medicineReRejectLines: []
   specialLines: []
   csvImportPath: 

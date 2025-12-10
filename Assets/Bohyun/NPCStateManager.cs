@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// NPC별 상태를 추적하는 매니저 (약을 받지 못한 날 수, 죽었는지 등)
-/// </summary>
 public class NPCStateManager : MonoBehaviour
 {
     private static NPCStateManager instance;
@@ -28,24 +25,25 @@ public class NPCStateManager : MonoBehaviour
     public class NPCState
     {
         public string npcName;
+
         public int daysWithoutMedicine = 0;
         public int daysWithoutFood = 0;
+
         public bool isDead = false;
+
         public bool requestedMedicineToday = false;
         public int refusalCount = 0;
+
         public bool receivedFoodToday = false;
         public bool receivedMedicineToday = false;
 
-        // ⭐ ADDED FOR DUAK
+        // ⭐ Used by Duak + Birak
         public bool forceMedicineTomorrow = false;
     }
 
     private Dictionary<string, NPCState> npcStates = new Dictionary<string, NPCState>();
 
-    // 무당 이벤트 관련
-    private bool hasShamanEventTriggered = false;
-
-    // 오늘 등장한 모든 NPC 이름 목록 (daySchedule에서 설정됨)
+    // List of NPCs that appear today
     private List<string> allNPCNames = new List<string>();
 
     void Awake()
@@ -67,14 +65,7 @@ public class NPCStateManager : MonoBehaviour
         {
             npcStates[npcName] = new NPCState
             {
-                npcName = npcName,
-                daysWithoutMedicine = 0,
-                daysWithoutFood = 0,
-                isDead = false,
-                requestedMedicineToday = false,
-                refusalCount = 0,
-                receivedFoodToday = false,
-                receivedMedicineToday = false
+                npcName = npcName
             };
         }
         return npcStates[npcName];
@@ -82,73 +73,62 @@ public class NPCStateManager : MonoBehaviour
 
     public void RecordMedicineRequest(string npcName)
     {
-        NPCState state = GetOrCreateState(npcName);
-        state.requestedMedicineToday = true;
+        GetOrCreateState(npcName).requestedMedicineToday = true;
     }
 
     public void RecordMedicineGiven(string npcName)
     {
-        NPCState state = GetOrCreateState(npcName);
-        state.daysWithoutMedicine = 0;
-        state.daysWithoutFood = 0;
-        state.requestedMedicineToday = false;
-        state.receivedMedicineToday = true;
-    }
-
-    public void RecordRefusal(string npcName, bool requestedMedicine)
-    {
-        NPCState state = GetOrCreateState(npcName);
-        state.refusalCount++;
-
-        if (requestedMedicine)
-        {
-            state.receivedMedicineToday = false;
-        }
-    }
-
-    public int GetRefusalCount(string npcName)
-    {
-        NPCState state = GetOrCreateState(npcName);
-        return state.refusalCount;
-    }
-
-    public void ResetRefusalCount(string npcName)
-    {
-        NPCState state = GetOrCreateState(npcName);
-        state.refusalCount = 0;
-    }
-
-    public bool IsDead(string npcName)
-    {
-        if (!npcStates.ContainsKey(npcName))
-            return false;
-        return npcStates[npcName].isDead;
+        var st = GetOrCreateState(npcName);
+        st.daysWithoutMedicine = 0;
+        st.receivedMedicineToday = true;
+        st.receivedFoodToday = true;
+        st.requestedMedicineToday = false;
     }
 
     public void RecordFoodGiven(string npcName)
     {
-        NPCState state = GetOrCreateState(npcName);
-        state.receivedFoodToday = true;
-        state.daysWithoutFood = 0;
+        var st = GetOrCreateState(npcName);
+        st.daysWithoutFood = 0;
+        st.receivedFoodToday = true;
     }
 
+    // ⭐ REQUIRED BY NIGHTTIME + QUEUE SYSTEM
     public bool ReceivedFoodToday(string npcName)
     {
-        if (!npcStates.ContainsKey(npcName))
-            return false;
+        if (!npcStates.ContainsKey(npcName)) return false;
         return npcStates[npcName].receivedFoodToday;
     }
 
     public bool ReceivedMedicineToday(string npcName)
     {
-        if (!npcStates.ContainsKey(npcName))
-            return false;
+        if (!npcStates.ContainsKey(npcName)) return false;
         return npcStates[npcName].receivedMedicineToday;
     }
 
-    public void SetAllNPCNames(List<string> npcNames)
+    public void RecordRefusal(string npcName, bool medicineRequest)
     {
-        allNPCNames = new List<string>(npcNames);
+        var st = GetOrCreateState(npcName);
+        st.refusalCount++;
+    }
+
+    public int GetRefusalCount(string npcName)
+    {
+        return GetOrCreateState(npcName).refusalCount;
+    }
+
+    public void ResetRefusalCount(string npcName)
+    {
+        GetOrCreateState(npcName).refusalCount = 0;
+    }
+
+    public bool IsDead(string npcName)
+    {
+        return npcStates.ContainsKey(npcName) && npcStates[npcName].isDead;
+    }
+
+    public void SetAllNPCNames(List<string> names)
+    {
+        allNPCNames = new List<string>(names);
     }
 
     public List<string> GetAllNPCNames()
@@ -156,73 +136,89 @@ public class NPCStateManager : MonoBehaviour
         return new List<string>(allNPCNames);
     }
 
+    // ⭐ Nighttime death logic
     public void EndDay()
     {
-        foreach (var state in npcStates.Values)
+        foreach (var st in npcStates.Values)
         {
-            if (state.isDead) continue;
+            if (st.isDead) continue;
 
-            if (state.requestedMedicineToday && !state.receivedMedicineToday)
+            if (st.requestedMedicineToday && !st.receivedMedicineToday)
             {
-                state.isDead = true;
-                Debug.Log($"{state.npcName}이(가) 약을 받지 못해 밤에 죽었습니다.");
+                st.isDead = true;
+                Debug.Log($"{st.npcName} died from no medicine.");
                 continue;
             }
 
-            bool receivedFoodOrMedicine = state.receivedFoodToday || state.receivedMedicineToday;
+            bool hadHelp = st.receivedFoodToday || st.receivedMedicineToday;
 
-            if (!receivedFoodOrMedicine)
+            if (!hadHelp)
             {
-                state.daysWithoutFood++;
-
-                if (state.daysWithoutFood >= 2)
+                st.daysWithoutFood++;
+                if (st.daysWithoutFood >= 2)
                 {
-                    state.isDead = true;
-                    Debug.Log($"{state.npcName}이(가) 이틀 연속 밥/약을 모두 받지 못해 죽었습니다.");
+                    st.isDead = true;
+                    Debug.Log($"{st.npcName} starved for 2 days.");
                 }
             }
             else
             {
-                state.daysWithoutFood = 0;
+                st.daysWithoutFood = 0;
             }
         }
     }
 
+    // ⭐ FIXED FOR DOKKAEBI EFFECTS
     public void OnNewDay()
     {
-        foreach (var state in npcStates.Values)
+        foreach (var st in npcStates.Values)
         {
-            // ⭐ ADDED FOR DUAK
-            if (state.forceMedicineTomorrow && !state.isDead)
-            {
-                state.requestedMedicineToday = true;
-                state.forceMedicineTomorrow = false;
-                Debug.Log($"[Duak Curse] {state.npcName} must request medicine today.");
-            }
+            bool forcedMedicine = st.forceMedicineTomorrow;
+            st.forceMedicineTomorrow = false;
 
-            // Reset daily flags
-            state.requestedMedicineToday = false;
-            state.refusalCount = 0;
-            state.receivedFoodToday = false;
-            state.receivedMedicineToday = false;
+            st.refusalCount = 0;
+            st.receivedFoodToday = false;
+            st.receivedMedicineToday = false;
+
+            if (forcedMedicine && !st.isDead)
+            {
+                st.requestedMedicineToday = true;
+                Debug.Log($"[Dokkaebi Effect] {st.npcName} must request medicine today.");
+            }
+            else
+            {
+                st.requestedMedicineToday = false;
+            }
         }
     }
 
     public void ResetAllStates()
     {
         npcStates.Clear();
-        hasShamanEventTriggered = false;
     }
 
+    // ------------------------------
+    // SHAMAN EVENT FLAG
+    // ------------------------------
+
+    private bool shamanEventTriggered = false;
+
+    /// <summary>
+    /// 무당 이벤트가 이미 발동했는지 확인
+    /// </summary>
     public bool HasShamanEventTriggered()
     {
-        return hasShamanEventTriggered;
+        return shamanEventTriggered;
     }
 
+    /// <summary>
+    /// 무당 이벤트 발동을 기록 (한번만 실행됨)
+    /// </summary>
     public void SetShamanEventTriggered()
     {
-        hasShamanEventTriggered = true;
+        shamanEventTriggered = true;
     }
+
 }
 
 

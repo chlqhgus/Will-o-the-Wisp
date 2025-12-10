@@ -3,27 +3,55 @@ using System.Collections.Generic;
 
 public class DuakEffect : MonoBehaviour
 {
-    [Header("NPC names that Duak may target")]
-    public List<string> possibleTargets = new List<string>();
-
-    /// <summary>
-    /// Call this when Duak is RE-REJECTED.
-    /// Picks a random NPC from the list and marks them to need medicine tomorrow.
-    /// </summary>
-    public void ApplyDuakCurse()
+    private static DuakEffect instance;
+    public static DuakEffect Instance
     {
-        if (possibleTargets.Count == 0)
+        get
         {
-            Debug.LogWarning("[DuakEffect] No possible targets set.");
+            if (instance == null)
+            {
+                instance = FindObjectOfType<DuakEffect>();
+                if (instance == null)
+                {
+                    GameObject go = new GameObject("DuakEffect");
+                    instance = go.AddComponent<DuakEffect>();
+                }
+            }
+            return instance;
+        }
+    }
+
+    [Header("NPCs Duak can target (player editable)")]
+    public List<string> targetNPCs = new List<string>();
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // ▶ Re-Reject → choose 1 random NPC FROM PLAYER LIST → force medicine tomorrow
+    public void OnReReject()
+    {
+        if (targetNPCs.Count == 0)
+        {
+            Debug.LogWarning("[Duak] targetNPCs list is EMPTY — nothing to choose.");
             return;
         }
 
-        // pick random target
-        string targetName = possibleTargets[Random.Range(0, possibleTargets.Count)];
+        string npc = targetNPCs[Random.Range(0, targetNPCs.Count)];
 
-        var state = NPCStateManager.Instance.GetOrCreateState(targetName);
-        state.forceMedicineTomorrow = true;
+        NPCStateManager.Instance.GetOrCreateState(npc).forceMedicineTomorrow = true;
 
-        Debug.Log($"[DuakEffect] {targetName} has been cursed. They will need medicine tomorrow.");
+        Debug.Log($"[Duak] Selected {npc} → must request medicine tomorrow.");
     }
 }
+
+

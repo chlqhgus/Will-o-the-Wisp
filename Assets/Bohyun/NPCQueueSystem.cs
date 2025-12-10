@@ -812,63 +812,63 @@ public class NPCQueueSystem : MonoBehaviour
     {
         return frontNPC != null && activeNPCs.Count > 0;
     }
-    
+
     public void RefuseFrontNPC()
     {
         Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
-        
+
         if (activeNPCs.Count == 0)
         {
             Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: activeNPCs가 비어있습니다.");
             return;
         }
-        
+
         if (frontNPC == null)
         {
             Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: frontNPC가 null입니다.");
             return;
         }
-        
+
         // NPC가 목표 위치에 도착했는지 확인
         bool hasArrived = false;
         if (npcArrivedAtPosition.ContainsKey(frontNPC))
         {
             hasArrived = npcArrivedAtPosition[frontNPC];
         }
-        
+
         if (!hasArrived)
         {
             Debug.LogWarning($"[NPCQueueSystem] RefuseFrontNPC() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
             return;
         }
-        
+
         if (isProcessingInteraction)
         {
             Debug.LogWarning("[NPCQueueSystem] RefuseFrontNPC() 실패: 이미 상호작용 처리 중입니다.");
             return;
         }
-        
+
         // 상호작용 시작
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] RefuseFrontNPC() 상호작용 시작");
 
         BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
-        string npcName = GetNPCName(frontNPC); // 고유 NPC 이름
+        string npcName = GetNPCName(frontNPC); // GetNPCName strips "(Clone)"
         bool requestedMedicine = false;
-        
+
         // 거절 횟수 확인 (고유 NPC 이름 사용) - RecordRefusal 호출 전에 확인해야 함
         int refusalCount = 0;
         if (NPCStateManager.Instance != null)
         {
             refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
         }
-        
+
         Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() - 현재 refusalCount: {refusalCount}");
-        
+
         if (bohyunData != null)
         {
             requestedMedicine = currentNPCRequestedMedicine;
-            
+
             // 재요청 가능 여부 확인 (re-accept나 re-reject 대사가 있으면 재요청 가능)
             bool hasReRequest = false;
             if (requestedMedicine)
@@ -881,12 +881,10 @@ public class NPCQueueSystem : MonoBehaviour
                 hasReRequest = (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0) ||
                                (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0);
             }
-            
+
             // 재요청 가능하고 첫 거절이면, 랜덤으로 재요청 여부 결정
-            // (약 요청 거절도 재요청 가능, 밤에 사망 처리됨)
             if (hasReRequest && refusalCount == 0)
             {
-                // 랜덤으로 재요청할지 결정
                 if (Random.value <= reRequestChance)
                 {
                     // 상태 기록 (재요청하기 전에 기록)
@@ -894,46 +892,38 @@ public class NPCQueueSystem : MonoBehaviour
                     {
                         NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
                     }
-                    
-                    // 재요청하는 경우: 거절 대사 건너뛰고 바로 재요청 대사만 표시
-                    // isProcessingInteraction은 ProcessRefusalAndReRequest에서 유지됨 (재요청 대사 표시 후에도 유지)
+
+                    // 재요청: skip reject dialogue, show re-request lines
                     StartCoroutine(ProcessRefusalAndReRequest(frontNPC, skipRejectDialogue: true));
-                    return; // 재요청 코루틴이 플래그를 관리하므로 여기서 리턴
+                    return; // ProcessRefusalAndReRequest will release isProcessingInteraction
                 }
                 else
                 {
-                    // 재요청하지 않는 경우: 상태 기록 후 거절 대사 표시 후 지나감
+                    // no re-request: record refusal then show reject dialogue (or remove)
                     if (NPCStateManager.Instance != null)
                     {
                         NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
                     }
-                    
+
                     string rejectDialogue = "";
                     if (requestedMedicine)
                     {
                         if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
-                        {
                             rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
-                        }
                     }
                     else
                     {
                         if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
-                        {
                             rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
-                        }
                     }
-                    
+
                     if (!string.IsNullOrEmpty(rejectDialogue))
                     {
                         ShowDialogueText(rejectDialogue);
-                        // 타이핑 완료와 대사 표시 시간을 기다린 후 제거 시작
                         StartCoroutine(WaitForDialogueAndRemove(frontNPC));
                     }
                     else
                     {
-                        // 대사가 없으면 바로 제거
-                        Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() ProcessInteractionAndRemove 시작 (재요청 없음, 대사 없음) - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
                         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
                     }
                     return;
@@ -941,31 +931,68 @@ public class NPCQueueSystem : MonoBehaviour
             }
             else
             {
-                // 두 번째 거절이거나 재요청 불가능: 상태 기록 후 거절 대사 표시 후 제거
+                // second refusal (re-reject) OR re-request not available => record refusal then apply effects & remove
                 if (NPCStateManager.Instance != null)
                 {
                     NPCStateManager.Instance.RecordRefusal(npcName, requestedMedicine);
-                    // RecordRefusal 호출 후 refusalCount가 증가했으므로 다시 확인
+                    // update refusalCount after record if needed
                     refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
                 }
-                
+
+                // ---------------- DOKKAEBI HOOKS for RE-REJECT (refusalCount >= 1) ----------------
+                if (refusalCount >= 1)
+                {
+                    // Birak: mark NPC immediately behind this NPC in queue to require medicine tomorrow
+                    if (npcName == "Birak")
+                    {
+                        if (activeNPCs.Count > 1 && activeNPCs[1] != null && NPCStateManager.Instance != null)
+                        {
+                            string behindName = GetNPCName(activeNPCs[1]);
+                            NPCStateManager.Instance.GetOrCreateState(behindName).forceMedicineTomorrow = true;
+                            Debug.Log($"[Birak Effect] {behindName} will require medicine tomorrow (set by Birak re-reject).");
+                        }
+                    }
+                    // Duak: use DuakEffect (inspector list) to pick a random target
+                    else if (npcName == "Duak")
+                    {
+                        if (DuakEffect.Instance != null)
+                        {
+                            DuakEffect.Instance.OnReReject(); // DuakEffect chooses random from its inspector list
+                            Debug.Log("[Duak Effect] DuakEffect.OnReReject() invoked.");
+                        }
+                    }
+                    // Gaksi: immediate penalty -2 rice
+                    else if (npcName == "Gaksi")
+                    {
+                        if (inventory != null)
+                        {
+                            inventory.AddLotus(-2); // AddLotus(-2) will Refresh
+                            Debug.Log("[Gaksi Effect] Player lost 2 rice (Gaksi re-reject).");
+                        }
+                    }
+                    // Nolgae: call NolgaeEffect's re-reject which marks deaths (isDead = true) on its list
+                    else if (npcName == "Nolgae")
+                    {
+                        if (NolgaeEffect.Instance != null)
+                        {
+                            NolgaeEffect.Instance.OnReReject();
+                            Debug.Log("[Nolgae Effect] NolgaeEffect.OnReReject() invoked.");
+                        }
+                    }
+                }
+                // ------------------------------------------------------------------------------
+
+                // Now show re-reject dialogue (if any) and remove
                 string rejectDialogue = "";
                 if (requestedMedicine)
                 {
-                    // 두 번 거절당했을 때 (RecordRefusal 호출 후이므로 refusalCount >= 1)
                     if (refusalCount >= 1)
                     {
                         if (bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
-                        {
                             rejectDialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
-                        }
                         else
-                        {
-                            // re-reject 대사가 없으면 기본 메시지
                             rejectDialogue = "I'm gonna die tomorrow...";
-                        }
                     }
-                    // 첫 거절
                     else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                     {
                         rejectDialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
@@ -973,36 +1000,26 @@ public class NPCQueueSystem : MonoBehaviour
                 }
                 else
                 {
-                    // 두 번 거절당했을 때
                     if (refusalCount >= 1)
                     {
                         if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
-                        {
                             rejectDialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
-                        }
                         else
-                        {
-                            // re-reject 대사가 없으면 기본 메시지
                             rejectDialogue = "I'm gonna die tomorrow...";
-                        }
                     }
-                    // 첫 거절
                     else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                     {
                         rejectDialogue = bohyunData.foodRejectLines[Random.Range(0, bohyunData.foodRejectLines.Length)];
                     }
                 }
-                
+
                 if (!string.IsNullOrEmpty(rejectDialogue))
                 {
                     ShowDialogueText(rejectDialogue);
-                    // 타이핑 완료와 대사 표시 시간을 기다린 후 제거 시작
                     StartCoroutine(WaitForDialogueAndRemove(frontNPC));
                 }
                 else
                 {
-                    // 대사가 없으면 바로 제거
-                    Debug.Log($"[NPCQueueSystem] RefuseFrontNPC() ProcessInteractionAndRemove 시작 (재요청 없음, 대사 없음) - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
                     StartCoroutine(ProcessInteractionAndRemove(frontNPC));
                 }
             }
@@ -1015,41 +1032,42 @@ public class NPCQueueSystem : MonoBehaviour
         }
     }
 
+
     public void GiveLotusRice()
     {
         Debug.Log($"[NPCQueueSystem] GiveLotusRice() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
-        
+
         if (activeNPCs.Count == 0)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: activeNPCs가 비어있습니다.");
             return;
         }
-        
+
         if (frontNPC == null)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: frontNPC가 null입니다.");
             return;
         }
-        
+
         // NPC가 목표 위치에 도착했는지 확인
         bool hasArrived = false;
         if (npcArrivedAtPosition.ContainsKey(frontNPC))
         {
             hasArrived = npcArrivedAtPosition[frontNPC];
         }
-        
+
         if (!hasArrived)
         {
             Debug.LogWarning($"[NPCQueueSystem] GiveLotusRice() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
             return;
         }
-        
+
         if (isProcessingInteraction)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveLotusRice() 실패: 이미 상호작용 처리 중입니다.");
             return;
         }
-        
+
         // Inventory 확인
         if (inventory != null && inventory.lotusRice <= 0)
         {
@@ -1057,27 +1075,27 @@ public class NPCQueueSystem : MonoBehaviour
             ShowDialogueText("연밥이 부족합니다.");
             return;
         }
-        
+
         // 상호작용 시작
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] GiveLotusRice() 상호작용 시작");
 
         BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
-        
+
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
         isCurrentNPCShaman = IsShamanNPC(bohyunData);
-        
-        // 거절 횟수 확인
+
+        // 거절 횟수 확인 (this is BEFORE any RecordRefusal/RecordFoodGiven calls - important)
         int refusalCount = 0;
         if (NPCStateManager.Instance != null)
         {
             refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
         }
-        
+
         string dialogue = "";
         bool isAccept = false;
-        
+
         if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
@@ -1085,63 +1103,103 @@ public class NPCQueueSystem : MonoBehaviour
             {
                 // 밥을 요청했고 밥을 줌 = Accept
                 isAccept = true;
-                
+
                 // 밥을 준 기록
                 if (NPCStateManager.Instance != null)
                 {
                     NPCStateManager.Instance.RecordFoodGiven(npcName);
                     NPCStateManager.Instance.ResetRefusalCount(npcName);
                 }
-                
+
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
                     if (bohyunData.foodReAcceptLines != null && bohyunData.foodReAcceptLines.Length > 0)
-                    {
                         dialogue = bohyunData.foodReAcceptLines[Random.Range(0, bohyunData.foodReAcceptLines.Length)];
-                    }
                     else
-                    {
-                        // re-accept 대사가 없으면 기본 메시지
                         dialogue = "Thank you... Thank you...";
-                    }
                 }
                 else if (bohyunData.foodAcceptLines != null && bohyunData.foodAcceptLines.Length > 0)
                 {
                     dialogue = bohyunData.foodAcceptLines[Random.Range(0, bohyunData.foodAcceptLines.Length)];
                 }
             }
-            else // 약 요청
+            else // 약 요청인데 밥을 줌 => 거절
             {
-                // 약을 요청했는데 밥을 줌 = 거절로 간주 (밤에 사망 처리됨)
                 isAccept = false;
                 if (NPCStateManager.Instance != null)
                 {
                     NPCStateManager.Instance.RecordRefusal(npcName, true);
                 }
-                
-                // 거절 대사 표시
+
                 if (refusalCount >= 1 && bohyunData.medicineReRejectLines != null && bohyunData.medicineReRejectLines.Length > 0)
                 {
-                    // 두 번 거절당했을 때
                     dialogue = bohyunData.medicineReRejectLines[Random.Range(0, bohyunData.medicineReRejectLines.Length)];
                 }
                 else if (bohyunData.medicineRejectLines != null && bohyunData.medicineRejectLines.Length > 0)
                 {
-                    // 첫 거절
                     dialogue = bohyunData.medicineRejectLines[Random.Range(0, bohyunData.medicineRejectLines.Length)];
                 }
             }
         }
-        
-        // 대사 표시
+
+        // ---------------- DOKKAEBI HOOKS (based on isAccept and pre-change refusalCount) ----------------
+        // Mapping:
+        // if (isAccept && refusalCount == 1) → Re-Accept
+        // if (isAccept && refusalCount == 0) → First Accept
+        // if (!isAccept && refusalCount == 1) → Re-Reject
+        // if (!isAccept && refusalCount == 0) → First Reject
+
+        // Gaksi: First Accept => give 1 medicine; Re-Reject => lose 2 rice (immediate)
+        if (npcName == "Gaksi")
+        {
+            if (isAccept && refusalCount == 0)
+            {
+                if (inventory != null)
+                {
+                    inventory.AddHerb(1); // uses Inventory method (handles Refresh)
+                    Debug.Log("[Gaksi Effect] First accept -> +1 medicine (immediate).");
+                }
+            }
+            else if (!isAccept && refusalCount == 1)
+            {
+                if (inventory != null)
+                {
+                    inventory.AddLotus(-2); // handles negative via AddLotus
+                    Debug.Log("[Gaksi Effect] Re-reject -> -2 rice (immediate).");
+                }
+            }
+        }
+
+        // Nolgae: Re-Accept -> mark (OnReAccept), Re-Reject -> kill (OnReReject)
+        if (npcName == "Nolgae")
+        {
+            if (isAccept && refusalCount == 1)
+            {
+                if (NolgaeEffect.Instance != null)
+                {
+                    NolgaeEffect.Instance.OnReAccept();
+                    Debug.Log("[Nolgae Effect] OnReAccept invoked (from GiveLotusRice).");
+                }
+            }
+            if (!isAccept && refusalCount == 1)
+            {
+                if (NolgaeEffect.Instance != null)
+                {
+                    NolgaeEffect.Instance.OnReReject();
+                    Debug.Log("[Nolgae Effect] OnReReject invoked (from GiveLotusRice).");
+                }
+            }
+        }
+        // -----------------------------------------------------------------------------------------------
+
+        // Show dialogue
         if (!string.IsNullOrEmpty(dialogue))
         {
             ShowDialogueText(dialogue);
         }
         else if (isAccept)
         {
-            // Accept 대사가 없으면 기본 메시지
             ShowDialogueText("Thank you!");
         }
 
@@ -1154,50 +1212,51 @@ public class NPCQueueSystem : MonoBehaviour
 
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
-        
+
         // 무당 플래그 리셋 (다음 NPC를 위해)
         isCurrentNPCShaman = false;
-        
+
         // 대사 표시 후 페이드아웃 및 제거
         Debug.Log($"[NPCQueueSystem] GiveLotusRice() ProcessInteractionAndRemove 시작 - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
 
+
     public void GiveHerbalMedicine()
     {
         Debug.Log($"[NPCQueueSystem] GiveHerbalMedicine() 호출됨 - activeNPCs.Count: {activeNPCs.Count}, frontNPC: {(frontNPC != null ? frontNPC.name : "null")}, isProcessingInteraction: {isProcessingInteraction}");
-        
+
         if (activeNPCs.Count == 0)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: activeNPCs가 비어있습니다.");
             return;
         }
-        
+
         if (frontNPC == null)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: frontNPC가 null입니다.");
             return;
         }
-        
+
         // NPC가 목표 위치에 도착했는지 확인
         bool hasArrived = false;
         if (npcArrivedAtPosition.ContainsKey(frontNPC))
         {
             hasArrived = npcArrivedAtPosition[frontNPC];
         }
-        
+
         if (!hasArrived)
         {
             Debug.LogWarning($"[NPCQueueSystem] GiveHerbalMedicine() 실패: NPC가 아직 목표 위치에 도착하지 않았습니다. ({frontNPC.name})");
             return;
         }
-        
+
         if (isProcessingInteraction)
         {
             Debug.LogWarning("[NPCQueueSystem] GiveHerbalMedicine() 실패: 이미 상호작용 처리 중입니다.");
             return;
         }
-        
+
         // Inventory 확인
         if (inventory != null && inventory.herbalMedicine <= 0)
         {
@@ -1205,27 +1264,27 @@ public class NPCQueueSystem : MonoBehaviour
             ShowDialogueText("약초가 부족합니다.");
             return;
         }
-        
+
         // 상호작용 시작
         isProcessingInteraction = true;
         Debug.Log("[NPCQueueSystem] GiveHerbalMedicine() 상호작용 시작");
 
         BohyunNPCData bohyunData = frontNPCComponent != null ? frontNPCComponent.bohyunData : null;
         string npcName = GetNPCName(frontNPC);
-        
+
         // 무당 NPC인지 확인 (상호작용 완료 후 이벤트 트리거용)
         isCurrentNPCShaman = IsShamanNPC(bohyunData);
-        
-        // 거절 횟수 확인
+
+        // 거절 횟수 확인 (BEFORE RecordMedicineGiven or RecordRefusal)
         int refusalCount = 0;
         if (NPCStateManager.Instance != null)
         {
             refusalCount = NPCStateManager.Instance.GetRefusalCount(npcName);
         }
-        
+
         string dialogue = "";
         bool isAccept = false;
-        
+
         if (bohyunData != null)
         {
             // NPC가 요청한 것과 일치하는지 확인
@@ -1238,46 +1297,31 @@ public class NPCQueueSystem : MonoBehaviour
                     NPCStateManager.Instance.RecordMedicineGiven(npcName);
                     NPCStateManager.Instance.ResetRefusalCount(npcName);
                 }
-                
+
                 // 한 번 거절 후 다시 받았을 때 대사
                 if (refusalCount > 0)
                 {
                     if (bohyunData.medicineReAcceptLines != null && bohyunData.medicineReAcceptLines.Length > 0)
-                    {
                         dialogue = bohyunData.medicineReAcceptLines[Random.Range(0, bohyunData.medicineReAcceptLines.Length)];
-                    }
                     else
-                    {
-                        // re-accept 대사가 없으면 기본 메시지
                         dialogue = "Thank you... Thank you...";
-                    }
                 }
                 else if (bohyunData.medicineAcceptLines != null && bohyunData.medicineAcceptLines.Length > 0)
                 {
                     dialogue = bohyunData.medicineAcceptLines[Random.Range(0, bohyunData.medicineAcceptLines.Length)];
                 }
             }
-            else // 밥 요청
+            else // 밥 요청인데 약을 줌 => 거절
             {
-                // 밥을 요청했는데 약을 줌 = 거절로 간주
                 isAccept = false;
                 if (NPCStateManager.Instance != null)
                 {
                     NPCStateManager.Instance.RecordRefusal(npcName, false);
                 }
-                
-                // 두 번 거절당했을 때
-                if (refusalCount >= 1)
+
+                if (refusalCount >= 1 && bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
                 {
-                    if (bohyunData.foodReRejectLines != null && bohyunData.foodReRejectLines.Length > 0)
-                    {
-                        dialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
-                    }
-                    else
-                    {
-                        // re-reject 대사가 없으면 기본 메시지
-                        dialogue = "I'm gonna die tomorrow...";
-                    }
+                    dialogue = bohyunData.foodReRejectLines[Random.Range(0, bohyunData.foodReRejectLines.Length)];
                 }
                 else if (bohyunData.foodRejectLines != null && bohyunData.foodRejectLines.Length > 0)
                 {
@@ -1285,7 +1329,74 @@ public class NPCQueueSystem : MonoBehaviour
                 }
             }
         }
-        
+
+        // ---------------- DOKKAEBI HOOKS (based on isAccept and pre-change refusalCount) ----------------
+        if (npcName == "Birak")
+        {
+            // Re-Reject -> mark behind NPC to require medicine tomorrow
+            if (!isAccept && refusalCount == 1)
+            {
+                if (activeNPCs.Count > 1 && activeNPCs[1] != null && NPCStateManager.Instance != null)
+                {
+                    string behindName = GetNPCName(activeNPCs[1]);
+                    NPCStateManager.Instance.GetOrCreateState(behindName).forceMedicineTomorrow = true;
+                    Debug.Log($"[Birak Effect] {behindName} will require medicine tomorrow (Birak re-reject).");
+                }
+            }
+        }
+        else if (npcName == "Duak")
+        {
+            if (!isAccept && refusalCount == 1)
+            {
+                if (DuakEffect.Instance != null)
+                {
+                    DuakEffect.Instance.OnReReject();
+                    Debug.Log("[Duak Effect] DuakEffect.OnReReject() invoked (from GiveHerbalMedicine).");
+                }
+            }
+        }
+        else if (npcName == "Gaksi")
+        {
+            // First Accept -> give player 1 medicine
+            if (isAccept && refusalCount == 0)
+            {
+                if (inventory != null)
+                {
+                    inventory.AddHerb(1);
+                    Debug.Log("[Gaksi Effect] First Accept -> +1 medicine (immediate).");
+                }
+            }
+            // Re-Reject -> lose 2 rice
+            else if (!isAccept && refusalCount == 1)
+            {
+                if (inventory != null)
+                {
+                    inventory.AddLotus(-2);
+                    Debug.Log("[Gaksi Effect] Re-Reject -> -2 rice (immediate).");
+                }
+            }
+        }
+        else if (npcName == "Nolgae")
+        {
+            if (isAccept && refusalCount == 1)
+            {
+                if (NolgaeEffect.Instance != null)
+                {
+                    NolgaeEffect.Instance.OnReAccept();
+                    Debug.Log("[Nolgae Effect] OnReAccept invoked (from GiveHerbalMedicine).");
+                }
+            }
+            if (!isAccept && refusalCount == 1)
+            {
+                if (NolgaeEffect.Instance != null)
+                {
+                    NolgaeEffect.Instance.OnReReject();
+                    Debug.Log("[Nolgae Effect] OnReReject invoked (from GiveHerbalMedicine).");
+                }
+            }
+        }
+        // -----------------------------------------------------------------------------------------------
+
         // 대사 표시
         if (!string.IsNullOrEmpty(dialogue))
         {
@@ -1293,7 +1404,6 @@ public class NPCQueueSystem : MonoBehaviour
         }
         else if (isAccept)
         {
-            // Accept 대사가 없으면 기본 메시지
             ShowDialogueText("Thank you!");
         }
 
@@ -1306,14 +1416,16 @@ public class NPCQueueSystem : MonoBehaviour
 
         // 무당 이벤트 트리거 (상호작용 완료 후)
         TriggerShamanEvent();
-        
+
         // 무당 플래그 리셋 (다음 NPC를 위해)
         isCurrentNPCShaman = false;
-        
+
         // 대사 표시 후 페이드아웃 및 제거
         Debug.Log($"[NPCQueueSystem] GiveHerbalMedicine() ProcessInteractionAndRemove 시작 - NPC: {(frontNPC != null ? frontNPC.name : "null")}");
         StartCoroutine(ProcessInteractionAndRemove(frontNPC));
     }
+
+
 
     [Header("Interaction Settings")]
     [Tooltip("타이핑 완료 후 말풍선이 사라지기까지 대기 시간 (초)")]

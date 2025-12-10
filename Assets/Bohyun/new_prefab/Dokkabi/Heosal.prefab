@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4533233977038344280}
   - component: {fileID: 3321262004376962460}
   - component: {fileID: 8776933958214668201}
+  - component: {fileID: 3010029424234544295}
   m_Layer: 0
   m_Name: Heosal
   m_TagString: Untagged
@@ -113,3 +114,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3010029424234544295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118033292246004583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: 9cda2359a8a7b47999da6c8c0bb7410f, type: 2}

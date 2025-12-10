@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 5037860312679126167}
   - component: {fileID: 5511068610948508443}
   - component: {fileID: 255512183337827794}
+  - component: {fileID: 6099242484013517577}
+  - component: {fileID: -6521031803750145115}
   m_Layer: 0
   m_Name: Duak
   m_TagString: Untagged
@@ -113,3 +115,34 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6099242484013517577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6990160488798596737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3024aa2ea924e37abeafd7842dbae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCComponent
+  bohyunData: {fileID: 11400000, guid: 63961ae365711420786fe00eeb62ba7f, type: 2}
+--- !u!114 &-6521031803750145115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6990160488798596737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceee822ecabf94475aa0a51c70ca6cfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DuakEffect
+  targetNPCs:
+  - Slave 1
+  - Slave 2
+  - Slave 3
+  - Slave 4
+  - Slave 5
