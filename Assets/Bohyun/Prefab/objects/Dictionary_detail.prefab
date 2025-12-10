@@ -27,7 +27,7 @@ RectTransform:
   m_GameObject: {fileID: 538882944031675847}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.13341966, y: 0.13341966, z: 0.13341966}
+  m_LocalScale: {x: 0.114040695, y: 0.114040695, z: 0.114040695}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1993872272731239846}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 151519412301209716}
   - component: {fileID: 3562041059246663228}
   m_Layer: 5
-  m_Name: Detail_Text
+  m_Name: Description_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 124, y: 96}
+  m_AnchoredPosition: {x: 124, y: 121}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &151519412301209716
@@ -140,12 +140,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "The outer corners of the eyes tilt upward.\n\r\nLarge ears\n\r\nNot eat
-    humans\u2014but it is an excellent LIAR\u2026\n\r\nSuspiciously interested in
-    human money."
+  m_text: "The outer corners of the eyes tilt upward.\n\r\nNot eat humans\u2014but
+    it is an excellent LIAR\u2026\n\r\nSuspiciously interested in human money."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3420a87ebd491439b8d77706333b5d06, type: 2}
-  m_sharedMaterial: {fileID: -5065742427530729364, guid: 3420a87ebd491439b8d77706333b5d06, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
+  m_sharedMaterial: {fileID: -8385986378493951259, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -169,8 +168,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -183,7 +182,7 @@ MonoBehaviour:
   m_wordSpacing: 0
   m_lineSpacing: -25
   m_lineSpacingMax: 0
-  m_paragraphSpacing: -20
+  m_paragraphSpacing: 10
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
@@ -207,7 +206,146 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 10.778992, y: -17.623901, z: -14.698608, w: -198.22122}
+  m_margin: {x: 10.778992, y: -17.623901, z: -14.698608, w: -93.72589}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &2356059822850573832
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6685190383073191199}
+  - component: {fileID: 7300894786156692420}
+  - component: {fileID: 2844036760572416560}
+  m_Layer: 5
+  m_Name: Feature_Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6685190383073191199
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2356059822850573832}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1993872272731239846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 124, y: -109}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7300894786156692420
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2356059822850573832}
+  m_CullTransparentMesh: 1
+--- !u!114 &2844036760572416560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2356059822850573832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: '- Upturned eyes with a smiling expression
+
+
+    - Large ears'
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
+  m_sharedMaterial: {fileID: -8385986378493951259, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 15
+  m_fontSizeBase: 15
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: -25
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 10
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 10.778992, y: -17.623901, z: -7.484009, w: -38.41394}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -562,6 +700,142 @@ MonoBehaviour:
   hoverCursor: {fileID: 2800000, guid: 1ae7e4639a74845da98f9f2a08ac377a, type: 3}
   cursorHotspot: {x: 0, y: 0}
   interactiveButtons: []
+--- !u!1 &4985900563123378200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3852822654548243330}
+  - component: {fileID: 4918582428055090016}
+  - component: {fileID: 2017808163354259764}
+  m_Layer: 5
+  m_Name: Key_Features
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3852822654548243330
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985900563123378200}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1993872272731239846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 124, y: -70}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &4918582428055090016
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985900563123378200}
+  m_CullTransparentMesh: 1
+--- !u!114 &2017808163354259764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985900563123378200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Key Features
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
+  m_sharedMaterial: {fileID: -8385986378493951259, guid: 8420937991cfb4acc8895776ad26e266, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 22
+  m_fontSizeBase: 22
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 1
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: -25
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 10
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 10.778992, y: -17.623901, z: 38.82666, w: 43.175262}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &7559896945622201840
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,6 +872,8 @@ RectTransform:
   - {fileID: 7082025332392262277}
   - {fileID: 1209709884537238358}
   - {fileID: 8440255647051394532}
+  - {fileID: 3852822654548243330}
+  - {fileID: 6685190383073191199}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -619,7 +895,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DictionaryDetailManager
   faceImage: {fileID: 285977788103075875}
   pageImage: {fileID: 4744903196081078736}
-  detailText: {fileID: 3562041059246663228}
+  featureText: {fileID: 2844036760572416560}
+  descriptionText: {fileID: 3562041059246663228}
   leftButton: {fileID: 6923507571516326848}
   rightButton: {fileID: 8417106982260086908}
   closeButton: {fileID: 6241182288462499481}
@@ -628,43 +905,56 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   pages:
   - faceImage: {fileID: -7136524316631348995, guid: ddfad20367ad14a71960c2a8e0764ead, type: 3}
-    textSegments:
-    - text: "The outer corners of the eyes tilt upward.\n\r\nLarge ears\n\r\nNot
-        eat humans\u2014but it is an excellent "
-      isBold: 0
-    - text: LIAR
-      isBold: 1
-    - text: "\u2026\n\r\nSuspiciously interested in human money."
-      isBold: 0
+    featureText: '- Upturned eyes with a smiling expression
+
+
+      - Large ears'
+    descriptionText: "The outer corners of the eyes tilt upward.\n\nNot eat humans\u2014but
+      it is an excellent LIAR\u2026\n\nSuspiciously interested in human money."
   - faceImage: {fileID: 7488313383368834622, guid: 767e5b7e5c7ed4caa87220cae617bd59, type: 3}
-    textSegments:
-    - text: "Large eyes and an unusually long smile line\n\r\nHuge build but always
-        starving\n\r\nDocile as long as it\u2019s well-fed\n\nWhen hungry, it becomes  "
-      isBold: 0
-    - text: THE MOST DANGEROUS
-      isBold: 1
-    - text: "creature\u2026"
-      isBold: 0
+    featureText: '- Big, round eyes
+
+
+      - Extremely long mouth corners
+
+
+      -
+      Broad shoulders and a protruding belly'
+    descriptionText: "It huge, but always starving.\n\nDocile as long as it\u2019s
+      well-fed.\n\nBut when hungry, it becomes THE MOST DANGEROUS creature to humans\u2026"
+  - faceImage: {fileID: -3667131600824562435, guid: b24450b6bda364307ac7f0bbb3df7c4e, type: 3}
+    featureText: '- Narrow, delicate eyes
+
+
+      - Pale skin'
+    descriptionText: "Has pointed ears, pale skin.\n\nSpeaks in a very polite manner.\nBut
+      that does not mean she is kind\u2026\n\nSeems to dislike humans who disobey
+      her."
   - faceImage: {fileID: 3192298445268409882, guid: bfac6ec5e12b04c87b3b60a8deb27b22, type: 3}
-    textSegments:
-    - text: 'Has a large jaw, with extremely greedy personality
+    featureText: '- Large, prominent jaw
 
 
-        When angry,
-        touches its neck and avoids eye contact
+      - Neck shows scratch-like marks
+      made by its own fingers'
+    descriptionText: "Extremely greedy.\n\nWhen angry, touches its neck and avoids
+      eye contact.\n\nIf its request is refused, it becomes furious and tries to
+      bite with its jaw\u2026\n\nBe CAREFUL not to let that jaw tear your flesh."
+  - faceImage: {fileID: -5643401755176094002, guid: 10c66b87101c94ac991a70afcc4901b5, type: 3}
+    featureText: '- Eyes slant downward.
 
 
-        If its request is refused,
-        it becomes  '
-      isBold: 0
-    - text: "FURIOUS AND TRIES TO BITE  \n"
-      isBold: 1
-    - text: "with its jaw\u2026 \n\nBe  "
-      isBold: 0
-    - text: CAREFUL
-      isBold: 1
-    - text: '  not to let that jaw tear your flesh.'
-      isBold: 0
+      - Slightly upturned mouth, a faint
+      smiling face.
+
+
+      - Has three horns.'
+    descriptionText: "Always smiling in a flimsy - annoying way.\n\nGood at lying
+      - don\u2019t let it trick you.\n\n...But it might share useful info if treated
+      well."
+  - faceImage: {fileID: 6843335327786611419, guid: 473a562c15e814bb9942bbc3efef39d2, type: 3}
+    featureText: "- Long beard. \n\n- Small eyes. "
+    descriptionText: "Extremely violent.\n\nLooks down on humans more than anyone.
+      \n\nThe Dokkaebi with the highest human kill count!!"
 --- !u!114 &2180624231555819828
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,21 +4,16 @@ using TMPro;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class TextSegment
-{
-    [TextArea(3, 10)]
-    public string text;           // 텍스트 내용
-    public bool isBold;           // Bold 여부
-}
-
-[System.Serializable]
 public class DictionaryPageData
 {
     [Header("Page Content")]
     public Sprite faceImage;        // 얼굴 이미지
     
-    [Header("Detail Text (Segments)")]
-    public TextSegment[] textSegments;  // 텍스트 세그먼트 배열 (일반 텍스트와 bold 텍스트를 분리)
+    [Header("Text Content")]
+    [TextArea(3, 10)]
+    public string featureText;     // Feature 설명 텍스트
+    [TextArea(3, 10)]
+    public string descriptionText; // 내용 설명 텍스트
 }
 
 public class DictionaryDetailManager : MonoBehaviour
@@ -26,7 +21,8 @@ public class DictionaryDetailManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Image faceImage;           // FaceImage
     [SerializeField] private Image pageImage;           // Dictionary_page (공통 이미지)
-    [SerializeField] private TextMeshProUGUI detailText; // Detail_Text
+    [SerializeField] private TextMeshProUGUI featureText; // Feature 설명 TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI descriptionText; // 내용 설명 TextMeshProUGUI
     [SerializeField] private Button leftButton;         // LeftButton
     [SerializeField] private Button rightButton;       // RightButton
     [SerializeField] private Button closeButton;        // CloseButton
@@ -145,10 +141,16 @@ public class DictionaryDetailManager : MonoBehaviour
             faceImage.sprite = currentPage.faceImage;
         }
         
-        // 텍스트 업데이트 (일반 텍스트와 bold 텍스트를 조합)
-        if (detailText != null)
+        // Feature 텍스트 업데이트
+        if (featureText != null)
         {
-            detailText.text = BuildFormattedText(currentPage.textSegments);
+            featureText.text = currentPage.featureText ?? "";
+        }
+        
+        // 내용 설명 텍스트 업데이트
+        if (descriptionText != null)
+        {
+            descriptionText.text = currentPage.descriptionText ?? "";
         }
         
         // 버튼 활성화/비활성화
@@ -163,40 +165,6 @@ public class DictionaryDetailManager : MonoBehaviour
         }
     }
     
-    private string BuildFormattedText(TextSegment[] segments)
-    {
-        if (segments == null || segments.Length == 0)
-        {
-            return "";
-        }
-        
-        string formattedText = "";
-        
-        for (int i = 0; i < segments.Length; i++)
-        {
-            TextSegment segment = segments[i];
-            if (segment == null || string.IsNullOrEmpty(segment.text))
-            {
-                continue;
-            }
-            
-            // 줄바꿈 문자 정규화 (\r\n -> \n)
-            string normalizedText = segment.text.Replace("\r\n", "\n").Replace("\r", "\n");
-            
-            if (segment.isBold)
-            {
-                // TextMeshPro의 bold 태그 사용
-                // 줄바꿈을 보존하면서 bold 태그 적용
-                formattedText += "<b>" + normalizedText + "</b>";
-            }
-            else
-            {
-                formattedText += normalizedText;
-            }
-        }
-        
-        return formattedText;
-    }
     
     void OnDestroy()
     {
