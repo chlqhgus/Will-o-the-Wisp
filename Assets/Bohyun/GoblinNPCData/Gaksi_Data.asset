@@ -23,7 +23,8 @@ MonoBehaviour:
   - Hehe, thank you.
   - Kindness has a way of returning, even if it takes the long road.
   medicineAcceptLines: []
-  foodRejectLines: []
+  foodRejectLines:
+  - Are you truly sincere?
   medicineRejectLines: []
   foodReRequestLines:
   - Are you truly sincere?

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BirakEffect : MonoBehaviour
@@ -13,19 +14,58 @@ public class BirakEffect : MonoBehaviour
         }
     }
 
+    [Header("Birak makes the NPC BEHIND the current one sick tomorrow")]
+    public List<string> birakPossibleTargets = new List<string>();
+
+    private List<string> pendingSick = new List<string>();
+
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // ===========================================================
+    // Called when Re-Reject occurs (Birak is the current NPC)
+    // ===========================================================
     public void ApplyBirak(string npcBehind)
     {
         if (string.IsNullOrEmpty(npcBehind))
         {
-            Debug.Log("[BIRAK] No NPC behind → no curse.");
+            Debug.LogWarning("[Birak] npcBehind is NULL or EMPTY.");
             return;
         }
 
-        // FIXED — correct property name
-        NPCStateManager.Instance.GetOrCreateState(npcBehind).willNeedMedicineTomorrow = true;
+        pendingSick.Add(npcBehind);
 
-        Debug.Log($"[BIRAK CURSE] {npcBehind} will need medicine tomorrow.");
+        Debug.Log($"[Birak] Marked {npcBehind} to become sick tomorrow.");
+    }
+
+    // ===========================================================
+    // Apply at NIGHT
+    // ===========================================================
+    public void ApplyNightEffects()
+    {
+        if (pendingSick.Count == 0)
+            return;
+
+        foreach (string npc in pendingSick)
+        {
+            NPCStateManager.Instance.MarkNeedMedicineTomorrow(npc);
+            Debug.Log($"[Birak] NIGHT: {npc} will need medicine tomorrow.");
+        }
+
+        pendingSick.Clear();
     }
 }
+
 
 

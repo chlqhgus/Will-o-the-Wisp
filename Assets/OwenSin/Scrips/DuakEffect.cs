@@ -14,13 +14,10 @@ public class DuakEffect : MonoBehaviour
         }
     }
 
-    [Header("Custom Duak Curse Target List (editable in Inspector)")]
-    [Tooltip("Enter the names of NPCs who can be cursed by Duak.")]
-    public List<string> duakTargetList = new List<string>();
+    [Header("NPC list for RE-REJECT → becomes sick tomorrow")]
+    public List<string> sickTargetList = new List<string>();
 
-    // NPCs chosen today to receive curse tomorrow
-    private List<string> duakChosenTargets = new List<string>();
-
+    private List<string> pendingSick = new List<string>();
 
     void Awake()
     {
@@ -35,46 +32,39 @@ public class DuakEffect : MonoBehaviour
         }
     }
 
-
-    // ===============================
-    // Called when DUAK re-reject happens
-    // ===============================
-    public void ApplyDuakCurse()
+    // RE-ACCEPT = no effect
+    public void OnReAccept()
     {
-        Debug.Log("[DUAK] Re-reject detected → selecting target from custom list.");
+        Debug.Log("[Duak] RE-ACCEPT → No effect");
+    }
 
-        if (duakTargetList == null || duakTargetList.Count == 0)
+    // RE-REJECT = choose 1 random NPC → sick tomorrow
+    public void OnReReject()
+    {
+        if (sickTargetList.Count == 0)
         {
-            Debug.LogWarning("[DUAK] Target list is EMPTY. No curse applied.");
+            Debug.LogWarning("[Duak] Sick target list is EMPTY.");
             return;
         }
 
-        // Pick a random NPC from your custom list
-        string target = duakTargetList[Random.Range(0, duakTargetList.Count)];
+        string target = sickTargetList[Random.Range(0, sickTargetList.Count)];
+        pendingSick.Add(target);
 
-        duakChosenTargets.Add(target);
-
-        Debug.Log($"[DUAK] Target selected: {target}");
+        Debug.Log($"[Duak] RE-REJECT → {target} will be SICK tomorrow.");
     }
 
-
-    // ===============================
-    // Apply curse at NIGHT
-    // ===============================
+    // Apply effect at night
     public void ApplyNightEffects()
     {
-        if (duakChosenTargets.Count == 0) return;
-
-        Debug.Log($"[DUAK] Applying {duakChosenTargets.Count} curses for tomorrow.");
-
-        foreach (string npc in duakChosenTargets)
+        foreach (string npc in pendingSick)
         {
             NPCStateManager.Instance.MarkNeedMedicineTomorrow(npc);
-            Debug.Log($"[DUAK] {npc} will need medicine tomorrow.");
+            Debug.Log($"[Duak] NIGHT: {npc} set to NEED MEDICINE tomorrow.");
         }
 
-        duakChosenTargets.Clear();
+        pendingSick.Clear();
     }
 }
+
 
 

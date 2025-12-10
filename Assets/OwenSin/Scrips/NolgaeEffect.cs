@@ -14,16 +14,14 @@ public class NolgaeEffect : MonoBehaviour
         }
     }
 
-    [Header("If RE-ACCEPT → randomly make 1 NPC sick (tomorrow)")]
+    [Header("If RE-ACCEPT → Random NPC becomes sick tomorrow")]
     public List<string> sickTargetList = new List<string>();
 
-    [Header("If RE-REJECT → randomly kill 4 NPCs tonight (unique)")]
+    [Header("If RE-REJECT → FOUR NPCs from this list will die tonight")]
     public List<string> killTargetList = new List<string>();
 
-    // pending actions applied at night
     private List<string> pendingSick = new List<string>();
     private List<string> pendingKill = new List<string>();
-
 
     void Awake()
     {
@@ -38,79 +36,97 @@ public class NolgaeEffect : MonoBehaviour
         }
     }
 
-
-    // =======================================================
-    // RE-ACCEPT → Make 1 random NPC sick tomorrow
-    // =======================================================
+    // ----------------------------------------------------
+    // RE-ACCEPT → 1 random sick target
+    // ----------------------------------------------------
     public void OnReAccept()
     {
         if (sickTargetList.Count == 0)
         {
-            Debug.LogWarning("[Nolgae] Sick target list is EMPTY.");
+            Debug.LogWarning("[Nolgae] RE-ACCEPT but SickTargetList is EMPTY");
             return;
         }
 
         string target = sickTargetList[Random.Range(0, sickTargetList.Count)];
         pendingSick.Add(target);
 
-        Debug.Log($"[Nolgae] RE-ACCEPT → {target} will become SICK tomorrow.");
+        Debug.Log($"[Nolgae] RE-ACCEPT → Mark {target} to be SICK tomorrow");
     }
 
-
-    // =======================================================
-    // RE-REJECT → Kill 4 random NPCs tonight
-    // =======================================================
+    // ----------------------------------------------------
+    // RE-REJECT → choose 4 unique NPCs to kill
+    // ----------------------------------------------------
     public void OnReReject()
     {
         if (killTargetList.Count == 0)
         {
-            Debug.LogWarning("[Nolgae] Kill target list is EMPTY.");
+            Debug.LogWarning("[Nolgae] RE-REJECT but KillTargetList is EMPTY");
             return;
         }
 
-        // Maximum 4 kills, but if list < 4, kill as many as available
-        int count = Mathf.Min(4, killTargetList.Count);
+        List<string> selected = SelectFourUnique();
 
-        // Temporary list to avoid duplicates
-        List<string> temp = new List<string>(killTargetList);
+        pendingKill.AddRange(selected);
+
+        Debug.Log($"[Nolgae] RE-REJECT → Selected {selected.Count} NPCs to DIE tonight");
+
+        foreach (var s in selected)
+            Debug.Log($"[Nolgae]  • Marked for death: {s}");
+    }
+
+    // ----------------------------------------------------
+    // Pick 4 unique random NPCs (or fewer if not enough)
+    // ----------------------------------------------------
+    private List<string> SelectFourUnique()
+    {
+        List<string> copy = new List<string>(killTargetList);
+        List<string> result = new List<string>();
+
+        int count = Mathf.Min(4, copy.Count);
 
         for (int i = 0; i < count; i++)
         {
-            int idx = Random.Range(0, temp.Count);
-            string chosen = temp[idx];
-
-            pendingKill.Add(chosen);
-            temp.RemoveAt(idx);
-
-            Debug.Log($"[Nolgae] RE-REJECT → {chosen} added to TONIGHT kill list.");
+            int index = Random.Range(0, copy.Count);
+            result.Add(copy[index]);
+            copy.RemoveAt(index);
         }
+
+        return result;
     }
 
-
-    // =======================================================
-    // NIGHT EFFECTS (called by NighttimeManager)
-    // =======================================================
+    // ----------------------------------------------------
+    // NIGHT EFFECTS — executed by NighttimeManager
+    // ----------------------------------------------------
     public void ApplyNightEffects()
     {
-        // Apply sick effects
-        foreach (string npc in pendingSick)
+        NPCStateManager sm = NPCStateManager.Instance;
+
+        if (sm == null)
         {
-            NPCStateManager.Instance.MarkNeedMedicineTomorrow(npc);
-            Debug.Log($"[Nolgae] NIGHT: {npc} will require MEDICINE tomorrow.");
+            Debug.LogError("[Nolgae] NPCStateManager missing!");
+            return;
         }
 
-        // Apply kills
+        // SICK EFFECT
+        foreach (string npc in pendingSick)
+        {
+            sm.MarkNeedMedicineTomorrow(npc);
+            Debug.Log($"[Nolgae] NIGHT → {npc} will need medicine tomorrow.");
+        }
+
+        // KILL EFFECT
         foreach (string npc in pendingKill)
         {
-            var st = NPCStateManager.Instance.GetOrCreateState(npc);
+            var st = sm.GetOrCreateState(npc);
             st.isDead = true;
 
-            Debug.Log($"[Nolgae] NIGHT: {npc} is now DEAD (bypassed hunger/medicine rules).");
+            Debug.Log($"[Nolgae] NIGHT → {npc} has been KILLED by Nolgae!");
         }
 
         pendingSick.Clear();
         pendingKill.Clear();
     }
 }
+
 
 

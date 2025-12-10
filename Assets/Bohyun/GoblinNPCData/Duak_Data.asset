@@ -22,7 +22,8 @@ MonoBehaviour:
   foodAcceptLines:
   - T-thank you truly.
   medicineAcceptLines: []
-  foodRejectLines: []
+  foodRejectLines:
+  - I beg you. I-I am so starving for a long time.
   medicineRejectLines: []
   foodReRequestLines:
   - I beg you. I-I am so starving for a long time.

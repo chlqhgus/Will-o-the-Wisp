@@ -101,15 +101,32 @@ public class NighttimeManager : MonoBehaviour
         {
             dayStartButtonText = dayStartButton.GetComponentInChildren<TextMeshProUGUI>();
         }
-        
+
         // 먼저 사망 처리 (약을 받지 못한 NPC, 이틀 연속 밥을 못 먹은 NPC)
+        // 먼저 사망 처리
         if (NPCStateManager.Instance != null)
         {
             Debug.Log("[NighttimeManager] Start() - 사망 처리 시작");
-            NPCStateManager.Instance.OnNewDay(); // 사망 처리 및 상태 리셋
+            NPCStateManager.Instance.OnNewDay();
             Debug.Log("[NighttimeManager] Start() - 사망 처리 완료");
         }
-        
+
+        // =====================================================
+        // APPLY DOKKAEBI NIGHT EFFECTS (Duak, Birak, Gaksi, Nolgae)
+        // =====================================================
+        if (DuakEffect.Instance != null)
+            DuakEffect.Instance.ApplyNightEffects();
+
+        if (BirakEffect.Instance != null)
+            BirakEffect.Instance.ApplyNightEffects();
+
+        if (GaksiEffect.Instance != null)
+            GaksiEffect.Instance.ApplyNightEffects();
+
+        if (NolgaeEffect.Instance != null)
+            NolgaeEffect.Instance.ApplyNightEffects();
+
+
         // 밥 또는 약을 준 NPC 수 계산 (도움을 준 사람) - 사망 처리 후 계산
         CalculateBlessedNPCs();
         

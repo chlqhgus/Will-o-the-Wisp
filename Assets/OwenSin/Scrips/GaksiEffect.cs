@@ -13,48 +13,65 @@ public class GaksiEffect : MonoBehaviour
         }
     }
 
-    private bool acceptedToday = false;
-    private bool reRefusedToday = false;
+    private int pendingMedicineGain = 0;
+    private int pendingRiceLoss = 0;
 
-    public void OnAcceptGaksi()
+    void Awake()
     {
-        acceptedToday = true;
-        reRefusedToday = false;
-        Debug.Log("[GAKSI] Accepted → +1 medicine tomorrow.");
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public void OnReRefuseGaksi()
+    // RE-ACCEPT = gain 1 medicine at night
+    public void OnReAccept()
     {
-        reRefusedToday = true;
-        acceptedToday = false;
-        Debug.Log("[GAKSI] Re-refuse → lose 2 rice tonight.");
+        pendingMedicineGain += 1;
+        Debug.Log("[Gaksi] RE-ACCEPT → +1 medicine tonight");
     }
 
+    // RE-REJECT = lose 2 rice at night
+    public void OnReReject()
+    {
+        pendingRiceLoss += 2;
+        Debug.Log("[Gaksi] RE-REJECT → -2 rice tonight");
+    }
+
+    // Apply resource changes at night
     public void ApplyNightEffects()
     {
         Inventory inv = Inventory.Instance;
-        if (inv == null) return;
-
-        // 1. Accept effect
-        if (acceptedToday)
+        if (inv == null)
         {
-            inv.AddHerb(1);
-            Debug.Log("[GAKSI NIGHT] +1 Herbal Medicine.");
+            Debug.LogWarning("[Gaksi] Inventory not found.");
+            return;
         }
 
-        // 2. Re-refuse effect
-        if (reRefusedToday)
+        // Gain medicine
+        if (pendingMedicineGain > 0)
         {
-            inv.lotusRice = Mathf.Max(0, inv.lotusRice - 2);
-
-            // FIXED — Refresh is now public
-            inv.Refresh();
-
-            Debug.Log("[GAKSI NIGHT] -2 Lotus Rice.");
+            inv.AddHerb(pendingMedicineGain);
+            Debug.Log($"[Gaksi] NIGHT: +{pendingMedicineGain} medicine");
         }
 
-        acceptedToday = false;
-        reRefusedToday = false;
+        // Lose rice
+        if (pendingRiceLoss > 0)
+        {
+            int loss = Mathf.Min(inv.lotusRice, pendingRiceLoss);
+            inv.lotusRice -= loss;
+
+            Debug.Log($"[Gaksi] NIGHT: -{loss} rice");
+        }
+
+        pendingMedicineGain = 0;
+        pendingRiceLoss = 0;
     }
 }
+
 
