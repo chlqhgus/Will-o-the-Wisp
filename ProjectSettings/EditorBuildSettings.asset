@@ -12,8 +12,8 @@ EditorBuildSettings:
     path: Assets/01.Scenes/IntroScene.unity
     guid: 37c899897f89643df9f0d38b7f681c30
   - enabled: 1
-    path: Assets/01.Scenes/MainScene_Test.unity
-    guid: 6aad3963f78d849f4922f026dc7bc5e5
+    path: Assets/Bohyun/MainScene_Test.unity
+    guid: eea0d7be90e774c4d9ee3f0eaacebf15
   - enabled: 1
     path: Assets/01.Scenes/EndingScene.unity
     guid: 838b0d3aa0364478ca0df9b83b75e26e

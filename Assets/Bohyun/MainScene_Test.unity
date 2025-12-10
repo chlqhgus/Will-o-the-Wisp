@@ -3858,9 +3858,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f79b2f79cf94025a28714432556bb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  lotusRice: 15
-  herbalMedicine: 8
-  money: 0
+  lotusRice: 30
+  herbalMedicine: 20
+  money: 5
   lotusText: {fileID: 1005924408}
   herbText: {fileID: 1445978469}
 --- !u!4 &1072397958

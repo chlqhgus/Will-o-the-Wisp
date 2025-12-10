@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MerchantData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: Merchant
-  foodRequestProbability: 0.65
-  medicineRequestProbability: 0.35
+  foodRequestProbability: 0.75
+  medicineRequestProbability: 0.25
   reRequestChance: 0.5
   foodRequestLines:
   - Please give me some food. It's too hard to bargain on an empty belly.

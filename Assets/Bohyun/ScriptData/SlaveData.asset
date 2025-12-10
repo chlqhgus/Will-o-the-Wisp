@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SlaveData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: Slave
-  foodRequestProbability: 0.55
-  medicineRequestProbability: 0.45
+  foodRequestProbability: 0.6
+  medicineRequestProbability: 0.4
   reRequestChance: 0
   foodRequestLines:
   - P-please. I haven't eaten. A small bite would save me.

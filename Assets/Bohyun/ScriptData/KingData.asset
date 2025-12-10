@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: KingData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: King
-  foodRequestProbability: 0.8
-  medicineRequestProbability: 0.2
+  foodRequestProbability: 0.85
+  medicineRequestProbability: 0.15
   reRequestChance: 0.5
   foodRequestLines:
   - Bring me food at once. You'll be rewarded of course.

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PhysicianData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: Physician
-  foodRequestProbability: 0.65
-  medicineRequestProbability: 0.35
+  foodRequestProbability: 0.7
+  medicineRequestProbability: 0.3
   reRequestChance: 0.5
   foodRequestLines:
   - A meal please. I haven't the strength to treat anyone.

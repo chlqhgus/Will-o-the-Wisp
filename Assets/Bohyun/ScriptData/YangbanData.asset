@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: YangbanData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: Yangban
-  foodRequestProbability: 0.7
-  medicineRequestProbability: 0.3
+  foodRequestProbability: 0.75
+  medicineRequestProbability: 0.25
   reRequestChance: 0.5
   foodRequestLines:
   - I expect a proper meal. I'll compensate you fairly.

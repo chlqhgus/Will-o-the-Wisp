@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ShamanData
   m_EditorClassIdentifier: Assembly-CSharp::BohyunNPCData
   npcName: Shaman
-  foodRequestProbability: 0.7
-  medicineRequestProbability: 0.3
+  foodRequestProbability: 0.75
+  medicineRequestProbability: 0.25
   reRequestChance: 0.5
   foodRequestLines:
   - ...I need warm food or the divine voice will fade.
